@@ -2,7 +2,7 @@
 Generic analysis for CLAS12 in groovy
 
 ## Dependencies
-* [CLAS12-Offline-Software](https://github.com/JeffersonLab/clas12-offline-software) Make sure your ```$CLASSPATH``` is properly set.
+* [CLAS12-Offline-Software](https://github.com/JeffersonLab/clas12-offline-software)
 * [CLASQADB](https://github.com/JeffersonLab/clasqaDB)
 * [J2ROOT](https://github.com/drewkenjo/j2root)
 
