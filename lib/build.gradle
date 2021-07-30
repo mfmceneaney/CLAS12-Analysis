@@ -25,12 +25,10 @@ repositories {
     	  url "https://clasweb.jlab.org/jhep/maven"
     }
     flatDir {
-    	//"echo $QADB".execute()
-        dirs '../../clas12root/clasqaDB'
+        dirs '../clasqaDB'
     }
     flatDir {
-    	//"echo $J2ROOT".execute()
-        dirs '../../j2root/target' // needs to be set manually
+        dirs '../j2root/target'
     }
 }
 
@@ -54,7 +52,13 @@ dependencies {
     implementation 'org.jlab.jnp:jnp-utils:2.0-SNAPSHOT'     // From mavenLocal()
     implementation 'target:JRoot-1.0'                        // Set manually path to j2root installation since not available online
     implementation 'org.jlab.jnp:jnp-physics:1.0-SNAPSHOT'   // From https://clasweb.jlab.org/jhep/maven
-    implementation 'clasqaDB:clasqa' // from https://github.com/JeffersonLab/clasqaDB
+    implementation 'clasqaDB:clasqa'                         // from https://github.com/JeffersonLab/clasqaDB
+}
+
+task run(type: JavaExec) {
+   classpath = files('build/libs/lib.jar')
+   classpath += sourceSets.main.runtimeClasspath
+   main = 'org.jlab.analysis.Main'
 }
 
 tasks.named('test') {
