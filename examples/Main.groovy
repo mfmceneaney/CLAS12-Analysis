@@ -25,7 +25,7 @@ public class Main {
     /**
     * Main method processes command line arguments such as paths for input/output file/directory,
     * limited kinematic cuts, and charge/pid identification requirements.
-    * Use the <code>-h/--h/-help/--help</code> options for full detail or check out the <code>docs/groovy</code> folder.
+    * Use the <code>-h/--h/-help/--help</code> options for full detail or check out the <code>examples/</code> folder.
     * You will probably want to customize this for less general analyses.
     *
     * @param String[] args
