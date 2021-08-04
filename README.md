@@ -11,7 +11,7 @@ Use the following commands in bash (csh scripts also provided) to setup the repo
 ```bash
 git clone https://github.com/mfmceneaney/CLAS12-Analysis.git
 cd CLAS12-Analysis
-source setup/setup.sh
+source bin/setup.sh
 ```
 Then add the following to your startup script:
 ```bash

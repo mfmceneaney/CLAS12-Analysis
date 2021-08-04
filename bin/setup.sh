@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export C12ANALYSIS=$PWD
+echo "C12ANALYSIS=$PWD" | grep C12ANALYSIS --color=auto
 
 # Setup j2root
 git clone https://github.com/drewkenjo/j2root.git
