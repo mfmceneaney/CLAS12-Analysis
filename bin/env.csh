@@ -11,4 +11,4 @@ cd $J2ROOT; source setup.csh; cd ..;
 cd clasqaDB; source env.csh; cd ..;
 
 # Add command line interface to path
-setenv PATH PATH:$C12ANALYSIS/bin
+setenv PATH $PATH:$C12ANALYSIS/bin
