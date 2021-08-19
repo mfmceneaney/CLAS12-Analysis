@@ -24,7 +24,13 @@ popd >> /dev/null
 
 Currently the default scons version 2.5 on ifarm does not support python 2.3, so just run the following before sourcing the setup script to get around this.
 ```bash
+# For interactive use
 alias scons "/usr/bin/env python2 `which scons`"
+
+# For jobs
+function scons {
+    /usr/bin/env python2 `which scons`
+}
 ```
 
 Depending on what java version you have, in particular for java 8 on ifarm, you need to edit the setup script by commenting and uncommenting these two lines:
