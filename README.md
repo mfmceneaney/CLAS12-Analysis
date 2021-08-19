@@ -13,6 +13,11 @@ git clone https://github.com/mfmceneaney/CLAS12-Analysis.git
 cd CLAS12-Analysis
 source bin/setup.sh
 ```
+Depending on what java version you have you may need to edit the setup script, in particular for java 8, you may need to edit the setup script by commenting and uncommenting these two lines:
+```bash
+jar -c -f clasqa.jar clasqa/*.groovy # Comment this
+# jar cf clasqa.jar clasqa/*.groovy  # Uncomment this
+```
 Then add the following to your startup script:
 ```bash
 pushd /path/to/CLAS12-Analysis >> /dev/null
