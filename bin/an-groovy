@@ -1,2 +1,4 @@
 #!/bin/bash
-$C12ANALYSIS/gradlew run -q -p $C12ANALYSIS $JAVA_OPTS --args=" $@"
+
+$C12ANALYSIS/gradlew run -q -p $C12ANALYSIS $JAVA_OPTS --args="`echo " $@"`"
+#NOTE: Space is important in " $@" so you don't get empty argument error
