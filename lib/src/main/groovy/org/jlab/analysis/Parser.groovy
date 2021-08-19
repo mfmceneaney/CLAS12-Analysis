@@ -159,6 +159,7 @@ public class Parser {
             String logName = ".analysis."+sdf.format(now)+".log";
             String allArgs = "# CLAS12 Analysis v. 1.0 : Argument list:\n";
             for (String arg : args) { allArgs+=arg; if (!arg.startsWith("-")) { allArgs+=" \n"; } else { allArgs+=" "; } }
+            allargs += "\n";
             System.out.println(" Log file created at: "+logName);
             try {
                 File logFile = new File(".analysis"+sdf.format(now)+".log");

@@ -31,7 +31,6 @@ public class Main {
     * @param String[] args
     */
     public static void main(String[] args) throws IOException, InterruptedException {
-        
         Analysis analysis = new Analysis();
         Parser parser     = new Parser(); 
         if(!parser.parse(args,analysis)) { return; }

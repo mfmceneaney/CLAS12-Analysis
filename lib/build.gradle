@@ -55,6 +55,10 @@ dependencies {
     implementation 'clasqaDB:clasqa'                         // from https://github.com/JeffersonLab/clasqaDB
 }
 
+tasks.withType(JavaExec) {
+    systemProperty "java.library.path", "../j2root/build"
+}
+
 task run(type: JavaExec) {
    classpath = files('build/libs/lib.jar')
    classpath += sourceSets.main.runtimeClasspath

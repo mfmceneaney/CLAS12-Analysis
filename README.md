@@ -24,6 +24,11 @@ pushd /path/to/CLAS12-Analysis >> /dev/null
 source env.sh
 popd >> /dev/null
 ``` 
+Note: on ifarm you might have to run the following so that gradle can jobs can read your gradle files:
+```bash
+chmod +r ~/.gradle/daemon/<version>/registry.bin
+```
+
 ## Getting Started
 You should now be able to run the ```an-groovy``` from the command line and see some version info pop up.
 Use ```an-groovy -h/--help``` to see a list of available options with basic descriptions.
