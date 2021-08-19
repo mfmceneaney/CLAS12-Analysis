@@ -57,6 +57,13 @@ This tool only reads HIPO files (see [CLAS12-Offline-Software](https://github.co
 You can also follow the examples to see how you might add customized kinematic variables to
 an analysis or manually select other options.  Please note the Constants class is not necessarily up to date and you should be especially careful to correctly set the beam energy and target mass.
 
+### If you already have J2ROOT and CLASQADB setup
+Assuming your ```$CLASSPATH``` is setup correctly you can instead run:
+```bash
+$C12ANALYSIS/bin/run.sh --help
+```
+
+
 #
 
 Contact: matthew.mceneaney@duke.edu

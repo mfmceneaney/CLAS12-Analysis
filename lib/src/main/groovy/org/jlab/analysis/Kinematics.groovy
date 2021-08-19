@@ -441,7 +441,7 @@ public class Kinematics {
 
         // Compute longitudinal momentum asymmetry alpha
         double alpha = (double) 0.0; double sum = (double) 0.0;
-        double sign = 1; int i = 1;
+        double sign = 1; int i = 0;
         for (LorentzVector lv : lvList) {
             if (this._constants.getCharge(this._decay.get(i))<0) {sign = -1;}
             alpha += sign * lv_parent.vect().dot(lv.vect())/lv_parent.vect().mag(); sum += lv_parent.vect().dot(lv.vect())/lv_parent.vect().mag(); i++;
