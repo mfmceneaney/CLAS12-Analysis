@@ -13,18 +13,27 @@ git clone https://github.com/mfmceneaney/CLAS12-Analysis.git
 cd CLAS12-Analysis
 source bin/setup.sh
 ```
-Depending on what java version you have you may need to edit the setup script, in particular for java 8, you may need to edit the setup script by commenting and uncommenting these two lines:
-```bash
-jar -c -f clasqa.jar clasqa/*.groovy # Comment this
-# jar cf clasqa.jar clasqa/*.groovy  # Uncomment this
-```
+
 Then add the following to your startup script:
 ```bash
 pushd /path/to/CLAS12-Analysis >> /dev/null
 source env.sh
 popd >> /dev/null
 ``` 
-Note: on ifarm you might have to run the following so that gradle can jobs can read your gradle files:
+### Notes for installing on ifarm
+
+Currently the default scons version 2.5 on ifarm does not support python 2.3, so just run the following before sourcing the setup script to get around this.
+```bash
+alias scons "/usr/bin/env python2 `which scons`"
+```
+
+Depending on what java version you have, in particular for java 8 on ifarm, you need to edit the setup script by commenting and uncommenting these two lines:
+```bash
+jar -c -f clasqa.jar clasqa/*.groovy # Comment this
+# jar cf clasqa.jar clasqa/*.groovy  # Uncomment this
+```
+
+Finally, you might have to run the following so that gradle can jobs can read your gradle files:
 ```bash
 chmod +r ~/.gradle/daemon/<version>/registry.bin
 ```
@@ -32,8 +41,11 @@ chmod +r ~/.gradle/daemon/<version>/registry.bin
 ## Getting Started
 You should now be able to run the ```an-groovy``` from the command line and see some version info pop up.
 Use ```an-groovy -h/--help``` to see a list of available options with basic descriptions.
+
 The main purpose of this library is being able to compute kinematics for all unique combinations of a 
-given set of particles (e.g. proton pion pairs) without the hassle of rewriting your analysis and plugging in different numbers every time.  This tool also only reads HIPO files (see [CLAS12-Offline-Software](https://github.com/JeffersonLab/clas12-offline-software)) and outputs to 
+given set of particles (e.g. proton pion pairs) without the hassle of rewriting your analysis and plugging in different numbers every time.
+
+This tool only reads HIPO files (see [CLAS12-Offline-Software](https://github.com/JeffersonLab/clas12-offline-software)) and outputs to 
 [ROOT](https://root.cern) files.
 
 You can also follow the examples to see how you might add customized kinematic variables to
