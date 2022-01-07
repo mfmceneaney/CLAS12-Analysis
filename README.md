@@ -44,6 +44,30 @@ Finally, you might have to run the following so that gradle can jobs can read yo
 chmod +r ~/.gradle/daemon/<version>/registry.bin
 ```
 
+However, you can run into thread permissions errors running gradle from `an-groovy` in jobs so it is better to just set `$CLASSPATH` manually like so (borrowed form `bin/clara-shell` script in `$CLARA_HOME`):
+
+```bash
+# set default classpath
+if [ -z "${CLASSPATH}" ]; then
+    CLASSPATH="${CLARA_HOME}/lib/*"
+
+    # Add every plugin
+    for plugin in "${plugins_dir}"/*/; do
+        plugin=${plugin%*/}
+        if [ "${plugin##*/}" = "clas12" ]; then # COAT has special needs
+            CLASSPATH+=":${plugin}/lib/clas/*:${plugin}/lib/services/*"
+        else
+            CLASSPATH+=":${plugin}/services/*:${plugin}/lib/*"
+        fi
+    done
+
+    CLASSPATH+=":${CLARA_HOME}/services/*"
+    export CLASSPATH
+fi
+```
+
+Then you can just use `$C12ANALYSIS/bin/run.sh` which runs directly from groovy.
+
 ## Getting Started
 You should now be able to run the ```an-groovy``` from the command line and see some version info pop up.
 Use ```an-groovy -h/--help``` to see a list of available options with basic descriptions.
@@ -62,7 +86,6 @@ Assuming your ```$CLASSPATH``` is setup correctly you can instead run:
 ```bash
 $C12ANALYSIS/bin/run.sh --help
 ```
-
 
 #
 
