@@ -1,6 +1,6 @@
 #!/bin/bash
 export C12ANALYSIS=$PWD
-export GCPATH=$C12ANALYSIS/lib/build/libs/
+export GCPATH=$C12ANALYSIS/lib/build/libs/lib.jar:$C12ANALYSIS/lib/classes/main/groovy/:$C12ANALYSIS/lib/src/main/groovy/:$C12ANALYSIS/j2root/target/classes/:$C12ANALYSIS/clasqaDB/clasqa.jar
 
 # J2ROOT Setup
 export J2ROOT=$C12ANALYSIS/j2root
