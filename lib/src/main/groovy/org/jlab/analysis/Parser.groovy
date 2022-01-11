@@ -242,17 +242,17 @@ public class Parser {
                         if (analysis.getOutPath().endsWith("/")) { analysis.setOutPath(analysis.getOutPath()+"Analysis.root"); }
                         else { analysis.setOutPath(analysis.getOutPath()+"/Analysis.root"); }
                     }
-                    if (out.isFile()) {
-                        System.out.println(" WARNING: "+analysis.getOutPath());
-                        System.out.print("          already exists, do you want to overwrite? (y/n): ");
-                        Scanner scanner = new Scanner(System.in);
-                        String permission = scanner.nextLine();
-                        if (!(permission.equals("y") || permission.equals("yes") || permission.equals("Yes") || permission.equals("YES"))) {
-                            System.out.println(" EXITING...");
-                            System.out.println("------------------------------------------------------------------------------");
-                            return false;
-                        }
-                    }
+                    // if (out.isFile()) { // Double coded
+                    //     System.out.println(" WARNING: "+analysis.getOutPath());
+                    //     System.out.print("          already exists, do you want to overwrite? (y/n): ");
+                    //     Scanner scanner = new Scanner(System.in);
+                    //     String permission = scanner.nextLine();
+                    //     if (!(permission.equals("y") || permission.equals("yes") || permission.equals("Yes") || permission.equals("YES"))) {
+                    //         System.out.println(" EXITING...");
+                    //         System.out.println("------------------------------------------------------------------------------");
+                    //         return false;
+                    //     }
+                    // }
                     valid_opt = true; break;
 
                 // Decay channel specification
