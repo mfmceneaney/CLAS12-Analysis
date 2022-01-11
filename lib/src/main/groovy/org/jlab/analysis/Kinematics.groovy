@@ -477,7 +477,7 @@ public class Kinematics {
         // if (!this._addColinearity) { return; }
 
         // Compute Colinearity
-        Vector3 vtx = new Vector3(list.get(0)); // IMPORTANT: initiate at the first entry
+        Vector3 vtx = list.get(0).vtx(); // IMPORTANT: initiate at the first entry
         for (int i=1; i<list.size(); i++) { //IMPORTANT: start at 0 since beam is separate from list, but then we want the difference so start at 1
             DecayProduct p = list.get(i);
             vtx.add(p.vtx());
@@ -578,7 +578,7 @@ public class Kinematics {
         kinematics.put("mass",mass);
         kinematics.put("mx",mx);
 
-        if (this._addLambdaKin) { this.getLKVars(kinematics,lvList,lv_parent,q,beam); }
+        if (this._addLambdaKin) { this.getLKVars(kinematics,lvList,lv_parent,q); }
         if (this._addLambdaKin) { this.getColinearity(kinematics,list,lv_parent,beam); }//TODO: Add option for this?
 
         return kinematics;
