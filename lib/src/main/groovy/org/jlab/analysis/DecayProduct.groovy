@@ -320,7 +320,8 @@ public class DecayProduct {
     */
     protected double phi() {
 
-        return Math.asin(this._py/this.pt()); //NOTE: Keeps return value between ±pi
+        return this._py>0 ? Math.acos(this._px/this.pt()) : -Math.acos(this._px/this.pt());
+        // return Math.asin(this._py/this.pt()); //NOTE: Keeps return value between ±pi
     }
 
     /**
