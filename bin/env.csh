@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/csh
 setenv C12ANALYSIS $PWD
 setenv GCPATH $C12ANALYSIS/lib/build/libs/lib.jar:$C12ANALYSIS/lib/classes/main/groovy/:$C12ANALYSIS/lib/src/main/groovy/:$C12ANALYSIS/j2root/target/classes/:$C12ANALYSIS/clasqaDB/clasqa.jar
 
