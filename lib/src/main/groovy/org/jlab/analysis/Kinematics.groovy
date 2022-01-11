@@ -223,7 +223,7 @@ public class Kinematics {
     protected boolean addRFTime() {return this._addRFTime;}
     protected void setAddLambdaKin(boolean addLambdaKin) {
         this._addLambdaKin = addLambdaKin;
-        String[] lkin = [ "alpha" , "costheta1" , "costheta2" ]; String[] arr = new String[this._defaults.length + lkin.length];
+        String[] lkin = [ "alpha" , "costheta1" , "costheta2" , "col"]; String[] arr = new String[this._defaults.length + lkin.length];
         int i = 0;
 	for (String defaults : this._defaults) { arr[i] = defaults; i++; }
 	for (String kin : lkin) { arr[i] = kin; i++; }
@@ -462,6 +462,32 @@ public class Kinematics {
         kinematics.put("alpha",alpha);
         kinematics.put("costheta1",costheta1);
         kinematics.put("costheta2",costheta2);
+
+    }
+
+    /**
+    * Compute colinearity cos(theta_colinearity) for V^0 2-body decays.
+    * @param HashMap<String, Double> kinematics
+    * @param ArrayList<DecayProduct> particles
+    * @param LorentzVector lv_parent
+    * @param DecayProduct beam
+    */
+    protected void getColinearity(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, LorentzVector lv_parent, DecayProduct beam) {
+
+        // if (!this._addColinearity) { return; }
+
+        // Compute Colinearity
+        Vector3 vtx = new Vector3(list.get(0)); // IMPORTANT: initiate at the first entry
+        for (int i=1; i<list.size(); i++) { //IMPORTANT: start at 0 since beam is separate from list, but then we want the difference so start at 1
+            DecayProduct p = list.get(i);
+            vtx.add(p.vtx());
+        }
+        vtx.setMagThetaPhi(vtx.mag()/list.size(),vtx.theta(),vtx.phi()); // Divide by total # particles in decay list
+        vtx.sub(beam.vtx());
+        double col = lv_parent.vect().dot(vtx) / (lv_parent.vect().mag() * vtx.mag());
+
+        kinematics.put("col",col);
+
     }
 
     /**
@@ -552,7 +578,8 @@ public class Kinematics {
         kinematics.put("mass",mass);
         kinematics.put("mx",mx);
 
-        if (this._addLambdaKin) { this.getLKVars(kinematics,lvList,lv_parent,q); }
+        if (this._addLambdaKin) { this.getLKVars(kinematics,lvList,lv_parent,q,beam); }
+        if (this._addLambdaKin) { this.getColinearity(kinematics,list,lv_parent,beam); }//TODO: Add option for this?
 
         return kinematics;
     }
