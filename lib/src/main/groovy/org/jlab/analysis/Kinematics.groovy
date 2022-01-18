@@ -223,7 +223,7 @@ public class Kinematics {
     protected boolean addRFTime() {return this._addRFTime;}
     protected void setAddLambdaKin(boolean addLambdaKin) {
         this._addLambdaKin = addLambdaKin;
-        String[] lkin = [ "alpha" , "costheta1" , "costheta2" , "col"]; String[] arr = new String[this._defaults.length + lkin.length];
+        String[] lkin = [ "alpha" , "costheta1" , "costheta2" , "col", "costhetab2b"]; String[] arr = new String[this._defaults.length + lkin.length];
         int i = 0;
 	for (String defaults : this._defaults) { arr[i] = defaults; i++; }
 	for (String kin : lkin) { arr[i] = kin; i++; }
@@ -491,6 +491,34 @@ public class Kinematics {
     }
 
     /**
+    * Compute back-to-back angle cos(theta_b2b) for 2-body decays.
+    * @param HashMap<String, Double> kinematics
+    * @param ArrayList<DecayProduct> particles
+    * @param LorentzVector lv_parent
+    * @param DecayProduct beam
+    */
+    protected void getBack2Back(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, LorentzVector lv_parent, DecayProduct beam) {
+
+        // if (!this._addColinearity) { return; }
+
+        // set cos theta lorentz vectors
+        Vector3 boost = lv_parent.boostVector();
+        boost.negative();  
+        LorentzVector boostedPhoton = new LorentzVector(q);
+        boostedPhoton.boost(boost);
+        Integer posPid = this._decay.get(1); for (Integer pid : this._decay) { if (this._constants.getCharge(pid)>0 && pid!=this._decay.get(0)) { posPid = pid; break; } } // Grab first positive particle in given decay particles for calculating costheta
+        LorentzVector boostedProton = new LorentzVector(lvList.get(this._decay.indexOf(posPid) - 1)); // IMPORTANT make a new one otherwise it modifies the list entry
+        boostedProton.boost(boost);
+        Integer negPid = this._decay.get(1); for (Integer pid : this._decay) { if (this._constants.getCharge(pid)<0 && pid!=this._decay.get(0)) { negPid = pid; break; } } // Grab first positive particle in given decay particles for calculating costheta
+        LorentzVector boostedPion = new LorentzVector(lvList.get(this._decay.indexOf(negPid) - 1)); // IMPORTANT make a new one otherwise it modifies the list entry
+        boostedPion.boost(boost);
+        double costhetab2b = boostedProton.vect().dot(boostedPion.vect()) / (boostedProton.vect().mag() * boostedPion.vect().mag());
+
+        kinematics.put("costhetab2b",costhetab2b);
+
+    }
+
+    /**
     * Checks if event passes given cuts.
     * @param HashMap<String, Double> kinematics
     * @return boolean passesCuts
@@ -580,6 +608,7 @@ public class Kinematics {
 
         if (this._addLambdaKin) { this.getLKVars(kinematics,lvList,lv_parent,q); }
         if (this._addLambdaKin) { this.getColinearity(kinematics,list,lv_parent,beam); }//TODO: Add option for this?
+        if (this._addLambdaKin) { this.getBack2Back(kinematics,list,lv_parent,beam); }//TODO: Add option for this?
 
         return kinematics;
     }
