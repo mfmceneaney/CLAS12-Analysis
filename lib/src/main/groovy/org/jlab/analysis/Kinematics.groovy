@@ -497,7 +497,7 @@ public class Kinematics {
     * @param LorentzVector lv_parent
     * @param DecayProduct beam
     */
-    protected void getBack2Back(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, LorentzVector lv_parent, DecayProduct beam) {
+    protected void getBack2Back(HashMap<String, Double> kinematics, ArrayList<LorentzVector> lvList, LorentzVector lv_parent, DecayProduct beam) {
 
         // if (!this._addColinearity) { return; }
 
@@ -606,7 +606,7 @@ public class Kinematics {
 
         if (this._addLambdaKin) { this.getLKVars(kinematics,lvList,lv_parent,q); }
         if (this._addLambdaKin) { this.getColinearity(kinematics,list,lv_parent,beam); }//TODO: Add option for this?
-        if (this._addLambdaKin) { this.getBack2Back(kinematics,list,lv_parent,beam); }//TODO: Add option for this?
+        if (this._addLambdaKin) { this.getBack2Back(kinematics,lvList,lv_parent,beam); }//TODO: Add option for this?
 
         return kinematics;
     }
