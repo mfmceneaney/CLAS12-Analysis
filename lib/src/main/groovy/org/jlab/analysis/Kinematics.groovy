@@ -503,9 +503,7 @@ public class Kinematics {
 
         // set cos theta lorentz vectors
         Vector3 boost = lv_parent.boostVector();
-        boost.negative();  
-        LorentzVector boostedPhoton = new LorentzVector(q);
-        boostedPhoton.boost(boost);
+        boost.negative();
         Integer posPid = this._decay.get(1); for (Integer pid : this._decay) { if (this._constants.getCharge(pid)>0 && pid!=this._decay.get(0)) { posPid = pid; break; } } // Grab first positive particle in given decay particles for calculating costheta
         LorentzVector boostedProton = new LorentzVector(lvList.get(this._decay.indexOf(posPid) - 1)); // IMPORTANT make a new one otherwise it modifies the list entry
         boostedProton.boost(boost);
