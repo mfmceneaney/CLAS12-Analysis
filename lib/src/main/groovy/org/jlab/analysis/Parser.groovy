@@ -332,6 +332,14 @@ public class Parser {
                     }
                     catch (Exception exception) { return this.help(); } }
 
+                // Exclusive tag option
+                case "-ex":
+                    if (args.length>2) { try {
+                        analysis.setExclusive(true);
+                        valid_opt = true; break;
+                    }
+                    catch (Exception exception) { return this.help(); } }
+
                 // PID tag option
                 case "-filter":
                     if (args.length>2) { try {

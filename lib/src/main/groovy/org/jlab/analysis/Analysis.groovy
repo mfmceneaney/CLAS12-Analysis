@@ -50,6 +50,7 @@ public class Analysis {
     protected static int     _n_events     = -1; 					// max number of events to to tree (no max if <0)
     protected static int     _split        = 0;                     // number of events to split outfiles on, won't split if 0, writes to same file different tuple if < 0
 	protected static boolean _require_tag  = false;					// pid tag requirement
+    protected static boolean _require_ex   = false;					// exclusive tag requirement
 	protected static boolean _require_pid  = true;					// decay particles pid requirement
     protected static boolean _require_e    = true;					// electron tag in FT requirement
     protected static boolean _strict       = false;					// strict mass from pid assignment for kinematics calculations
@@ -524,10 +525,19 @@ public class Analysis {
     * Set boolean for requiring pid tag(s) in event and lund pid(s) to tag.
     * @param int... tag_pid
     */
-    protected void setTag(int... tag_pid) {
+    protected void setTag(int... tag_pids) {
 
         this._require_tag = true;
-        this._tag_pids     = tag_pids;
+        this._tag_pids    = tag_pids;
+    }
+
+    /**
+    * Set boolean for requiring exclusive tag in event.
+    * @param boolean require_ex
+    */
+    protected void setExclusive(boolean require_ex) {
+
+        this._require_ex = require_ex;
     }
 
     /**
@@ -547,6 +557,11 @@ public class Analysis {
     * @return boolean filter
     */
     protected boolean filter(ArrayList<DecayProduct> list) {
+        if (this._require_ex) {
+            for (DecayProduct p : list) {
+                if (!this._pid_filter.containsKey(p.pid()) && p.pid()>=100) { return false; } 
+            }
+        }
         if (this._pid_filter.size()==0) { return true; }
         for (Integer key : this._pid_filter.keySet()){
             int count = 0; for (DecayProduct p : list) { if (p.pid()==key) { count += 1; } }
