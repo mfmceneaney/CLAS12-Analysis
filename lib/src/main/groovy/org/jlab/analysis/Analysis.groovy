@@ -559,7 +559,7 @@ public class Analysis {
     protected boolean filter(ArrayList<DecayProduct> list) {
         if (this._require_ex) {
             for (DecayProduct p : list) {
-                if (!this._pid_filter.containsKey(p.pid()) && p.pid()>=100) { return false; } 
+                if (!this._pid_filter.containsKey(p.pid())) { return false; }
             }
         }
         if (this._pid_filter.size()==0) { return true; }
