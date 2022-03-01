@@ -223,7 +223,7 @@ public class Kinematics {
     protected boolean addRFTime() {return this._addRFTime;}
     protected void setAddLambdaKin(boolean addLambdaKin) {
         this._addLambdaKin = addLambdaKin;
-        String[] lkin = [ "alpha" , "costheta1" , "costheta2" , "col", "costhetab2b"]; String[] arr = new String[this._defaults.length + lkin.length];
+        String[] lkin = [ "alpha" , "costheta1" , "costheta2", "costheta1T", "costheta2T" , "col", "costhetab2b"]; String[] arr = new String[this._defaults.length + lkin.length];
         int i = 0;
 	for (String defaults : this._defaults) { arr[i] = defaults; i++; }
 	for (String kin : lkin) { arr[i] = kin; i++; }
@@ -467,39 +467,38 @@ public class Kinematics {
 
     /**
     * Compute additional kinematics particular to \Lambda^0 Analysis 
-    * but potentially useful for other two body decays.
+    * but potentially useful for other two body decays. Set tranverse 
+    * cos(theta) lorentz vectors using dot into n = unit(p_beam X p_Lambda).
     * @param HashMap<String, Double> kinematics
     * @param ArrayList<LorentzVector> lvList
     * @param LorentzVector lv_parent
     * @param LorentzVector q
+    * @param DecayProduct beam
     */
-    protected void getTLKVars(HashMap<String, Double> kinematics, ArrayList<LorentzVector> lvList, LorentzVector lv_parent, LorentzVector q, LorentzVector beam) {
+    protected void getTLKVars(HashMap<String, Double> kinematics, ArrayList<LorentzVector> lvList, LorentzVector lv_parent, LorentzVector q, DecayProduct beam) {
 
         if (!this._addLambdaKin) { return; }
 
-        // Compute longitudinal momentum asymmetry alpha
-        double alpha = (double) 0.0; double sum = (double) 0.0;
-        double sign = 1; int i = 0;
-        for (LorentzVector lv : lvList) {
-            if (this._constants.getCharge(this._decay.get(i))<0) {sign = -1;}
-            alpha += sign * lv_parent.vect().dot(lv.vect())/lv_parent.vect().mag(); sum += lv_parent.vect().dot(lv.vect())/lv_parent.vect().mag(); i++;
-        }
-        alpha /= sum;
-
-        // set cos theta lorentz vectors
         Vector3 boost = lv_parent.boostVector();
-        boost.negative();  
+        boost.negative();
+        LorentzVector boostedParent = new LorentzVector(lv_parent);
+        boostedParent.boost(boost);
+        LorentzVector boostedBeam = new LorentzVector(beam.lv());
+        boostedBeam.boost(boost);
         LorentzVector boostedPhoton = new LorentzVector(q);
         boostedPhoton.boost(boost);
         Integer posPid = this._decay.get(1); for (Integer pid : this._decay) { if (this._constants.getCharge(pid)>0 && pid!=this._decay.get(0)) { posPid = pid; break; } } // Grab first positive particle in given decay particles for calculating costheta
         LorentzVector boostedProton = new LorentzVector(lvList.get(this._decay.indexOf(posPid) - 1)); // IMPORTANT make a new one otherwise it modifies the list entry
         boostedProton.boost(boost);
-        double costheta1 = boostedProton.vect().dot(lv_parent.vect()) / (boostedProton.vect().mag() * lv_parent.vect().mag());
-        double costheta2 = boostedProton.vect().dot(boostedPhoton.vect()) / (boostedProton.vect().mag() * boostedPhoton.vect().mag());
 
-        kinematics.put("alpha",alpha);
-        kinematics.put("costheta1",costheta1);
-        kinematics.put("costheta2",costheta2);
+        Vector3 n1 = boostedBeam.vect().cross(boostedParent.vect());
+        Vector3 n2 = boostedPhoton.vect().cross(boostedParent.vect());
+
+        double costheta1T = boostedProton.vect().dot(n1) / (boostedProton.vect().mag() * boostedBeam.vect().mag() * boostedParent.vect().mag());
+        double costheta2T = boostedProton.vect().dot(n2) / (boostedProton.vect().mag() * boostedPhoton.vect().mag() * boostedParent.vect().mag());
+
+        kinematics.put("costheta1T",costheta1T);
+        kinematics.put("costheta2T",costheta2T);
 
     }
 
@@ -643,6 +642,7 @@ public class Kinematics {
         kinematics.put("mx",mx);
 
         if (this._addLambdaKin) { this.getLKVars(kinematics,lvList,lv_parent,q); }
+        if (this._addLambdaKin) { this.getTLKVars(kinematics,lvList,lv_parent,q,beam); }//TODO: Add option for this?
         if (this._addLambdaKin) { this.getColinearity(kinematics,list,lv_parent,beam); }//TODO: Add option for this?
         if (this._addLambdaKin) { this.getBack2Back(kinematics,lvList,lv_parent,beam); }//TODO: Add option for this?
 
