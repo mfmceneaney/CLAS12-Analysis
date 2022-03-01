@@ -22,7 +22,9 @@ def colinearity = (Constants constants, ArrayList<Integer> decay, ArrayList<Deca
         }
         // Get Transverse momentum relative to parent momentum
         double pT = (double) 0.0;
-        for (LorentzVector lv : lvList) { pT += lv_parent.vect().cross(lv.vect()).mag()/lv_parent.vect().mag(); } // for some reason using lvUnit.unit normalizes the parent vector
+        for (LorentzVector lv : lvList) { 
+            pT += lv_parent.vect().cross(lv.vect()).mag()/lv_parent.vect().mag(); 
+        } // for some reason using lvUnit.unit normalizes the parent vector
         pT = pT / lvList.size();
         def colinear = 0
 		return colinear };
