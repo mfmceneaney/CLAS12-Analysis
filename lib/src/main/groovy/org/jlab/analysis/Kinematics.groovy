@@ -466,6 +466,44 @@ public class Kinematics {
     }
 
     /**
+    * Compute additional kinematics particular to \Lambda^0 Analysis 
+    * but potentially useful for other two body decays.
+    * @param HashMap<String, Double> kinematics
+    * @param ArrayList<LorentzVector> lvList
+    * @param LorentzVector lv_parent
+    * @param LorentzVector q
+    */
+    protected void getTLKVars(HashMap<String, Double> kinematics, ArrayList<LorentzVector> lvList, LorentzVector lv_parent, LorentzVector q, LorentzVector beam) {
+
+        if (!this._addLambdaKin) { return; }
+
+        // Compute longitudinal momentum asymmetry alpha
+        double alpha = (double) 0.0; double sum = (double) 0.0;
+        double sign = 1; int i = 0;
+        for (LorentzVector lv : lvList) {
+            if (this._constants.getCharge(this._decay.get(i))<0) {sign = -1;}
+            alpha += sign * lv_parent.vect().dot(lv.vect())/lv_parent.vect().mag(); sum += lv_parent.vect().dot(lv.vect())/lv_parent.vect().mag(); i++;
+        }
+        alpha /= sum;
+
+        // set cos theta lorentz vectors
+        Vector3 boost = lv_parent.boostVector();
+        boost.negative();  
+        LorentzVector boostedPhoton = new LorentzVector(q);
+        boostedPhoton.boost(boost);
+        Integer posPid = this._decay.get(1); for (Integer pid : this._decay) { if (this._constants.getCharge(pid)>0 && pid!=this._decay.get(0)) { posPid = pid; break; } } // Grab first positive particle in given decay particles for calculating costheta
+        LorentzVector boostedProton = new LorentzVector(lvList.get(this._decay.indexOf(posPid) - 1)); // IMPORTANT make a new one otherwise it modifies the list entry
+        boostedProton.boost(boost);
+        double costheta1 = boostedProton.vect().dot(lv_parent.vect()) / (boostedProton.vect().mag() * lv_parent.vect().mag());
+        double costheta2 = boostedProton.vect().dot(boostedPhoton.vect()) / (boostedProton.vect().mag() * boostedPhoton.vect().mag());
+
+        kinematics.put("alpha",alpha);
+        kinematics.put("costheta1",costheta1);
+        kinematics.put("costheta2",costheta2);
+
+    }
+
+    /**
     * Compute colinearity cos(theta_colinearity) for V^0 2-body decays.
     * @param HashMap<String, Double> kinematics
     * @param ArrayList<DecayProduct> particles
@@ -506,10 +544,10 @@ public class Kinematics {
         boost.negative();
         Integer posPid = this._decay.get(1); for (Integer pid : this._decay) { if (this._constants.getCharge(pid)>0 && pid!=this._decay.get(0)) { posPid = pid; break; } } // Grab first positive particle in given decay particles for calculating costheta
         LorentzVector boostedProton = new LorentzVector(lvList.get(this._decay.indexOf(posPid) - 1)); // IMPORTANT make a new one otherwise it modifies the list entry
-        boostedProton.boost(boost);
+        // boostedProton.boost(boost); //DEBUGGING: See if removing boost we are still in CoM frame.
         Integer negPid = this._decay.get(1); for (Integer pid : this._decay) { if (this._constants.getCharge(pid)<0 && pid!=this._decay.get(0)) { negPid = pid; break; } } // Grab first positive particle in given decay particles for calculating costheta
         LorentzVector boostedPion = new LorentzVector(lvList.get(this._decay.indexOf(negPid) - 1)); // IMPORTANT make a new one otherwise it modifies the list entry
-        boostedPion.boost(boost);
+        // boostedPion.boost(boost); //DEBUGGING: See if removing boost we are still in CoM frame.
         double costhetab2b = boostedProton.vect().dot(boostedPion.vect()) / (boostedProton.vect().mag() * boostedPion.vect().mag());
 
         kinematics.put("costhetab2b",costhetab2b);
