@@ -565,7 +565,6 @@ public class Analysis {
         if (this._pid_filter.size()==0) { return true; }
         for (Integer key : this._pid_filter.keySet()){
             int count = 0; for (DecayProduct p : list) { if (p.pid()==key) { count += 1; } }
-            System.out.println("DEBUGGING count = "+count+" for pid = "+key);
             if (this._pid_filter.get(key)<0 && count<=Math.abs(this._pid_filter.get(key))) { return false; }
             if (this._pid_filter.get(key)==0 && count>0) { return false; }
             if (this._pid_filter.get(key)>0 && count>Math.abs(this._pid_filter.get(key))) { return false; }
