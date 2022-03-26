@@ -40,7 +40,8 @@ public class Kinematics {
     protected static boolean _addLiveTime   = false;    // include live time in TNTuple
     protected static boolean _addStartTime  = false;    // include start time in TNTuple
     protected static boolean _addRFTime     = false;    // include RF time in TNTuple
-    protected static boolean _addLambdaKin  = false;    // include special two particle decay kinematics from \Lambda^0 analysis
+    protected static boolean _addLambdaKin  = false;    // include special two particle decay kinematics from Lambda analysis
+    protected static boolean _addIndivKin   = false;    // include special two particle decay kinematics from Lambda analysis
 
     // built in lambdas
     protected ConfigVar _getEventNum = (HipoReader reader, Event event) -> {
@@ -221,6 +222,8 @@ public class Kinematics {
     protected boolean addStartTime() {return this._addStartTime;}
     protected void setAddRFTime(boolean addRFTime) {this._addRFTime = addRFTime; if (addRFTime) {this._configs.put("RFTime",this._getEventNum);} else {this._configs.remove("event");}}
     protected boolean addRFTime() {return this._addRFTime;}
+
+    // Option for adding Lambda analysis variables
     protected void setAddLambdaKin(boolean addLambdaKin) {
         this._addLambdaKin = addLambdaKin;
         String[] lkin = [ "alpha" , "costheta1" , "costheta2", "costheta1T", "costheta2T" , "col", "costhetab2b"]; String[] arr = new String[this._defaults.length + lkin.length];
@@ -229,6 +232,30 @@ public class Kinematics {
 	for (String kin : lkin) { arr[i] = kin; i++; }
 	this._defaults = arr;
     }
+
+    // Option for adding individual particle kinematics
+    protected void setAddIndividualKin(boolean addIndivKin) {
+        this._AddIndivKin = addIndivKin;
+        String[] ikin_init = ["z_", "xF_", "y_", "zeta_"];
+        String[] ikin = new String[ikin_init.length() * this._decays.length()];
+
+        // Loop this._decay pids and individual kinematics names and add to keyset
+        int k = 0;
+        for (int pid : this._decays) {
+            String pname = this._constants.getName(pid);
+            for (String kin : ikin_init) {
+                ikin[k] = kin + pname;
+                k++;
+            }
+        }
+
+        // Reset this._defaults with added kinematics
+        int i = 0;
+        for (String defaults : this._defaults) { arr[i] = defaults; i++; }
+        for (String kin : ikin) { arr[i] = kin; i++; }
+        this._defaults = arr;
+    }
+
     protected boolean addLambdaKin() {return this._addLambdaKin;}
 
      /**
@@ -428,7 +455,7 @@ public class Kinematics {
     }
 
     /**
-    * Compute additional kinematics particular to \Lambda^0 Analysis 
+    * Compute additional kinematics particular to \Lambda Analysis 
     * but potentially useful for other two body decays.
     * @param HashMap<String, Double> kinematics
     * @param ArrayList<LorentzVector> lvList
@@ -466,7 +493,7 @@ public class Kinematics {
     }
 
     /**
-    * Compute additional kinematics particular to \Lambda^0 Analysis 
+    * Compute additional kinematics particular to \Lambda Analysis 
     * but potentially useful for other two body decays. Set tranverse 
     * cos(theta) lorentz vectors using dot into n = unit(p_beam X p_Lambda).
     * @param HashMap<String, Double> kinematics
@@ -613,7 +640,7 @@ public class Kinematics {
         double Q2   = (-1) * (q.mass2());
         double nu   = q.e();
         double z    = lv_parent.e() / nu;
-        double y    = q.e() / lv_beam.e();		
+        double y    = q.e() / lv_beam.e();
         double x    = Q2 / (2 * this._constants.getTargetM() * nu);
         double W    = Math.sqrt(this._constants.getTargetM()*this._constants.getTargetM()+Q2 * (1 - x) / x);
         double Walt = gN.mass();
@@ -645,6 +672,33 @@ public class Kinematics {
         if (this._addLambdaKin) { this.getTLKVars(kinematics,lvList,lv_parent,q,beam); }//TODO: Add option for this?
         if (this._addLambdaKin) { this.getColinearity(kinematics,list,lv_parent,beam); }//TODO: Add option for this?
         if (this._addLambdaKin) { this.getBack2Back(kinematics,lvList,lv_parent,beam); }//TODO: Add option for this?
+
+        // Add individual hadron kinematics
+        if (this._addIndivKin) {
+            LorentzVector boostedTarget = new LorentzVector(lv_target);
+            boostedTarget.boost(gNBoost);
+            for (DecayProduct p : list){
+
+                // Grab lorentz vectors and boost
+                LorentzVector lv = p.lv();
+                String pname = this._constants.getName(p.pid());
+                LorentzVector boostedLv = new LorentzVector(lv);
+                boostedLv.boost(gNBoost);
+
+                // Get SIDIS variables for individual particles
+                double z_      = lv.e() / nu;
+                double xF_     = boostedLv.pz() / (Walt/2);
+                double y_      = 1/2*Math.log((lv.e()+lv.pz())/(lv.e()-lv.pz()));
+                double zeta_   = boostedLv.e() / boostedTarget.e();
+
+                // Add entries to kinematics map
+                kinematics.put("xF_"+pname,xF_);     //NOTE: x_Feynman
+                kinematics.put("z_"+pname,z_);       //NOTE: z for individual hadron
+                kinematics.put("y_"+pname,y_);       //NOTE: rapidity for individual hadron
+                kinematics.put("zeta_"+pname,zeta_); //NOTE: E_h / E_target in gamma* - nucleon CoMass Frame
+
+            }
+        }
 
         return kinematics;
     }
