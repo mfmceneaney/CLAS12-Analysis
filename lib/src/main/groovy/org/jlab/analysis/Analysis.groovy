@@ -57,6 +57,7 @@ public class Analysis {
     protected static boolean _addRunNum    = false;					// include event number in TNTuple (always added as zeroeth entry)
     protected static boolean _addEvNum     = false;					// include event number in TNTuple (always added as zeroeth entry or just after run #)
     protected static boolean _lambdaKin    = false;					// include special two particle decay kinematics from \Lambda^0 analysis
+    protected static boolean _indivKin     = false;					// include extra individual particle kinematics
     protected static boolean _requireQA    = false;                 // require clasqaDB check for run and event #'s
     protected static boolean _requireFC    = false;                 // require Fiducial cuts using event #'s and pid
     protected static boolean _match        = false;                 // require matching decay in MC (with same parent, specify this._parent if you want a specific parent)
