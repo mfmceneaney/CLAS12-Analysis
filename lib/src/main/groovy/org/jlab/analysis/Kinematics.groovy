@@ -235,7 +235,7 @@ public class Kinematics {
 
     // Option for adding individual particle kinematics
     protected void setAddIndivKin(boolean addIndivKin) {
-        this._AddIndivKin = addIndivKin;
+        this._addIndivKin = addIndivKin;
         String[] ikin_init = ["z_", "xF_", "y_", "zeta_"];
         String[] ikin = new String[ikin_init.length() * this._decays.length()];
 
