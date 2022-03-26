@@ -237,11 +237,11 @@ public class Kinematics {
     protected void setAddIndivKin(boolean addIndivKin) {
         this._addIndivKin = addIndivKin;
         String[] ikin_init = ["z_", "xF_", "y_", "zeta_"];
-        String[] ikin = new String[ikin_init.length() * this._decays.length];
+        String[] ikin = new String[ikin_init.length() * this._decay.length];
 
         // Loop this._decay pids and individual kinematics names and add to keyset
         int k = 0;
-        for (int pid : this._decays) {
+        for (int pid : this._decay) {
             String pname = this._constants.getName(pid);
             for (String kin : ikin_init) {
                 ikin[k] = kin + pname;
