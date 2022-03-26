@@ -233,11 +233,11 @@ public class Kinematics {
 	this._defaults = arr;
     }
 
-    // Option for adding individual particle kinematics
+    // Option for adding individual particle kinematics //TODO: Currently you have to call this after getting decay.  Would be better if order didn't matter.
     protected void setAddIndivKin(boolean addIndivKin) {
         this._addIndivKin = addIndivKin;
         String[] ikin_init = ["z_", "xF_", "y_", "zeta_"];
-        String[] ikin = new String[ikin_init.size() * this._decay.length];
+        String[] ikin = new String[ikin_init.size() * this._decay.size()];
 
         // Loop this._decay pids and individual kinematics names and add to keyset
         int k = 0;
