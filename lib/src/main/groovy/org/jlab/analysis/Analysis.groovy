@@ -634,6 +634,18 @@ public class Analysis {
     }
 
     /**
+    * Set boolean for including more individual particle kinematics (relevant for dihadron analysis) 
+    * and propagate changes to kinematics.
+    * @param boolean IK
+    */
+    protected void setIndivKin(boolean IK) {
+
+        if (!this._decay.size()==2) { return; }
+        this._indivKin = IK;
+        this._kinematics.setAddIndivKin(IK);
+    }
+
+    /**
     * Set boolean for using clasqaDB cuts 
     * @see <a href="https://github.com/JeffersonLab/clasqaDB">clasqaDB GitHub repository</a>.
     * @param boolean QA
