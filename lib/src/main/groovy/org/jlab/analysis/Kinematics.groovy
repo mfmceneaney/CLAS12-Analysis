@@ -25,6 +25,7 @@ public class Kinematics {
     protected static ArrayList<Integer> _parents;      // List of parent Lund pids without parent particle from _decay
     protected static Constants          _constants;
     protected String[]                  _defaults = ["Q2", "nu", "y", "x", "W", "z", "xF", "pT", "phperp", "mass","mx"];
+    protected String[]                  _ikin;         // List of individual particle kinematics
     protected HashMap<String,ConfigVar> _configs;      // HashMap of name to lambda expression for computing
     protected HashMap<String,SIDISVar>  _vars;         // HashMap of name to lambda expression for computing
     protected HashMap<String,Cut>       _cuts;         // HashMap of name to boolean(double) lambda expression cut
@@ -242,19 +243,26 @@ public class Kinematics {
 
         // Loop this._decay pids and individual kinematics names and add to keyset
         int k = 0;
-        for (int pid : this._decay) {
+        HashMap<Integer,Integer> pidCounts = new HashMap<Integer,Integer>();
+        ArrayList<Integer> unique_pids = this._decay.stream().distinct().collect(Collectors.toList());
+        for (Integer pid : unique_pids) { pidCounts.put(pid,0); }
+        for (int i=0; i<this._decay.size(); i++) {
+            Integer pid = this._decay.get(i);
             String pname = this._constants.getName(pid);
+            pidCounts[pid] += 1;
+            if (i!=0) { if (pid==this._decay.get(i-1)) { pname += pidCounts.get(pid); } } //NOTE: Append occurence number of pid to distinguish between different particles of same pid.
             for (String kin : ikin_init) {
                 ikin[k] = kin + pname;
                 k++;
             }
         }
 
-        // Reset this._defaults with added kinematics
+        // Reset this._defaults and this._ikin with added kinematics
         int i = 0;
         for (String defaults : this._defaults) { arr[i] = defaults; i++; }
         for (String kin : ikin) { arr[i] = kin; i++; }
         this._defaults = arr;
+        this._ikin     = ikin;
     }
 
     protected boolean addLambdaKin() {return this._addLambdaKin;}
@@ -675,14 +683,15 @@ public class Kinematics {
         if (this._addLambdaKin) { this.getBack2Back(kinematics,lvList,lv_parent,beam); }//TODO: Add option for this?
 
         // Add individual hadron kinematics
+        int k = 0;
         if (this._addIndivKin) {
             LorentzVector boostedTarget = new LorentzVector(lv_target);
             boostedTarget.boost(gNBoost);
-            for (DecayProduct p : list){
+            for (DecayProduct p : list){ //NOTE: IMPORTANT: Should already be ordered same as this._decay
 
                 // Grab lorentz vectors and boost
                 LorentzVector lv = p.lv();
-                String pname = this._constants.getName(p.pid());
+                // String pname = this._constants.getName(p.pid()); //TODO: Delete
                 LorentzVector boostedLv = new LorentzVector(lv);
                 boostedLv.boost(gNBoost);
 
@@ -693,11 +702,10 @@ public class Kinematics {
                 double zeta_   = boostedLv.e() / boostedTarget.e();
 
                 // Add entries to kinematics map
-                kinematics.put("xF_"+pname,xF_);     //NOTE: x_Feynman
-                kinematics.put("z_"+pname,z_);       //NOTE: z for individual hadron
-                kinematics.put("y_"+pname,y_);       //NOTE: rapidity for individual hadron
-                kinematics.put("zeta_"+pname,zeta_); //NOTE: E_h / E_target in gamma* - nucleon CoMass Frame
-
+                kinematics.put(this._ikin[k++],xF_);     //NOTE: x_Feynman
+                kinematics.put(this._ikin[k++],z_);       //NOTE: z for individual hadron
+                kinematics.put(this._ikin[k++],y_);       //NOTE: rapidity for individual hadron
+                kinematics.put(this._ikin[k++],zeta_); //NOTE: E_h / E_target in gamma* - nucleon CoMass Frame
             }
         }
 
