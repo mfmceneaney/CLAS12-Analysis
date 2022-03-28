@@ -3,6 +3,7 @@ package org.jlab.analysis;
 // Java Imports
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 // CLAS Physics Imports
 import org.jlab.jnp.hipo4.data.*;
@@ -590,6 +591,44 @@ public class Kinematics {
     }
 
     /**
+    * Compute additional individual particle kinematics.
+    * NOTE: Kinematics should already have nu and W entries for event!
+    * @param HashMap<String, Double> kinematics
+    * @param ArrayList<DecayProduct> list
+    * @param LorentzVector lv_parent
+    * @param Vector3 gNBoost
+    */
+    protected void getIndivKin(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, LorentzVector lv_target,Vector3 gNBoost) {
+        // Add individual hadron kinematics
+        int k = 0;
+        LorentzVector boostedTarget = new LorentzVector(lv_target);
+        boostedTarget.boost(gNBoost);
+        for (DecayProduct p : list){ //NOTE: IMPORTANT: Should already be ordered same as this._decay
+
+            // Grab lorentz vectors and boost
+            LorentzVector lv = p.lv();
+            // String pname = this._constants.getName(p.pid()); //TODO: Delete
+            LorentzVector boostedLv = new LorentzVector(lv);
+            boostedLv.boost(gNBoost);
+
+            double nu = kinematics.get("nu");
+            double W  = kinematics.get("W");
+
+            // Get SIDIS variables for individual particles
+            double z_      = lv.e() / nu;
+            double xF_     = boostedLv.pz() / (W/2);
+            double y_      = 1/2*Math.log((lv.e()+lv.pz())/(lv.e()-lv.pz()));
+            double zeta_   = boostedLv.e() / boostedTarget.e();
+
+            // Add entries to kinematics map
+            kinematics.put(this._ikin[k++],xF_);     //NOTE: x_Feynman
+            kinematics.put(this._ikin[k++],z_);       //NOTE: z for individual hadron
+            kinematics.put(this._ikin[k++],y_);       //NOTE: rapidity for individual hadron
+            kinematics.put(this._ikin[k++],zeta_); //NOTE: E_h / E_target in gamma* - nucleon CoMass Frame
+        }
+    }
+
+    /**
     * Checks if event passes given cuts.
     * @param HashMap<String, Double> kinematics
     * @return boolean passesCuts
@@ -681,33 +720,7 @@ public class Kinematics {
         if (this._addLambdaKin) { this.getTLKVars(kinematics,lvList,lv_parent,q,beam); }//TODO: Add option for this?
         if (this._addLambdaKin) { this.getColinearity(kinematics,list,lv_parent,beam); }//TODO: Add option for this?
         if (this._addLambdaKin) { this.getBack2Back(kinematics,lvList,lv_parent,beam); }//TODO: Add option for this?
-
-        // Add individual hadron kinematics
-        int k = 0;
-        if (this._addIndivKin) {
-            LorentzVector boostedTarget = new LorentzVector(lv_target);
-            boostedTarget.boost(gNBoost);
-            for (DecayProduct p : list){ //NOTE: IMPORTANT: Should already be ordered same as this._decay
-
-                // Grab lorentz vectors and boost
-                LorentzVector lv = p.lv();
-                // String pname = this._constants.getName(p.pid()); //TODO: Delete
-                LorentzVector boostedLv = new LorentzVector(lv);
-                boostedLv.boost(gNBoost);
-
-                // Get SIDIS variables for individual particles
-                double z_      = lv.e() / nu;
-                double xF_     = boostedLv.pz() / (Walt/2);
-                double y_      = 1/2*Math.log((lv.e()+lv.pz())/(lv.e()-lv.pz()));
-                double zeta_   = boostedLv.e() / boostedTarget.e();
-
-                // Add entries to kinematics map
-                kinematics.put(this._ikin[k++],xF_);     //NOTE: x_Feynman
-                kinematics.put(this._ikin[k++],z_);       //NOTE: z for individual hadron
-                kinematics.put(this._ikin[k++],y_);       //NOTE: rapidity for individual hadron
-                kinematics.put(this._ikin[k++],zeta_); //NOTE: E_h / E_target in gamma* - nucleon CoMass Frame
-            }
-        }
+        if (this._addIndivKin)  { this.getIndivKin(kinematics,list,lv_target,gNBoost); }//TODO: Check this.
 
         return kinematics;
     }
