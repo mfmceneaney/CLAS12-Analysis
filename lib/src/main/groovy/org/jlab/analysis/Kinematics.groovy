@@ -239,7 +239,7 @@ public class Kinematics {
     protected void setAddIndivKin(boolean addIndivKin) {
         this._addIndivKin = addIndivKin;
         String[] ikin_init = ["z_", "xF_", "y_", "zeta_"];
-        String[] ikin = new String[ikin_init.size() * this._decay.size()];
+        String[] ikin = new String[ikin_init.length * this._decay.size()];
         String[] arr = new String[this._defaults.length + ikin.size()];
 
         // Loop this._decay pids and individual kinematics names and add to keyset
@@ -653,6 +653,9 @@ public class Kinematics {
     * @return HashMap<String, Double>
     */
     protected HashMap<String, Double> getDefaultVars(ArrayList<DecayProduct> list, DecayProduct beam) {
+
+        //NOTE: HARD CODE BELOW
+        int nDaughters = 2;
         
         HashMap<String, Double> kinematics = new HashMap<String, Double>();
         if (!this._require_e) { return kinematics; } // Return empty hashmap if don't require electron
@@ -668,8 +671,11 @@ public class Kinematics {
         LorentzVector lv_beam   = new LorentzVector(); lv_beam.setPxPyPzM(0.0, 0.0, Math.sqrt(Math.pow(this._constants.getBeamE(),2) - Math.pow(this._constants.getBeamM(),2)), this._constants.getBeamM()); // Assumes all energy is along pz...?
         LorentzVector lv_target = new LorentzVector(); lv_target.setPxPyPzM(0.0, 0.0, this._constants.getTargetE(), this._constants.getTargetM()); //TODO: should fix this so mirrors line above...
         LorentzVector lv_parent = new LorentzVector(); double px = 0; double py = 0; double pz = 0; double en = 0;
-        for (LorentzVector lv : lvList) { px += lv.px(); py += lv.py(); pz += lv.pz(); en += lv.e(); }
+        int idx = 0; for (LorentzVector lv : lvList) { if (idx<nDaughters) { px += lv.px(); py += lv.py(); pz += lv.pz(); en += lv.e(); } idx++; }
         lv_parent.setPxPyPzE(px,py,pz,en); //NOTE: for some reason lv_parent.add(lv) doesn't do what it's supposed to...it seems like it's boosting to some other frame in the process
+
+        //TODO: Group particles for "reconstruction" of parent particle, e.g. a Lambda, from command line?
+        //TODO: Add some better comments here.
 
         LorentzVector q = new LorentzVector(lv_beam);
         q.sub(lv_max);
@@ -704,12 +710,15 @@ public class Kinematics {
         // Get hadron momentum perpendicular to plane of scattered electron...check this
         double phperp = lv_parent.vect().cross(q.vect()).mag()/q.vect().mag(); // for some reason using qUnit.unit normalizes the parent vector
 
+        // General kinematics for any interaction
         kinematics.put("Q2",Q2);
         kinematics.put("nu",nu);
-        kinematics.put("z",z);
+        kinematics.put("z",z); //NOTE: NOT SPECIFIC TO INTERACTION ORDER MATTERS THOUGH
         kinematics.put("y",y);
         kinematics.put("x",x);
         kinematics.put("W",W);
+
+        // Kinematics specific to parent
         kinematics.put("xF",xF);
         kinematics.put("pT",pT);
         kinematics.put("phperp",phperp);
