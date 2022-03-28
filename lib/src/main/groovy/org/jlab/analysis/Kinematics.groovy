@@ -238,6 +238,7 @@ public class Kinematics {
         this._addIndivKin = addIndivKin;
         String[] ikin_init = ["z_", "xF_", "y_", "zeta_"];
         String[] ikin = new String[ikin_init.size() * this._decay.size()];
+        String[] arr = new String[this._defaults.length + ikin.size()];
 
         // Loop this._decay pids and individual kinematics names and add to keyset
         int k = 0;
