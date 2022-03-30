@@ -1311,7 +1311,9 @@ public class Analysis {
 
         // Create ROOT Output file
         int index = num/this._split-1;
-        int last; if (num == this._split) { last = 6; } else { last = 6+(index>=10 ? 3 : 2); }
+        int last; if (num == this._split) { last = 6; } else { last = 6+(index>10 ? 3 : 2); /*TODO: Handle >100 case -> just set some global basename variable.*/}
+        System.out.println("DEBUGGING last = "+last);//DEBUGGING
+        System.out.println("DEBUGGING this._outPath[0..-last] = "+this._outPath[0..-last]);//DEBUGGING
         this._outPath = this._outPath[0..-last] + "_" + index + ".root"; // just a groovy capability, assumes file name end is .root
         this._outFile = new ROOTFile(this._outPath); //WARNING: This will currently overwrite existing files
         System.out.println(" Created new file: "+this._outPath);
