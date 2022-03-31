@@ -251,7 +251,7 @@ public class MCDecays {
             newlist.add(p);
             ArrayList<DecayProduct> newplist = new ArrayList<DecayProduct>(plist); // IMPORTANT: declare new list
             newplist = newplist.subList(pIndex,newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._decay and this._pidList are sorted)
-            if (dIndex == this._decay.size()-1) { this._parComboPidList.add(newlist); } //Important: -1!
+            if (dIndex == this._parents.size()-1) { this._parComboPidList.add(newlist); } //Important: -1!
             else { setParComboPidList(dIndex+1,newplist,newlist); }
         }
     }
