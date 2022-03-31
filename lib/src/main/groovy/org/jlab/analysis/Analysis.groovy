@@ -1031,6 +1031,12 @@ public class Analysis {
                 // Fill TNTuple
                 double[] dataArray = new double[data.size()];
                 for (int i=0; i<data.size(); i++) { dataArray[i] = (double) data.get(i); }
+                
+                //DEBUGGING
+                System.out.println(this._tupleNames);//DEBUGGING
+                System.out.println(dataArray);//DEBUGGING
+                //DEBUGGING
+
                 this._tuple.fill(dataArray);
             }
             // Count events selected not # of actual data entries added and split output file/tuple if requested.
