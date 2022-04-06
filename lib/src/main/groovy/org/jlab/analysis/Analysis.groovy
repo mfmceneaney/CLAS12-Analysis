@@ -1333,6 +1333,9 @@ public class Analysis {
         // Setup ROOT Output file and tuple
         this._outFile = new ROOTFile(this._outPath);
         this.setTupleNames(); // IMPORTANT! Call AFTER parsing.
+        //DEBUGGING
+        System.out.println("this._tupleNames = "+this._tupleNames);//DEBUGGING
+        //DEBUGGING END
         this._tuple = this._outFile.makeNtuple(this._treeName+(this._split<0 ? "0" : ""),"title",this._tupleNames);
 
         // Single file
