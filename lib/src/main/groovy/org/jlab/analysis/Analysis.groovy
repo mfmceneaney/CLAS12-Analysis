@@ -1225,11 +1225,6 @@ public class Analysis {
             for (String kin : this._kinematics.keySet()) { this._tupleNames += kin + "_MC" + ":"; }
         }
         String[] names = ["px_",":py_",":pz_"];
-        //DEBUGGING
-        System.out.println(this._useMC);
-        System.out.println(this._combo);
-        System.out.println(this._match);
-        //DEBUGGING END
         if (this._addVertices) { names += ((this._useMC && !this._combo && !this._match) ? [":vx_",":vy_",":vz_"] : [":vx_",":vy_",":vz_",":vt_"]); } //NOTE: Just a groovy capability //TODO: CHECK THIS CONDITION
         if (this._addAngles) { names += [":theta_",":phi_"]; } //NOTE: Just a groovy capability
         if (!this._useMC || this._combo || this._match) { names += [":chi2pid_",":status_"]; }
