@@ -1086,8 +1086,8 @@ public class Analysis {
 
             // Get combined list of particle combinations from REC::Particle and MC::Lund banks
             ArrayList<ArrayList<DecayProduct>> list;
-            if (!this._require_pid) { list = decays.mergeComboChargeList(mcdecays.getComboChargeList()); }
-            if (this._require_pid)  { list = decays.mergeComboPidList(mcdecays.getComboPidList()); }
+            if (!this._require_pid) { list = decays.mergeComboChargeList(mcdecays.getComboChargeList()); if (this._parents.size()!=0) { list = decays.mergeComboChargeList(mcdecays.getCheckedComboChargeList()); } }
+            if (this._require_pid)  { list = decays.mergeComboPidList(mcdecays.getComboPidList()); if (this._parents.size()!=0) { list = decays.mergeComboPidList(mcdecays.getCheckedComboPidList()); } }
 
             // Check for scattered electron if requested
             DecayProduct beam   = decays.getScatteredBeam();
