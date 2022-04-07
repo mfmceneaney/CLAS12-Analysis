@@ -1102,7 +1102,7 @@ public class Analysis {
                 HashMap<String, Double> mckinematics = this._kinematics.processMCEvent(reader, event, (ArrayList<DecayProduct>)l.subList(this._decay.size(),this._decay.size()*2), mcdecays.getParents());
                 if (kinematics.size()==0 || mckinematics.size()==0) { continue; } else { addedEvent = true; }
                 ArrayList<Double> data = new ArrayList<Double>();
-                if (this._require_e) {
+                if (this._require_e) { //TODO: Evaluate if this requirement makes sense for all kinematics?  Always should see scattered electron though...
                     for (String key : this._kinematics.keySet()) { data.add(kinematics.get(key)); }
                     for (String key : this._kinematics.keySet()) { data.add(mckinematics.get(key)); }
                     // Add REC::Particle Beam
@@ -1225,7 +1225,12 @@ public class Analysis {
             for (String kin : this._kinematics.keySet()) { this._tupleNames += kin + "_MC" + ":"; }
         }
         String[] names = ["px_",":py_",":pz_"];
-        if (this._addVertices) { names += ((this._useMC && !this._combo && !this._match) ? [":vx_",":vy_",":vz_"] : [":vx_",":vy_",":vz_",":vt_"]); } //NOTE: Just a groovy capability
+        //DEBUGGING
+        System.out.println(this._useMC);
+        System.out.println(this._combo);
+        System.out.println(this._match);
+        //DEBUGGING END
+        if (this._addVertices) { names += ((this._useMC && !this._combo && !this._match) ? [":vx_",":vy_",":vz_"] : [":vx_",":vy_",":vz_",":vt_"]); } //NOTE: Just a groovy capability //TODO: CHECK THIS CONDITION
         if (this._addAngles) { names += [":theta_",":phi_"]; } //NOTE: Just a groovy capability
         if (!this._useMC || this._combo || this._match) { names += [":chi2pid_",":status_"]; }
         if (!this._require_pid) {names += [":pid_"]; } //NOTE: Just a groovy capability // use .addAll() for java
