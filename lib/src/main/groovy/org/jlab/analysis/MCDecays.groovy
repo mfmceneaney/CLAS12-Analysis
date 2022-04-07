@@ -298,7 +298,8 @@ public class MCDecays {
         for (ArrayList<DecayProduct> combo : this.getComboPidList()) {
             for (ArrayList<DecayProduct> check : this.getParComboPidList()) {
                 ArrayList<DecayProduct> addList = new ArrayList<DecayProduct>(combo);
-                if (combo.get(0).parent()==check.get(0).daughter()) { checkedComboPidList.add(addList); }
+                System.out.println("DEBUGGING combo.get(0).parent(), check.get(0).daughter()"+combo.get(0).parent()+" , "+check.get(0).daughter());//DEBUGGING
+                if (combo.get(0).parent()==check.get(0).daughter()) { System.out.println("DEBUGGING found pair! (above)"); /*DEBUGGING*/ checkedComboPidList.add(addList); }
             }
          }
 
