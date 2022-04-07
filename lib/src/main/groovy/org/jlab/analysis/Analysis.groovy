@@ -1273,7 +1273,7 @@ public class Analysis {
 
         // Reset names
         names = ["px_",":py_",":pz_"];
-        if (this._addVertices) { names += [":vx_",":vy_",":vz_"]; } //NOTE: Just a groovy capability, MC::Lund does not have vt entry
+        if (this._addVertices) { names += [":vx_",":vy_",":vz_",":vt_"]; } //NOTE: Just a groovy capability, MC::Lund does not have vt entry
         if (this._addAngles) { names += [":theta_",":phi_"]; } //NOTE: Just a groovy capability
         if (!this._require_pid) {names += [":pid_"]; } //NOTE: Just a groovy capability // use .addAll() for java
 
