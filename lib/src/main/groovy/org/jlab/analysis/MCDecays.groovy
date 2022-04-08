@@ -298,7 +298,7 @@ public class MCDecays {
         for (ArrayList<DecayProduct> combo : this.getComboPidList()) {
             for (ArrayList<DecayProduct> check : this.getParComboPidList()) {
                 ArrayList<DecayProduct> addList = new ArrayList<DecayProduct>(combo);
-                if (combo.get(0).parent()==check.get(0).daughter()) { checkedComboPidList.add(addList); }
+                if (combo.get(0).parent()==check.get(0).index()) { checkedComboPidList.add(addList); }
             }
          }
 
@@ -523,7 +523,7 @@ public class MCDecays {
         for (ArrayList<DecayProduct> combo : this.getComboChargeList()) {
             for (ArrayList<DecayProduct> check : this.getParComboChargeList()) {
                 ArrayList<DecayProduct> addList = new ArrayList<DecayProduct>(combo);
-                if (combo.get(0).parent()==check.get(0).daughter()) { checkedComboChargeList.add(addList); }
+                if (combo.get(0).parent()==check.get(0).index()) { checkedComboChargeList.add(addList); }
             }
          }
 
