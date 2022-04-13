@@ -251,7 +251,7 @@ public class MCDecays {
             newlist.add(p);
             ArrayList<DecayProduct> newplist = new ArrayList<DecayProduct>(plist); // IMPORTANT: declare new list
             newplist = newplist.subList(pIndex,newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._decay and this._pidList are sorted)
-            if (dIndex == this._decay.size()-1) { this._parComboPidList.add(newlist); } //Important: -1!
+            if (dIndex == this._parents.size()-1) { this._parComboPidList.add(newlist); } //Important: -1!
             else { setParComboPidList(dIndex+1,newplist,newlist); }
         }
     }
@@ -298,7 +298,7 @@ public class MCDecays {
         for (ArrayList<DecayProduct> combo : this.getComboPidList()) {
             for (ArrayList<DecayProduct> check : this.getParComboPidList()) {
                 ArrayList<DecayProduct> addList = new ArrayList<DecayProduct>(combo);
-                if (combo.get(0).parent()==check.get(0).daughter()) { checkedComboPidList.add(addList); }
+                if (combo.get(0).parent()==check.get(0).index()) { checkedComboPidList.add(addList); }
             }
          }
 
@@ -523,7 +523,7 @@ public class MCDecays {
         for (ArrayList<DecayProduct> combo : this.getComboChargeList()) {
             for (ArrayList<DecayProduct> check : this.getParComboChargeList()) {
                 ArrayList<DecayProduct> addList = new ArrayList<DecayProduct>(combo);
-                if (combo.get(0).parent()==check.get(0).daughter()) { checkedComboChargeList.add(addList); }
+                if (combo.get(0).parent()==check.get(0).index()) { checkedComboChargeList.add(addList); }
             }
          }
 

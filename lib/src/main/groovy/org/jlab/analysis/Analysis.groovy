@@ -1044,6 +1044,7 @@ public class Analysis {
                 // Fill TNTuple
                 double[] dataArray = new double[data.size()];
                 for (int i=0; i<data.size(); i++) { dataArray[i] = (double) data.get(i); }
+
                 this._tuple.fill(dataArray);
             }
             // Count events selected not # of actual data entries added and split output file/tuple if requested.
@@ -1098,8 +1099,8 @@ public class Analysis {
 
             // Get combined list of particle combinations from REC::Particle and MC::Lund banks
             ArrayList<ArrayList<DecayProduct>> list;
-            if (!this._require_pid) { list = decays.mergeComboChargeList(mcdecays.getComboChargeList()); }
-            if (this._require_pid)  { list = decays.mergeComboPidList(mcdecays.getComboPidList()); }
+            if (!this._require_pid) { list = decays.mergeComboChargeList(mcdecays.getComboChargeList()); if (this._parents.size()!=0) { list = decays.mergeComboChargeList(mcdecays.getCheckedComboChargeList()); } }
+            if (this._require_pid)  { list = decays.mergeComboPidList(mcdecays.getComboPidList()); if (this._parents.size()!=0) { list = decays.mergeComboPidList(mcdecays.getCheckedComboPidList()); } }
 
             // Check for scattered electron if requested
             DecayProduct beam   = decays.getScatteredBeam();
@@ -1114,7 +1115,7 @@ public class Analysis {
                 HashMap<String, Double> mckinematics = this._kinematics.processMCEvent(reader, event, (ArrayList<DecayProduct>)l.subList(this._decay.size(),this._decay.size()*2), mcdecays.getParents());
                 if (kinematics.size()==0 || mckinematics.size()==0) { continue; } else { addedEvent = true; }
                 ArrayList<Double> data = new ArrayList<Double>();
-                if (this._require_e) {
+                if (this._require_e) { //TODO: Evaluate if this requirement makes sense for all kinematics?  Always should see scattered electron though...
                     for (String key : this._kinematics.keySet()) { data.add(kinematics.get(key)); }
                     for (String key : this._kinematics.keySet()) { data.add(mckinematics.get(key)); }
                     // Add REC::Particle Beam
@@ -1237,7 +1238,7 @@ public class Analysis {
             for (String kin : this._kinematics.keySet()) { this._tupleNames += kin + "_MC" + ":"; }
         }
         String[] names = ["px_",":py_",":pz_"];
-        if (this._addVertices) { names += ((this._useMC && !this._combo && !this._match) ? [":vx_",":vy_",":vz_"] : [":vx_",":vy_",":vz_",":vt_"]); } //NOTE: Just a groovy capability
+        if (this._addVertices) { names += ((this._useMC && !this._combo && !this._match) ? [":vx_",":vy_",":vz_"] : [":vx_",":vy_",":vz_",":vt_"]); } //NOTE: Just a groovy capability //TODO: CHECK THIS CONDITION
         if (this._addAngles) { names += [":theta_",":phi_"]; } //NOTE: Just a groovy capability
         if (!this._useMC || this._combo || this._match) { names += [":chi2pid_",":status_"]; }
         if (!this._require_pid) {names += [":pid_"]; } //NOTE: Just a groovy capability // use .addAll() for java
@@ -1280,7 +1281,7 @@ public class Analysis {
 
         // Reset names
         names = ["px_",":py_",":pz_"];
-        if (this._addVertices) { names += [":vx_",":vy_",":vz_"]; } //NOTE: Just a groovy capability, MC::Lund does not have vt entry
+        if (this._addVertices) { names += [":vx_",":vy_",":vz_",":vt_"]; } //NOTE: Just a groovy capability, MC::Lund does not have vt entry
         if (this._addAngles) { names += [":theta_",":phi_"]; } //NOTE: Just a groovy capability
         if (!this._require_pid) {names += [":pid_"]; } //NOTE: Just a groovy capability // use .addAll() for java
 
@@ -1324,7 +1325,7 @@ public class Analysis {
 
         // Create ROOT Output file
         int index = num/this._split-1;
-        int last; if (num == this._split) { last = 6; } else { last = 6+(index>=10 ? 3 : 2); }
+        int last; if (num == this._split) { last = 6; } else { last = 6+(index>10 ? 3 : 2); /*TODO: Handle >100 case -> just set some global basename variable.*/}
         this._outPath = this._outPath[0..-last] + "_" + index + ".root"; // just a groovy capability, assumes file name end is .root
         this._outFile = new ROOTFile(this._outPath); //WARNING: This will currently overwrite existing files
         System.out.println(" Created new file: "+this._outPath);
