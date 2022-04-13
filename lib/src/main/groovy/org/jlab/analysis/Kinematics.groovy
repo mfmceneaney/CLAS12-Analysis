@@ -661,6 +661,7 @@ public class Kinematics {
         ArrayList<LorentzVector> lvList = new ArrayList<LorentzVector>();
         for (int i=0; i<list.size(); i++) { //IMPORTANT: start at 0 since beam is separate from list
             DecayProduct p = list.get(i);
+            if (p.pid() == 321 || p.pid()==-321 || p.pid() == 310) continue;//DEBUGGING Just for Lambda Kaon projections...
             if (!this._strict) { p.changePid(this._decay.get(i)); } //NOTE: Calculate with assumed mass unless strict option selected
             lvList.add(p.lv());
         }
@@ -721,7 +722,7 @@ public class Kinematics {
         if (this._addLambdaKin) { this.getColinearity(kinematics,list,lv_parent,beam); }//TODO: Add option for this?
         if (this._addLambdaKin) { this.getBack2Back(kinematics,lvList,lv_parent,beam); }//TODO: Add option for this?
         if (this._addIndivKin)  { this.getIndivKin(kinematics,list,lv_target,gNBoost); }//TODO: Check this.
-
+        //TODO: add mx to each indiv kin, make decaymother class extending decayproduct, so it has arraylist of decayproducts and then individual particles still get written out but it adds some overhead kinematics.... also parse with parentheses around pid pairs... Much more extensive project
         return kinematics;
     }
 
