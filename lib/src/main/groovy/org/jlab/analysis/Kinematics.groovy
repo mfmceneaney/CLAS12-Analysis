@@ -655,67 +655,35 @@ public class Kinematics {
     protected HashMap<String, Double> getDefaultVars(ArrayList<DecayProduct> list, DecayProduct beam) {
         
         HashMap<String, Double> kinematics = new HashMap<String, Double>();
-        if (!this._require_e) { return kinematics; } // Return empty hashmap if don't require electron
+        if (!this._require_e) { return kinematics; } //TODO: Does this still apply????? Return empty hashmap if don't require electron
 
         // Set final state lorentz vectors
-        ArrayList<LorentzVector> lvList = new ArrayList<LorentzVector>();
-        for (int i=0; i<list.size(); i++) { //IMPORTANT: start at 0 since beam is separate from list
-            DecayProduct p = list.get(i);
-            if (p.pid() == 321 || p.pid()==-321 || p.pid() == 310) continue;//DEBUGGING Just for Lambda Kaon projections...
-            if (!this._strict) { p.changePid(this._decay.get(i)); } //NOTE: Calculate with assumed mass unless strict option selected
-            lvList.add(p.lv());
-        }
         LorentzVector lv_max    = beam.lv();
         LorentzVector lv_beam   = new LorentzVector(); lv_beam.setPxPyPzM(0.0, 0.0, Math.sqrt(Math.pow(this._constants.getBeamE(),2) - Math.pow(this._constants.getBeamM(),2)), this._constants.getBeamM()); // Assumes all energy is along pz...?
         LorentzVector lv_target = new LorentzVector(); lv_target.setPxPyPzM(0.0, 0.0, this._constants.getTargetE(), this._constants.getTargetM()); //TODO: should fix this so mirrors line above...
-        LorentzVector lv_parent = new LorentzVector(); double px = 0; double py = 0; double pz = 0; double en = 0;
-        for (LorentzVector lv : lvList) { px += lv.px(); py += lv.py(); pz += lv.pz(); en += lv.e(); }
-        lv_parent.setPxPyPzE(px,py,pz,en); //NOTE: for some reason lv_parent.add(lv) doesn't do what it's supposed to...it seems like it's boosting to some other frame in the process
-
         LorentzVector q = new LorentzVector(lv_beam);
         q.sub(lv_max);
         LorentzVector gN = new LorentzVector(q);
         gN.add(lv_target);
         Vector3 gNBoost = gN.boostVector();
         gNBoost.negative();
-        LorentzVector boostedParent = new LorentzVector(lv_parent);
-        boostedParent.boost(gNBoost);
         LorentzVector boostedMax = new LorentzVector(lv_max);
         boostedMax.boost(gNBoost);
-        LorentzVector lv_miss = new LorentzVector(gN);
-        lv_miss.sub(lv_parent);
 
         // Compute SIDIS variables
         double Q2   = (-1) * (q.mass2());
         double nu   = q.e();
-        double z    = lv_parent.e() / nu;
         double y    = q.e() / lv_beam.e();
         double x    = Q2 / (2 * this._constants.getTargetM() * nu);
         double W    = Math.sqrt(this._constants.getTargetM()*this._constants.getTargetM()+Q2 * (1 - x) / x);
         double Walt = gN.mass();
-        double xF   = boostedParent.pz() / (Walt/2);
-        double mass = lv_parent.mass();
-        double mx   = lv_miss.mass();
 
-        // Get Transverse momentum relative to parent momentum
-        double pT = (double) 0.0;
-        for (LorentzVector lv : lvList) { pT += lv_parent.vect().cross(lv.vect()).mag()/lv_parent.vect().mag(); } // for some reason using lvUnit.unit normalizes the parent vector
-        pT = pT / lvList.size();
-
-        // Get hadron momentum perpendicular to plane of scattered electron...check this
-        double phperp = lv_parent.vect().cross(q.vect()).mag()/q.vect().mag(); // for some reason using qUnit.unit normalizes the parent vector
-
-        kinematics.put("Q2",Q2);
+        // Add SIDIS variables to map
+        kinematics.put("Q2",Q2); //TODO: How to make sure entries match up when mapping to TREE?????
         kinematics.put("nu",nu);
-        kinematics.put("z",z);
         kinematics.put("y",y);
         kinematics.put("x",x);
         kinematics.put("W",W);
-        kinematics.put("xF",xF);
-        kinematics.put("pT",pT);
-        kinematics.put("phperp",phperp);
-        kinematics.put("mass",mass);
-        kinematics.put("mx",mx);
 
         if (this._addLambdaKin) { this.getLKVars(kinematics,lvList,lv_parent,q); }
         if (this._addLambdaKin) { this.getTLKVars(kinematics,lvList,lv_parent,q,beam); }//TODO: Add option for this?
