@@ -22,14 +22,16 @@ import org.jlab.jnp.physics.*;
 
 public class Kinematics {
 
-    protected static ArrayList<Integer> _decay;        // List of Lund pids with first entry as parent particle
-    protected static ArrayList<Integer> _parents;      // List of parent Lund pids without parent particle from _decay
-    protected static Constants          _constants;
-    protected String[]                  _defaults = ["Q2", "nu", "y", "x", "W", "z", "xF", "pT", "phperp", "mass","mx"];
-    protected String[]                  _ikin;         // List of individual particle kinematics
-    protected HashMap<String,ConfigVar> _configs;      // HashMap of name to lambda expression for computing
-    protected HashMap<String,SIDISVar>  _vars;         // HashMap of name to lambda expression for computing
-    protected HashMap<String,Cut>       _cuts;         // HashMap of name to boolean(double) lambda expression cut
+    protected static ArrayList<Integer>            _decay;        // List of Lund pids with first entry as parent particle
+    protected static ArrayList<ArrayList<Integer>> _groups;       // List of lists of grouped indices in this._decay
+    protected static ArrayList<Integer>            _parents;      // List of parent Lund pids without parent particle from _decay
+    protected static Constants                     _constants;
+    protected String[]                             _defaults = ["Q2", "nu", "y", "x", "W"]; //NOTE: OLD rest: "z", "xF", "pT", "phperp", "mass","mx"
+    protected String[]                             _ikin = [];         // List of individual particle kinematics
+    protected String[]                             _gkin = [];         // List of individual particle kinematics
+    protected HashMap<String,ConfigVar>            _configs;      // HashMap of name to lambda expression for computing
+    protected HashMap<String,SIDISVar>             _vars;         // HashMap of name to lambda expression for computing
+    protected HashMap<String,Cut>                  _cuts;         // HashMap of name to boolean(double) lambda expression cut
 
     // Options
     protected static boolean _strict        = false;    // use strict pid to mass assignment in kinematics calculations
@@ -43,7 +45,8 @@ public class Kinematics {
     protected static boolean _addStartTime  = false;    // include start time in TNTuple
     protected static boolean _addRFTime     = false;    // include RF time in TNTuple
     protected static boolean _addLambdaKin  = false;    // include special two particle decay kinematics from Lambda analysis
-    protected static boolean _addIndivKin   = false;    // include special two particle decay kinematics from Lambda analysis
+    protected static boolean _addIndivKin   = false;    // include individual kinematics
+    protected static boolean _addGroupKin   = false;    // include grouped particles' kinematics
 
     // built in lambdas
     protected ConfigVar _getEventNum = (HipoReader reader, Event event) -> {
@@ -120,10 +123,11 @@ public class Kinematics {
     * @param Constants constants
     * @param ArrayList<Integer> decay
     */
-    public Kinematics(Constants constants, ArrayList<Integer> decay) {
+    public Kinematics(Constants constants, ArrayList<Integer> decay, ArrayList<ArrayList<Integer>> groups) {
 
         this._constants = constants;
         this._decay     = decay;
+        this._groups    = groups;
         this._configs   = new HashMap<String,ConfigVar>();
         this._vars      = new HashMap<String,SIDISVar>();
         this._cuts      = new HashMap<String,Cut>();
@@ -168,7 +172,7 @@ public class Kinematics {
     }
 
     /**
-    * Set list of Lund pids for decay.  Parent particle is always first.
+    * Set list of Lund pids for decay.
     * @param ArrayList<Integer> decay
     */
     protected void setDecay(ArrayList<Integer> decay) {
@@ -183,6 +187,24 @@ public class Kinematics {
     protected ArrayList<Integer> getDecay() {
 
         return this._decay;
+    }
+
+    /**
+    * Set list of lists of indices in this._decay to group for kinematics.
+    * @param ArrayList<ArrayList<Integer>> groups
+    */
+    protected void setGroups(ArrayList<ArrayList<Integer>> groups) {
+
+        this._groups = groups;
+    }
+
+    /**
+    * Access list of lists of indices in this._decay to group for kinematics.
+    * @return ArrayList<Integer> _groups
+    */
+    protected ArrayList<ArrayList<Integer>> getGroups() {
+
+        return this._groups;
     }
 
     /**
@@ -235,12 +257,15 @@ public class Kinematics {
 	this._defaults = arr;
     }
 
-    // Option for adding individual particle kinematics //TODO: Currently you have to call this after getting decay.  Would be better if order didn't matter.
+    // Option for adding individual particle kinematics //TODO: Currently you have to call this after setting decay from command line...  Would be nice if order didn't matter.
     protected void setAddIndivKin(boolean addIndivKin) {
+
+        // Set string arrays for TNTuple entry names
         this._addIndivKin = addIndivKin;
-        String[] ikin_init = ["z_", "xF_", "y_", "zeta_"];
+        String[] ikin_init = ["z_", "xF_", "y_", "zeta_", "mx_", "phperp_"];
         String[] ikin = new String[ikin_init.size() * this._decay.size()];
-        String[] arr = new String[this._defaults.length + ikin.size()];
+
+        //OLD: String[] arr = new String[this._defaults.length + ikin.size()];
 
         // Loop this._decay pids and individual kinematics names and add to keyset
         int k = 0;
@@ -258,37 +283,106 @@ public class Kinematics {
             }
         }
 
-        // Reset this._defaults and this._ikin with added kinematics
-        int i = 0;
-        for (String defaults : this._defaults) { arr[i] = defaults; i++; }
-        for (String kin : ikin) { arr[i] = kin; i++; }
-        this._defaults = arr;
+        // // Reset this._defaults and this._ikin with added kinematics
+        // int i = 0;
+        // for (String defaults : this._defaults) { arr[i] = defaults; i++; }
+        // for (String kin : ikin) { arr[i] = kin; i++; }
+        // this._defaults = arr;
+
+        // Reset this._ikin
         this._ikin     = ikin;
+    }
+
+    // Option for adding individual particle kinematics //TODO: Currently you have to call this after getting decay.  Would be better if order didn't matter.
+    protected void setAddGroupKin(boolean addGroupKin) {
+
+        //NOTE: this._groups should already be sorted correctly to match up with sorted decay!
+
+        // Set string arrays for TNTuple entry names
+        this._addGroupKin = addGroupKin;
+        String[] gkin_init = ["z_", "xF_", "y_", "zeta_", "mx_", "phperp_","mass_"];
+        String[] gkin = new String[gkin_init.size() * this._groups.size()];
+        String[] ends = new String[this._decay.size()];
+
+        //OLD: String[] arr  = new String[this._defaults.length + gkin.size()];
+
+        // Loop this._decay pids and get particle name endings
+        int k = 0;
+        HashMap<Integer,Integer> pidCounts = new HashMap<Integer,Integer>();
+        ArrayList<Integer> unique_pids = this._decay.stream().distinct().collect(Collectors.toList());
+        for (Integer pid : unique_pids) { pidCounts.put(pid,0); }
+        for (int i=0; i<this._decay.size(); i++) {
+            Integer pid = this._decay.get(i);
+            String pname = this._constants.getName(pid);
+            pidCounts[pid] += 1;
+            if (i!=0) { if (pid==this._decay.get(i-1)) { pname += pidCounts.get(pid); } } //NOTE: Append occurence number of pid to distinguish between different particles of same pid.
+            ends[i] = pname;
+        }
+
+        // Loop this._groups and individual kinematics names and add to keyset
+        int l = 0;
+        for (ArrayList<Integer> group : this._groups) {
+            String pname = new String("");
+            for (int i : group) { pname += ends[i]; }
+            for (String kin : gkin_init) {
+                gkin[l] = kin + pname;
+                l++;
+            }
+        }
+
+        // // Reset this._defaults and this._gkin with added kinematics
+        // int m = 0;
+        // for (String defaults : this._defaults) { arr[m] = defaults; m++; }
+        // for (String kin : gkin) { arr[m] = kin; m++; }
+        // this._defaults = arr;
+
+        // Reset this._gkin
+        this._gkin     = gkin;
     }
 
     protected boolean addLambdaKin() {return this._addLambdaKin;}
 
-     /**
+    /**
     * Access keyset for all variables to access, useful for setting TNTuple entry names.
     * @return String[] keySet
     */
     protected String[] keySet() { // can call from Analysis object
 
-        String[] arr = new String[this._defaults.length + this._configs.size() + this._vars.size()];
+        String[] arr = new String[this._configs.size() + this._defaults.length + this._ikin.length + this._gkin.length + this._vars.size()];
         int i = 0;
         for (String con : this._configs.keySet()) { arr[i] = con; i++; }
-        for (String defaults : this._defaults)         { arr[i] = defaults; i++; }
+        for (String defaults : this._defaults)    { arr[i] = defaults; i++; } //NOTE: Ordering must match order variables are added to kinematics map.
+        for (String ikin : this._ikin)            { arr[i] = ikin; i++; }
+        for (String gkin : this._gkin)            { arr[i] = gkin; i++; }
         for (String var : this._vars.keySet())    { arr[i] = var; i++; }
         return arr;
     }
 
-     /**
-    * Access string array for names of default kinematic variables: Q2, nu, W, Walt x, xF, y, z, pT, phperp, mass.
+    /**
+    * Access string array for names of default kinematic variables: Q2, nu, y, x, W.
     * @return String[] _defaults
     */
     protected String[] getDefaults() { // can call from Analysis object
 
         return this._defaults;
+    }
+
+    /**
+    * Access string array for names of default individual particles' kinematic variables: z, xF, Y, zeta, phperp. //TODO: phi, phi_s, ...,
+    * @return String[] _ikin
+    */
+    protected String[] getIndivKin() { // can call from Analysis object
+
+        return this._ikin;
+    }
+
+    /**
+    * Access string array for names of default grouped particles' kinematic variables: z, xF, Y, zeta, phperp, pT, mass. //TODO: phi, phi_s, ..., lambda kinematics
+    * @return String[] _gkin
+    */
+    protected String[] getGroupKin() { // can call from Analysis object
+
+        return this._ikin;
     }
 
     /**
@@ -596,21 +690,28 @@ public class Kinematics {
     * @param HashMap<String, Double> kinematics
     * @param ArrayList<DecayProduct> list
     * @param LorentzVector lv_parent
+    * @param LorentzVector q
+    * @param LorentzVector gN
     * @param Vector3 gNBoost
     */
-    protected void getIndivKin(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, LorentzVector lv_target,Vector3 gNBoost) {
+    protected void getIndivKin(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, LorentzVector lv_target, LorentzVector q, LorentzVector gN, Vector3 gNBoost) {
+        
         // Add individual hadron kinematics
         int k = 0;
         LorentzVector boostedTarget = new LorentzVector(lv_target);
         boostedTarget.boost(gNBoost);
-        for (DecayProduct p : list){ //NOTE: IMPORTANT: Should already be ordered same as this._decay
+        for (int i=0; i<list.size(); i++) { //IMPORTANT: start at 0 since beam is separate from list { //NOTE: IMPORTANT: Should already be ordered same as this._decay
+            DecayProduct p = list.get(i);
+            if (!this._strict) { p.changePid(this._decay.get(i)); } //NOTE: Calculate with assumed mass unless strict option selected
 
             // Grab lorentz vectors and boost
             LorentzVector lv = p.lv();
-            // String pname = this._constants.getName(p.pid()); //TODO: Delete
             LorentzVector boostedLv = new LorentzVector(lv);
             boostedLv.boost(gNBoost);
+            LorentzVector lv_miss = new LorentzVector(gN);
+            lv_miss.sub(lv);
 
+            // Grab previously calculated kinematics
             double nu = kinematics.get("nu");
             double W  = kinematics.get("W");
 
@@ -619,13 +720,93 @@ public class Kinematics {
             double xF_     = boostedLv.pz() / (W/2);
             double y_      = 1/2*Math.log((lv.e()+lv.pz())/(lv.e()-lv.pz()));
             double zeta_   = boostedLv.e() / boostedTarget.e();
+            double mx_     = lv_miss.mass();
+            double phperp_ = lv.vect().cross(q.vect()).mag()/q.vect().mag();
 
-            // Add entries to kinematics map
+            // Add entries to kinematics map NOTE: The # of kinematics added here must exactly match the # set in this.setAddIndivKin() above.
             kinematics.put(this._ikin[k++],xF_);     //NOTE: x_Feynman
-            kinematics.put(this._ikin[k++],z_);       //NOTE: z for individual hadron
-            kinematics.put(this._ikin[k++],y_);       //NOTE: rapidity for individual hadron
-            kinematics.put(this._ikin[k++],zeta_); //NOTE: E_h / E_target in gamma* - nucleon CoMass Frame
+            kinematics.put(this._ikin[k++],z_);      //NOTE: z for individual hadron
+            kinematics.put(this._ikin[k++],y_);      //NOTE: rapidity for individual hadron
+            kinematics.put(this._ikin[k++],zeta_);   //NOTE: E_h / E_target in gamma* - nucleon CoMass Frame
+            kinematics.put(this._ikin[k++],mx_);     //NOTE: Missing mass
+            kinematics.put(this._ikin[k++],phperp_); //NOTE: momentum of hadron perp to electron scattering plane
         }
+    }
+
+    /**
+    * Compute additional particle correlation kinematics for particle groups.
+    * @param HashMap<String, Double> kinematics
+    * @param ArrayList<DecayProduct> list
+    * @param LorentzVector lv_parent
+    * @param LorentzVector q
+    * @param LorentzVector gN
+    * @param Vector3 gNBoost
+    */
+    protected void getGroupKin(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, LorentzVector lv_target, LorentzVector q, LorentzVector gN, Vector3 gNBoost) {
+        
+        int k = 0; //NOTE: counter for groups
+        for (ArrayList<Integer> group : this._decay_groups) { //NOTE: this._decay_groups contains already sorted indices (indices to sorted this._decay) to access for each group.
+            
+            // Loop indices from group and grab selected particles' lorentz vectors
+            ArrayList<LorentzVector> lvList = new ArrayList<LorentzVector>();
+            for (int i : group) {
+                DecayProduct p = list.get(i);
+                if (!this._strict) { p.changePid(this._decay.get(i)); } //NOTE: Calculate with assumed mass unless strict option selected
+                lvList.add(p.lv());
+            }
+
+            // Loop through grouped lorentz vectors and set parent lorentz vector
+            LorentzVector lv_parent = new LorentzVector(); double px = 0; double py = 0; double pz = 0; double en = 0;
+            for (LorentzVector lv : lvList) { px += lv.px(); py += lv.py(); pz += lv.pz(); en += lv.e(); }
+            lv_parent.setPxPyPzE(px,py,pz,en); //NOTE: for some reason lv_parent.add(lv) doesn't do what it's supposed to...it seems like it's boosting to some other frame in the process
+
+            // Grab lorentz vectors and boost
+            LorentzVector boostedTarget = new LorentzVector(lv_target);
+            boostedTarget.boost(gNBoost);
+            LorentzVector lv = new LorentzVector(lv_parent); //NOTE: Now set from parent lorentz vector and not looping through particles.
+            LorentzVector boostedLv = new LorentzVector(lv);
+            boostedLv.boost(gNBoost);
+            LorentzVector lv_miss = new LorentzVector(gN);
+            lv_miss.sub(lv);
+            
+            // Grab previously calculated kinematics
+            double nu = kinematics.get("nu");
+            double W  = kinematics.get("W");
+
+            // Get SIDIS variables for individual particles
+            double z_      = lv.e() / nu;
+            double xF_     = boostedLv.pz() / (W/2);
+            double y_      = 1/2*Math.log((lv.e()+lv.pz())/(lv.e()-lv.pz()));
+            double zeta_   = boostedLv.e() / boostedTarget.e();
+            double mx_     = lv_miss.mass();
+            double phperp_ = lv.vect().cross(q.vect()).mag()/q.vect().mag();
+
+            // Get final state kinematics for parent
+            double mass = lv_parent.mass();
+
+            // Get Transverse momentum relative to parent momentum
+            double pT = (double) 0.0;
+            for (LorentzVector lv_ : lvList) { pT += lv_parent.vect().cross(lv_.vect()).mag()/lv_parent.vect().mag(); } // for some reason using lvUnit.unit normalizes the parent vector
+            pT = pT / lvList.size();
+
+            //TODO: Get phi relative to electron scattering plane
+
+            // Add entries to kinematics map NOTE: The # of kinematics added here must exactly match the # set in this.setAddIndivKin() above.
+            kinematics.put(this._gkin[k++],xF_);     //NOTE: x_Feynman
+            kinematics.put(this._gkin[k++],z_);      //NOTE: z for individual hadron
+            kinematics.put(this._gkin[k++],y_);      //NOTE: rapidity for individual hadron
+            kinematics.put(this._gkin[k++],zeta_);   //NOTE: E_h / E_target in gamma* - nucleon CoMass Frame
+            kinematics.put(this._gkin[k++],mx_);     //NOTE: Missing mass
+            kinematics.put(this._gkin[k++],phperp_); //NOTE: momentum of hadron perp to electron scattering plane
+            kinematics.put(this._gkin[k++],mass_);   //NOTE: Invariant mass of grouped particles system
+            
+            //TODO: // Add Lambda kinematics if requested
+            // if (this._addLambdaKin) { this.getLambdaVars(kinematics,lvList); }
+
+            // // Add Dihadron kinematics if requested
+            // if (this._addDHKin) { this.getDHVars(kinematics,lvList); }
+
+        } // for (ArrayList<Integer> group : this._decay_groups) {
     }
 
     /**
@@ -685,12 +866,11 @@ public class Kinematics {
         kinematics.put("x",x);
         kinematics.put("W",W);
 
-        if (this._addLambdaKin) { this.getLKVars(kinematics,lvList,lv_parent,q); }
-        if (this._addLambdaKin) { this.getTLKVars(kinematics,lvList,lv_parent,q,beam); }//TODO: Add option for this?
-        if (this._addLambdaKin) { this.getColinearity(kinematics,list,lv_parent,beam); }//TODO: Add option for this?
-        if (this._addLambdaKin) { this.getBack2Back(kinematics,lvList,lv_parent,beam); }//TODO: Add option for this?
-        if (this._addIndivKin)  { this.getIndivKin(kinematics,list,lv_target,gNBoost); }//TODO: Check this.
-        //TODO: add mx to each indiv kin, make decaymother class extending decayproduct, so it has arraylist of decayproducts and then individual particles still get written out but it adds some overhead kinematics.... also parse with parentheses around pid pairs... Much more extensive project
+        //TODO: Update getMCDefaultVars below too
+
+        if (this._addIndivKin)  { this.getIndivKin(kinematics,list,lv_target,q,gN,gNBoost); }//TODO: Check this.
+        if (this._addGroupKin)  { this.getGroupKin(kinematics,list,lv_target,q,gN,gNBoost); }//TODO: Check this.
+
         return kinematics;
     }
 
