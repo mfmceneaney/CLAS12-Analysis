@@ -867,8 +867,7 @@ public class Kinematics {
         kinematics.put("x",x);
         kinematics.put("W",W);
 
-        //TODO: Update getMCDefaultVars below too
-
+        // Get individual and group kinematics if requested
         if (this._addIndivKin)  { this.getIndivKin(kinematics,list,lv_target,q,gN,gNBoost); }//TODO: Check this.
         if (this._addGroupKin)  { this.getGroupKin(kinematics,list,lv_target,q,gN,gNBoost); }//TODO: Check this.
 
@@ -889,67 +888,47 @@ public class Kinematics {
         if (!this._require_e) { return kinematics; } // Return empty hashmap if don't require electron
 	    if (list.size() == 0 || ilist.size() == 0) { return kinematics; } // Return empty hashmap if no particles or MC particles
 
-        // Set final state lorentz vectors
-        ArrayList<LorentzVector> lvList = new ArrayList<LorentzVector>();
-        for (int i=0; i<list.size(); i++) {
-            DecayProduct p = list.get(i);
-            lvList.add(p.lv());
-        }
-
         DecayProduct beam, target, photon, max, parent;
         beam = ilist.get(0); target = ilist.get(1); photon = ilist.get(2); max = ilist.get(3); // IMPORTANT! MC::Lund order preserved
         parent = list.get(0); //IMPORTANT! MCDecays should set the particle parent at index 0
 
+        // Get lorentz vectors for interaction
         LorentzVector lv_beam   = beam.lv();
         LorentzVector lv_target = target.lv();
         LorentzVector q         = photon.lv();
         LorentzVector lv_max    = max.lv();
         LorentzVector lv_parent = parent.lv();
 
+        // Setup additional lorentz vectors
         LorentzVector gN = new LorentzVector(q);
         gN.add(lv_target);
         Vector3 gNBoost = gN.boostVector();
         gNBoost.negative();
-        LorentzVector boostedParent = new LorentzVector(lv_parent);
-        boostedParent.boost(gNBoost);
         LorentzVector boostedMax = new LorentzVector(lv_max);
         boostedMax.boost(gNBoost);
-        LorentzVector lv_miss = new LorentzVector(gN);
-        lv_miss.sub(lv_parent);
 
         // Compute SIDIS variables
         double Q2   = (-1) * (q.mass2());
         double nu   = q.e();
-        double z    = lv_parent.e() / nu;
-        double y    = q.e() / lv_beam.e();		
+        double y    = q.e() / lv_beam.e();
         double x    = Q2 / (2 * this._constants.getTargetM() * nu);
         double W    = Math.sqrt(this._constants.getTargetM()*this._constants.getTargetM()+Q2 * (1 - x) / x);
         double Walt = gN.mass();
-        double xF   = boostedParent.pz() / (Walt/2);
-        double mass = lv_parent.mass();
-        double mx   = lv_miss.mass();
 
-        // Get Transverse momentum relative to parent momentum
-        double pT = (double) 0.0;
-        for (LorentzVector lv : lvList) { pT += lv_parent.vect().cross(lv.vect()).mag()/lv_parent.vect().mag(); } // for some reason using lvUnit.unit normalizes the parent vector
-        pT = pT / lvList.size();
-
-        // Get hadron momentum perpendicular to plane of scattered electron...check this
-        double phperp = lv_parent.vect().cross(q.vect()).mag()/q.vect().mag(); // for some reason using qUnit.unit normalizes the parent vector
-
+        // Add SIDIS variables to map
         kinematics.put("Q2",Q2);
         kinematics.put("nu",nu);
-        kinematics.put("z",z);
         kinematics.put("y",y);
         kinematics.put("x",x);
         kinematics.put("W",W);
-        kinematics.put("xF",xF);
-        kinematics.put("pT",pT);
-        kinematics.put("phperp",phperp);
-        kinematics.put("mass",mass);
-        kinematics.put("mx",mx);
 
-        if (this._addLambdaKin) { this.getLKVars(kinematics,lvList,lv_parent,q); }
+        // Create particle list without parent for individual and group kinematics below
+        ArrayList<DecayProduct> list_noparent = new ArrayList<DecayProduct>();
+        for (int i = 1; i<list.size(); i++) {list_noparent.add(list.get(i)); }
+
+        // Get individual and group kinematics if requested
+        if (this._addIndivKin)  { this.getIndivKin(kinematics,list_noparent,lv_target,q,gN,gNBoost); }//TODO: Check this.
+        if (this._addGroupKin)  { this.getGroupKin(kinematics,list_noparent,lv_target,q,gN,gNBoost); }//TODO: Check this.
 
         return kinematics;
     }
