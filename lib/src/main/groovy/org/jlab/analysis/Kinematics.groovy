@@ -355,6 +355,7 @@ public class Kinematics {
         for (String ikin : this._ikin)            { arr[i] = ikin; i++; }
         for (String gkin : this._gkin)            { arr[i] = gkin; i++; }
         for (String var : this._vars.keySet())    { arr[i] = var; i++; }
+
         return arr;
     }
 
@@ -743,9 +744,9 @@ public class Kinematics {
     * @param Vector3 gNBoost
     */
     protected void getGroupKin(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, LorentzVector lv_target, LorentzVector q, LorentzVector gN, Vector3 gNBoost) {
-        
+
         int k = 0; //NOTE: counter for groups
-        for (ArrayList<Integer> group : this._decay_groups) { //NOTE: this._decay_groups contains already sorted indices (indices to sorted this._decay) to access for each group.
+        for (ArrayList<Integer> group : this._groups) { //NOTE: this._groups contains already sorted indices (indices to sorted this._decay) to access for each group.
             
             // Loop indices from group and grab selected particles' lorentz vectors
             ArrayList<LorentzVector> lvList = new ArrayList<LorentzVector>();
@@ -782,7 +783,7 @@ public class Kinematics {
             double phperp_ = lv.vect().cross(q.vect()).mag()/q.vect().mag();
 
             // Get final state kinematics for parent
-            double mass = lv_parent.mass();
+            double mass_ = lv_parent.mass();
 
             // Get Transverse momentum relative to parent momentum
             double pT = (double) 0.0;
@@ -806,7 +807,7 @@ public class Kinematics {
             // // Add Dihadron kinematics if requested
             // if (this._addDHKin) { this.getDHVars(kinematics,lvList); }
 
-        } // for (ArrayList<Integer> group : this._decay_groups) {
+        } // for (ArrayList<Integer> group : this._groups) {
     }
 
     /**
