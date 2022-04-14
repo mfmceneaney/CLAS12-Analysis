@@ -85,7 +85,9 @@ public class Parser {
         System.out.println("\t                       or >count if filter<0 (delimiter ':')");
         System.out.println("\n * Channel/Bank Options");
         System.out.println("\t-ch   [int...] : Specify Lund pids for a decay in MC or REC");
-        System.out.println("\t                 (delimiter ':', default 2212:-211)");
+        System.out.println("\t                  (delimiter ':', default 2212:-211).");
+        System.out.println("\t                  Denote groups for kinematics by just separating with commas,");
+        System.out.println("\t                  e.g., 22:2212,-211:321 groups 2212 and -211.");
         System.out.println("\t-mch  [int...] : Specify more pids to look for in MC::Lund bank");
         System.out.println("\t-pch  [int...] : Specify parent pids to look for in MC::Lund bank");
         System.out.println("\t-ma            : Require matching decay in MC::Lund bank");
@@ -260,7 +262,20 @@ public class Parser {
                 case '-ch':
                     if (args.length<=2) { break; }
                     try {
-                        String[] arr = args[i+1].split(':');
+                        String[] arr = args[i+1].replace(',',':').split(':'); //TODO: Make sure to change later instances!
+
+                        // Get particle groups delimited with just commas
+                        ArrayList<ArrayList<String>> arrnew = args[i+1].split(':').collect{ el -> return el.split(',')};
+                        int k = 0;
+                        ArrayList<ArrayList<Integer>> groups = new ArrayList<ArrayList<Integer>>();
+                        for (ArrayList<String> group : arrnew) {
+                            ArrayList<Integer> list = new ArrayList<Integer>();
+                            for (String pid : group) { list.add(k++); }
+                            if (list.size()>1) groups.add(list);
+                        }
+                        analysis.setGroups(groups);
+
+                        // Get list of pids
                         ArrayList<Integer> pids = new ArrayList<Integer>();
                         for (String entry : arr) { int pid = Integer.parseInt(entry); pids.add(pid); }
                         analysis.setDecay(pids);
@@ -286,7 +301,21 @@ public class Parser {
                 case '-mch':
                     if (args.length<=2) { break; }
                     try {
-                        String[] arr = args[i+1].split(':');
+                        try {
+                        String[] arr = args[i+1].replace(',',':').split(':'); //TODO: Make sure to change later instances!
+
+                        // Get particle groups delimited with just commas
+                        ArrayList<ArrayList<String>> arrnew = args[i+1].split(':').collect{ el -> return el.split(',')};
+                        int k = 0;
+                        ArrayList<ArrayList<Integer>> groups = new ArrayList<ArrayList<Integer>>();
+                        for (ArrayList<String> group : arrnew) {
+                            ArrayList<Integer> list = new ArrayList<Integer>();
+                            for (String pid : group) { list.add(k++); }
+                            if (list.size()>1) groups.add(list);
+                        }
+                        analysis.setGroups(groups);
+
+                        // Get list of pids
                         ArrayList<Integer> pids = new ArrayList<Integer>();
                         for (String entry : arr) { int pid = Integer.parseInt(entry); pids.add(pid); }
                         if (pids.size()==0) { return this.help(); }
