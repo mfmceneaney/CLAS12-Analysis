@@ -223,8 +223,12 @@ public class Analysis {
     * @param ArrayList<ArrayList<Integer>> groups
     */
     protected void setGroups(ArrayList<ArrayList<Integer>> groups) {
-
+        
         this._groups = groups;
+        if (this._groups.size()>0) {
+            this._kinematics.setGroups(groups);
+            this._kinematics.setAddGroupKin(true);
+        }
     }
 
     /**
@@ -247,6 +251,10 @@ public class Analysis {
         Collections.sort(this._decay);      //IMPORTANT: Combinations algorithm relies on this in Decays.groovy.
         this._kinematics.setDecay(decay);   //NOTE: Using unsorted decay here though.
         this._kinematics.setGroups(groups);
+        if (this._groups.size()>0) {
+            this._kinematics.setGroups(groups);
+            this._kinematics.setAddGroupKin(true);
+        }
     }
 
     /**
