@@ -301,7 +301,6 @@ public class Parser {
                 case '-mch':
                     if (args.length<=2) { break; }
                     try {
-                        try {
                         String[] arr = args[i+1].replace(',',':').split(':'); //TODO: Make sure to change later instances!
 
                         // Get particle groups delimited with just commas
