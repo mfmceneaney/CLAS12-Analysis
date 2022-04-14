@@ -28,22 +28,23 @@ import clasqa.QADB;
 
 public class Analysis {
 
-    protected Constants          _constants;
-    protected ArrayList<Integer> _decay;       // If you pass this to a Decays object make sure the parent pid is first.
-    protected ArrayList<Integer> _mcdecay;       // If you pass this to a Decays object make sure the parent pid is first.
-    protected ArrayList<Integer> _parents;       // Only contains pids for the parents of the parent in _decay.  DO NOT double enter parent pid.
-    protected Kinematics         _kinematics;
-    protected QADB               _qa;
-    protected String              _qaMethod;
-    protected FiducialCuts       _fiducialCuts;
-    protected String             _inPath;
-    protected String             _outPath;
-    protected ROOTFile           _outFile;
-    protected TNtuple            _tuple;
-    protected String             _treeName;
-    protected String             _tupleNames;
-    protected int                _event_counter;
-    protected int                _data_counter;
+    protected Constants                     _constants;
+    protected ArrayList<Integer>            _decay;         //OLD: If you pass this to a Decays object make sure the parent pid is first.
+    protected ArrayList<Integer>            _mcdecay;       //OLD: If you pass this to a Decays object make sure the parent pid is first.
+    protected ArrayList<Integer>            _parents;       //OLD: Only contains pids for the parents of the parent in _decay.  DO NOT double enter parent pid.
+    protected ArrayList<ArrayList<Integer>> _groups;        //NOTE: Make sure the index ordering matches that for this._decay since this._decay must be sorted.
+    protected Kinematics                    _kinematics;
+    protected QADB                          _qa;
+    protected String                        _qaMethod;
+    protected FiducialCuts                  _fiducialCuts;
+    protected String                        _inPath;
+    protected String                        _outPath;
+    protected ROOTFile                      _outFile;
+    protected TNtuple                       _tuple;
+    protected String                        _treeName;
+    protected String                        _tupleNames;
+    protected int                           _event_counter;
+    protected int                           _data_counter;
 
 	// Options
 	protected static int     _n_files      = 10; 					// max number of files to analyze
@@ -56,8 +57,9 @@ public class Analysis {
     protected static boolean _strict       = false;					// strict mass from pid assignment for kinematics calculations
     protected static boolean _addRunNum    = false;					// include event number in TNTuple (always added as zeroeth entry)
     protected static boolean _addEvNum     = false;					// include event number in TNTuple (always added as zeroeth entry or just after run #)
-    protected static boolean _lambdaKin    = false;					// include special two particle decay kinematics from \Lambda^0 analysis
+    protected static boolean _lambdaKin    = false;					// include special two particle decay kinematics for Lambda baryons
     protected static boolean _indivKin     = false;					// include extra individual particle kinematics
+    protected static boolean _groupKin     = false;					// include extra grouped particles' kinematics
     protected static boolean _requireQA    = false;                 // require clasqaDB check for run and event #'s
     protected static boolean _requireFC    = false;                 // require Fiducial cuts using event #'s and pid
     protected static boolean _match        = false;                 // require matching decay in MC (with same parent, specify this._parent if you want a specific parent)
@@ -81,7 +83,8 @@ public class Analysis {
         this._decay            = new ArrayList<Integer>(); this._decay.add(2212); this._decay.add(-211);
         this._mcdecay          = new ArrayList<Integer>(this._decay);
         this._parents          = new ArrayList<Integer>();
-        this._kinematics       = new Kinematics(this._constants, this._decay);
+        this._groups           = new ArrayList<ArrayList<Integer>>();
+        this._kinematics       = new Kinematics(this._constants, this._decay, this._groups);
         this._qaMethod         = new String("OkForAsymmetry");
         this._fiducialCuts     = new FiducialCuts();
         this._inPath           = new String("");
@@ -105,7 +108,8 @@ public class Analysis {
         this._decay            = decay;
         this._mcdecay          = new ArrayList<Integer>(this._decay);
         this._parents          = new ArrayList<Integer>();
-        this._kinematics       = new Kinematics(this._constants, this._decay);
+        this._groups           = new ArrayList<ArrayList<Integer>>();
+        this._kinematics       = new Kinematics(this._constants, this._decay, this._groups);
         this._qaMethod         = new String("OkForAsymmetry");
         this._fiducialCuts     = new FiducialCuts();
         this._inPath           = inPath;
@@ -133,7 +137,8 @@ public class Analysis {
         this._decay            = decay;
         this._mcdecay          = mcdecay;
         this._parents          = parents;
-        this._kinematics       = new Kinematics(this._constants, this._mcdecay);
+        this._groups           = new ArrayList<ArrayList<Integer>>();
+        this._kinematics       = new Kinematics(this._constants, this._mcdecay, this._groups);
         this._qaMethod         = new String("OkForAsymmetry");
         this._fiducialCuts     = new FiducialCuts();
         this._inPath           = inPath;
@@ -201,7 +206,7 @@ public class Analysis {
 
         this._decay = decay;
         Collections.sort(this._decay); //IMPORTANT: Combinations algorithm relies on this in Decays.groovy.
-        this._kinematics.setDecay(decay);
+        this._kinematics.setDecay(decay); //NOTE: Using unsorted decay here though.
     }
 
     /**
@@ -211,6 +216,37 @@ public class Analysis {
     protected ArrayList<Integer> getDecay() {
 
         return this._decay;
+    }
+
+    /**
+    * Set list of lists of indices in this._decay to group for kinematics.
+    * @param ArrayList<ArrayList<Integer>> groups
+    */
+    protected void setGroups(ArrayList<ArrayList<Integer>> groups) {
+
+        this._groups = groups;
+    }
+
+    /**
+    * Get list of lists of indices in this._decay to group for kinematics.
+    * @return ArrayList<ArrayList<Integer>> _groups
+    */
+    protected ArrayList<ArrayList<Integer>> getGroups() {
+
+        return this._groups;
+    }
+
+    /**
+    * Set list of Lund pids for decay.  Parent particle is always first.
+    * @param ArrayList<Integer> decay
+    */
+    protected void setDecayAndGroups(ArrayList<Integer> decay, ArrayList<ArrayList<Integer>> groups) {
+
+        this._decay = decay;
+        this._groups = groups;
+        Collections.sort(this._decay);      //IMPORTANT: Combinations algorithm relies on this in Decays.groovy.
+        this._kinematics.setDecay(decay);   //NOTE: Using unsorted decay here though.
+        this._kinematics.setGroups(groups);
     }
 
     /**
@@ -356,12 +392,30 @@ public class Analysis {
     }
 
     /**
-    * Access string array for names of default kinematic variables: Q2, nu, W, Walt x, xF, y, z, pT, phperp, mass.
+    * Access string array for names of default kinematic variables: eg. Q2, nu, W, y, x.
     * @return String[] _defaults
     */
     protected String[] getDefaults() {
 
         return this._kinematics.getDefaults();
+    }
+
+    /**
+    * Access string array for names of default individual particles' kinematics.
+    * @return String[] _ikin
+    */
+    protected String[] getIndivKin() {
+
+        return this._kinematics.getIndivKin();
+    }
+
+    /**
+    * Access string array for names of default grouped particles' kinematics.
+    * @return String[] _gkin
+    */
+    protected String[] getGroupKin() {
+
+        return this._kinematics.getGroupKin();
     }
 
     /**
