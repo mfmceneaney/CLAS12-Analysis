@@ -266,8 +266,6 @@ public class Kinematics {
         String[] ikin_init = ["z_", "xF_", "y_", "zeta_", "mx_", "phperp_","phi_h_"];
         String[] ikin = new String[ikin_init.size() * this._decay.size()];
 
-        //OLD: String[] arr = new String[this._defaults.length + ikin.size()];
-
         // Loop this._decay pids and individual kinematics names and add to keyset
         int k = 0;
         HashMap<Integer,Integer> pidCounts = new HashMap<Integer,Integer>();
@@ -284,12 +282,6 @@ public class Kinematics {
             }
         }
 
-        // // Reset this._defaults and this._ikin with added kinematics
-        // int i = 0;
-        // for (String defaults : this._defaults) { arr[i] = defaults; i++; }
-        // for (String kin : ikin) { arr[i] = kin; i++; }
-        // this._defaults = arr;
-
         // Reset this._ikin
         this._ikin     = ikin;
     }
@@ -304,8 +296,6 @@ public class Kinematics {
         String[] gkin_init = ["z_", "xF_", "y_", "zeta_", "mx_", "phperp_","phi_h_","mass_","alpha_","pT_"];
         String[] gkin = new String[gkin_init.size() * this._groups.size()];
         String[] ends = new String[this._decay.size()];
-
-        //OLD: String[] arr  = new String[this._defaults.length + gkin.size()];
 
         // Loop this._decay pids and get particle name endings
         int k = 0;
@@ -330,12 +320,6 @@ public class Kinematics {
                 l++;
             }
         }
-
-        // // Reset this._defaults and this._gkin with added kinematics
-        // int m = 0;
-        // for (String defaults : this._defaults) { arr[m] = defaults; m++; }
-        // for (String kin : gkin) { arr[m] = kin; m++; }
-        // this._defaults = arr;
 
         // Reset this._gkin
         this._gkin     = gkin;
