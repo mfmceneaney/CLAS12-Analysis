@@ -962,7 +962,9 @@ public class Kinematics {
 
         // Create particle list without parent for individual and group kinematics below
         ArrayList<DecayProduct> list_noparent = new ArrayList<DecayProduct>();
-        for (int i = 1; i<list.size(); i++) {list_noparent.add(list.get(i)); }
+        for (int i = 1; i<list.size(); i++) {
+            System.out.println("DEBUGGING i, p.pid() = "i+" "+list.get(i).pid()+"\n");//DEBUGGING
+        list_noparent.add(list.get(i)); }
 
         // Get individual and group kinematics if requested
         if (this._addIndivKin)  { this.getIndivKin(kinematics,list_noparent,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//TODO: Check this.
