@@ -261,7 +261,7 @@ public class Parser {
                 // Decay channel specification
                 case '-ch':
                     if (args.length<=2) { break; }
-                    // try {
+                    try {
                         String[] arr = args[i+1].replace(',',':').split(':'); //TODO: Make sure to change later instances!
 
                         // Get particle groups delimited with just commas
@@ -280,8 +280,8 @@ public class Parser {
                         analysis.setDecayAndGroups(pids,groups); //NOTE: Important to use this method since it sorts groups to match the decay.
                         if (args.contains('-mch'))  { analysis.setCombo(true); } // Use processComboEvents() method if both MC::Lund and REC::Particle channel are specified.
                         valid_opt = true; break;
-                    // }
-                    // catch (Exception exception) { return this.help(); }
+                    }
+                    catch (Exception exception) { return this.help(); }
 
                 // Parent channel specification
                 case '-pch':
