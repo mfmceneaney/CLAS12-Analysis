@@ -26,7 +26,7 @@ public class Kinematics {
     protected static ArrayList<ArrayList<Integer>> _groups;       // List of lists of grouped indices in this._decay
     protected static ArrayList<Integer>            _parents;      // List of parent Lund pids without parent particle from _decay
     protected static Constants                     _constants;
-    protected String[]                             _defaults = ["Q2", "nu", "y", "x", "W"]; //NOTE: OLD rest: "z", "xF", "pT", "phperp", "mass","mx"
+    protected String[]                             _defaults = ["Q2", "nu", "y", "x", "W", "Mh", "Mx"]; //NOTE: OLD rest: "z", "xF", "pT", "phperp", "mass","mx"
     protected String[]                             _ikin = [];         // List of individual particle kinematics
     protected String[]                             _gkin = [];         // List of individual particle kinematics
     protected HashMap<String,ConfigVar>            _configs;      // HashMap of name to lambda expression for computing
@@ -696,8 +696,9 @@ public class Kinematics {
             LorentzVector lv = p.lv();
             LorentzVector boostedLv = new LorentzVector(lv);
             boostedLv.boost(gNBoost);
-            LorentzVector lv_miss = new LorentzVector(gN);
+            LorentzVector lv_miss = new LorentzVector(gN); //NOTE: Missing mass should usually include scattered beam.
             lv_miss.sub(lv);
+            lv_miss.sub(lv_max);
 
             // Grab previously calculated kinematics
             double nu = kinematics.get("nu");
@@ -762,8 +763,9 @@ public class Kinematics {
             LorentzVector lv = new LorentzVector(lv_parent); //NOTE: Now set from parent lorentz vector and not looping through particles.
             LorentzVector boostedLv = new LorentzVector(lv);
             boostedLv.boost(gNBoost);
-            LorentzVector lv_miss = new LorentzVector(gN);
+            LorentzVector lv_miss = new LorentzVector(gN); //NOTE: Missing mass should usually include scattered beam.
             lv_miss.sub(lv);
+            lv_miss.sub(lv_max);
             
             // Grab previously calculated kinematics
             double nu = kinematics.get("nu");
@@ -852,6 +854,15 @@ public class Kinematics {
         HashMap<String, Double> kinematics = new HashMap<String, Double>();
         if (!this._require_e) { return kinematics; } //TODO: Does this still apply????? Return empty hashmap if don't require electron
 
+        // Loop and sum all final state particles' lorentz vectors
+        LorentzVector lv_parent = new LorentzVector(); double px = 0; double py = 0; double pz = 0; double en = 0;
+        for (int i=0; i<list.size(); i++) {
+            DecayProduct p = list.get(i);
+            if (!this._strict) { p.changePid(this._decay.get(i)); } //NOTE: Calculate with assumed mass unless strict option selected
+            px += p.px(); py += p.py(); pz += p.pz(); en += p.e();
+        }
+        lv_parent.setPxPyPzE(px,py,pz,en); //NOTE: for some reason lv_parent.add(lv) doesn't do what it's supposed to...it seems like it's boosting to some other frame in the process
+        
         // Set final state lorentz vectors
         LorentzVector lv_max    = beam.lv();
         LorentzVector lv_beam   = new LorentzVector(); lv_beam.setPxPyPzM(0.0, 0.0, Math.sqrt(Math.pow(this._constants.getBeamE(),2) - Math.pow(this._constants.getBeamM(),2)), this._constants.getBeamM()); // Assumes all energy is along pz...?
@@ -864,6 +875,9 @@ public class Kinematics {
         gNBoost.negative();
         LorentzVector boostedMax = new LorentzVector(lv_max);
         boostedMax.boost(gNBoost);
+        LorentzVector lv_miss = new LorentzVector(gN); //NOTE: Missing mass should usually include scattered beam.
+        lv_miss.sub(lv_parent);
+        lv_miss.sub(lv_max);
 
         // Compute SIDIS variables
         double Q2   = (-1) * (q.mass2());
@@ -871,7 +885,9 @@ public class Kinematics {
         double y    = q.e() / lv_beam.e();
         double x    = Q2 / (2 * this._constants.getTargetM() * nu);
         double W    = Math.sqrt(this._constants.getTargetM()*this._constants.getTargetM()+Q2 * (1 - x) / x);
-        double Walt = gN.mass();
+        // double Walt = gN.mass();
+        double Mh   = lv_parent.mass(); //NOTE: Hadronic mass of final state particles together
+        double Mx   = lv_miss.mass(); //NOTE: Missing mass of final state particles together
 
         // Add SIDIS variables to map
         kinematics.put("Q2",Q2); //TODO: How to make sure entries match up when mapping to TREE?????
@@ -879,6 +895,8 @@ public class Kinematics {
         kinematics.put("y",y);
         kinematics.put("x",x);
         kinematics.put("W",W);
+        kinematics.put("Mh",Mh);
+        kinematics.put("Mx",Mx);
 
         // Get individual and group kinematics if requested
         if (this._addIndivKin)  { this.getIndivKin(kinematics,list,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//TODO: Check this.
@@ -919,6 +937,9 @@ public class Kinematics {
         gNBoost.negative();
         LorentzVector boostedMax = new LorentzVector(lv_max);
         boostedMax.boost(gNBoost);
+        LorentzVector lv_miss = new LorentzVector(gN); //NOTE: Missing mass should usually include scattered beam.
+        lv_miss.sub(lv_parent);
+        lv_miss.sub(lv_max);
 
         // Compute SIDIS variables
         double Q2   = (-1) * (q.mass2());
@@ -926,7 +947,9 @@ public class Kinematics {
         double y    = q.e() / lv_beam.e();
         double x    = Q2 / (2 * this._constants.getTargetM() * nu);
         double W    = Math.sqrt(this._constants.getTargetM()*this._constants.getTargetM()+Q2 * (1 - x) / x);
-        double Walt = gN.mass();
+        // double Walt = gN.mass();
+        double Mh   = lv_parent.mass(); //NOTE: Hadronic mass of final state particles together
+        double Mx   = lv_miss.mass(); //NOTE: Missing mass of final state particles together 
 
         // Add SIDIS variables to map
         kinematics.put("Q2",Q2);
@@ -934,6 +957,8 @@ public class Kinematics {
         kinematics.put("y",y);
         kinematics.put("x",x);
         kinematics.put("W",W);
+        kinematics.put("Mh",Mh);
+        kinematics.put("Mx",Mx);
 
         // Create particle list without parent for individual and group kinematics below
         ArrayList<DecayProduct> list_noparent = new ArrayList<DecayProduct>();
