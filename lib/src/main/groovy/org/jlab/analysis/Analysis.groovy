@@ -971,7 +971,6 @@ public class Analysis {
                 if (l.size()==0) { continue; } // IMPORTANT!
                 HashMap<String, Double> kinematics = this._kinematics.processMCEvent(reader, event, l, decays.getParents());
                 if (kinematics.size()==0) { continue; } else { addedEvent = true; }
-                System.out.println("DEBUGGING: this._kinematics.processMCEvent() returns:\n"+kinematics);//DEBUGGING
                 ArrayList<Double> data = new ArrayList<Double>();
                 if (this._require_e) {
                     for (String key : this._kinematics.keySet()) { data.add(kinematics.get(key)); }
