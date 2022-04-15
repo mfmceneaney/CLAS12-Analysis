@@ -261,7 +261,7 @@ public class Parser {
                 // Decay channel specification
                 case '-ch':
                     if (args.length<=2) { break; }
-                    try {
+                    // try {
                         String[] arr = args[i+1].replace(',',':').split(':'); //TODO: Make sure to change later instances!
 
                         // Get particle groups delimited with just commas
@@ -273,16 +273,15 @@ public class Parser {
                             for (String pid : group) { list.add(k++); }
                             if (list.size()>1) groups.add(list);
                         }
-                        analysis.setGroups(groups);
 
                         // Get list of pids
                         ArrayList<Integer> pids = new ArrayList<Integer>();
                         for (String entry : arr) { int pid = Integer.parseInt(entry); pids.add(pid); }
-                        analysis.setDecay(pids);
+                        analysis.setDecayAndGroups(pids,groups); //NOTE: Important to use this method since it sorts groups to match the decay.
                         if (args.contains('-mch'))  { analysis.setCombo(true); } // Use processComboEvents() method if both MC::Lund and REC::Particle channel are specified.
                         valid_opt = true; break;
-                    }
-                    catch (Exception exception) { return this.help(); }
+                    // }
+                    // catch (Exception exception) { return this.help(); }
 
                 // Parent channel specification
                 case '-pch':
@@ -312,14 +311,13 @@ public class Parser {
                             for (String pid : group) { list.add(k++); }
                             if (list.size()>1) groups.add(list);
                         }
-                        analysis.setGroups(groups);
 
                         // Get list of pids
                         ArrayList<Integer> pids = new ArrayList<Integer>();
                         for (String entry : arr) { int pid = Integer.parseInt(entry); pids.add(pid); }
                         if (pids.size()==0) { return this.help(); }
-                        analysis.setMCDecay(pids);
-                        if (!args.contains("-ch")) { analysis.setDecay(pids); } //NOTE: just use analysis._decay object for simplicity if just looking in MC::Lund bank
+                        analysis.setMCDecay(pids);//TODO: May need set groups and decay here too...
+                        if (!args.contains("-ch")) { analysis.setDecayAndGroups(pids,groups); } //NOTE: just use analysis._decay object for simplicity if just looking in MC::Lund bank.  Also, it's important to use this method so that groups is sorted correctly.
                         if (args.contains('-ch'))  { analysis.setCombo(true); } // Use processComboEvents() method if both MC::Lund and REC::Particle channel are specified.
                         valid_opt = true; break;
                     }
