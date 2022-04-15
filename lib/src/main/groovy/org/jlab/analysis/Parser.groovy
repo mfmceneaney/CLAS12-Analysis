@@ -317,7 +317,7 @@ public class Parser {
                         for (String entry : arr) { int pid = Integer.parseInt(entry); pids.add(pid); }
                         if (pids.size()==0) { return this.help(); }
                         analysis.setMCDecay(pids);//TODO: May need set groups and decay here too...
-                        if (!args.contains("-ch")) { analysis.setDecayAndGroups(pids,groups); } //NOTE: just use analysis._decay object for simplicity if just looking in MC::Lund bank.  Also, it's important to use this method so that groups is sorted correctly.
+                        if (!args.contains("-ch")) { analysis.setDecayAndGroups(pids,groups); analysis.setUseMC(true); } //NOTE: just use analysis._decay object for simplicity if just looking in MC::Lund bank.  Also, it's important to use this method so that groups is sorted correctly.
                         if (args.contains('-ch'))  { analysis.setCombo(true); } // Use processComboEvents() method if both MC::Lund and REC::Particle channel are specified.
                         valid_opt = true; break;
                     }
