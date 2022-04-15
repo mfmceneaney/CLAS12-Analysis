@@ -246,14 +246,29 @@ public class Analysis {
     */
     protected void setDecayAndGroups(ArrayList<Integer> decay, ArrayList<ArrayList<Integer>> groups) {
 
-        this._decay = decay;
-        this._groups = groups;
+        // Sort groups so to match this._decays
+        LinkedHashMap<Integer, Integer> map = new LinkedHashMap<Integer, Integer>(); //NOTE: Maps pid to original index in decay.
+        int i = 0; for (int pid : decay) { map.put(pid,i); i++; }
+        map = map.sort(); //NOTE: Now same sorting as this._decays will have.  Reassignment is important!
+        LinkedHashMap<Integer, Integer> map2 = new LinkedHashMap<Integer, Integer>(); //NOTE: Maps old indices to new.
+        int k = 0; for (Integer index : map.values()) { map2.put(index,k); k++; }
+
+        // Replace old indices with new in groups
+        ArrayList<ArrayList<Integer>> sortedGroups = new ArrayList<ArrayList<Integer>>();
+        for (ArrayList<Integer> group : groups) {
+            ArrayList<Integer> sortedGroup = new ArrayList<Integer>();
+            for (Integer m : group) { sortedGroup.add(map2.get(m)); }
+            sortedGroups.add(sortedGroup);
+        }
+
+        // Reset groups and decays everywhere
+        this._groups = sortedGroups;
+        this._decay = decay
         Collections.sort(this._decay);      //IMPORTANT: Combinations algorithm relies on this in Decays.groovy.
-        this._kinematics.setDecay(decay);   //NOTE: Using unsorted decay here though.
-        this._kinematics.setGroups(groups);
+        this._kinematics.setDecay(this._decay);   //NOTE: Using unsorted decay here though.
         if (this._groups.size()>0) {
-            this._kinematics.setGroups(groups);
-            this._kinematics.setAddGroupKin(true);
+            this._kinematics.setGroups(this._groups);
+            this._kinematics.setAddGroupKin(true);//NOTE: This must occur after calling setGroups() above!
         }
     }
 
