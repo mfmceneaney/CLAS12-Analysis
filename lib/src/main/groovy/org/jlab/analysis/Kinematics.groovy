@@ -249,8 +249,9 @@ public class Kinematics {
 
     // Option for adding Lambda analysis variables
     protected void setAddLambdaKin(boolean addLambdaKin) {
+        if (!this._addGroupKin) return; //NOTE: Must be getting group kinematics to do this. //TODO: Generalize
         this._addLambdaKin = addLambdaKin;
-        String[] lkin = [ "alpha" , "costheta1" , "costheta2", "costheta1T", "costheta2T" , "col", "costhetab2b"]; String[] arr = new String[this._defaults.length + lkin.length];
+        String[] lkin = [ "costheta1" , "costheta2", "costheta1T", "costheta2T" ]; String[] arr = new String[this._defaults.length + lkin.length];
         int i = 0;
 	for (String defaults : this._defaults) { arr[i] = defaults; i++; }
 	for (String kin : lkin) { arr[i] = kin; i++; }
@@ -262,7 +263,7 @@ public class Kinematics {
 
         // Set string arrays for TNTuple entry names
         this._addIndivKin = addIndivKin;
-        String[] ikin_init = ["z_", "xF_", "y_", "zeta_", "mx_", "phperp_"];
+        String[] ikin_init = ["z_", "xF_", "y_", "zeta_", "mx_", "phperp_","phi_h_"];
         String[] ikin = new String[ikin_init.size() * this._decay.size()];
 
         //OLD: String[] arr = new String[this._defaults.length + ikin.size()];
@@ -300,7 +301,7 @@ public class Kinematics {
 
         // Set string arrays for TNTuple entry names
         this._addGroupKin = addGroupKin;
-        String[] gkin_init = ["z_", "xF_", "y_", "zeta_", "mx_", "phperp_","mass_"];
+        String[] gkin_init = ["z_", "xF_", "y_", "zeta_", "mx_", "phperp_","phi_h_","mass_","alpha_","pT_"];
         String[] gkin = new String[gkin_init.size() * this._groups.size()];
         String[] ends = new String[this._decay.size()];
 
@@ -560,41 +561,43 @@ public class Kinematics {
     }
 
     /**
-    * Compute additional kinematics particular to \Lambda Analysis 
+    * Compute additional kinematics particular to Lambda baryon analysis
     * but potentially useful for other two body decays.
     * @param HashMap<String, Double> kinematics
     * @param ArrayList<LorentzVector> lvList
     * @param LorentzVector lv_parent
     * @param LorentzVector q
+    * @param LorentzVector lv_beam
     */
-    protected void getLKVars(HashMap<String, Double> kinematics, ArrayList<LorentzVector> lvList, LorentzVector lv_parent, LorentzVector q) {
+    protected void getLambdaVars(HashMap<String, Double> kinematics, ArrayList<LorentzVector> lvList, LorentzVector lv_parent, LorentzVector q, LorentzVector lv_beam) {
 
         if (!this._addLambdaKin) { return; }
 
-        // Compute longitudinal momentum asymmetry alpha
-        double alpha = (double) 0.0; double sum = (double) 0.0;
-        double sign = 1; int i = 0;
-        for (LorentzVector lv : lvList) {
-            if (this._constants.getCharge(this._decay.get(i))<0) {sign = -1;}
-            alpha += sign * lv_parent.vect().dot(lv.vect())/lv_parent.vect().mag(); sum += lv_parent.vect().dot(lv.vect())/lv_parent.vect().mag(); i++;
-        }
-        alpha /= sum;
-
-        // set cos theta lorentz vectors
+        // Set up Lorentz vectors
         Vector3 boost = lv_parent.boostVector();
-        boost.negative();  
+        boost.negative();
+        LorentzVector boostedParent = new LorentzVector(lv_parent);
+        boostedParent.boost(boost);
+        LorentzVector boostedBeam = new LorentzVector(lv_beam);
+        boostedBeam.boost(boost);
         LorentzVector boostedPhoton = new LorentzVector(q);
         boostedPhoton.boost(boost);
-        Integer posPid = this._decay.get(1); for (Integer pid : this._decay) { if (this._constants.getCharge(pid)>0 && pid!=this._decay.get(0)) { posPid = pid; break; } } // Grab first positive particle in given decay particles for calculating costheta
-        LorentzVector boostedProton = new LorentzVector(lvList.get(this._decay.indexOf(posPid) - 1)); // IMPORTANT make a new one otherwise it modifies the list entry
+        LorentzVector boostedProton = new LorentzVector(lvList.get(1)); //TODO: Can assume this is always 2nd now???
         boostedProton.boost(boost);
+
+        // Get longitudinal lambda kinematics
         double costheta1 = boostedProton.vect().dot(lv_parent.vect()) / (boostedProton.vect().mag() * lv_parent.vect().mag());
         double costheta2 = boostedProton.vect().dot(boostedPhoton.vect()) / (boostedProton.vect().mag() * boostedPhoton.vect().mag());
-
-        kinematics.put("alpha",alpha);
         kinematics.put("costheta1",costheta1);
         kinematics.put("costheta2",costheta2);
 
+        // Get transverse lambda kinematics
+        Vector3 n1 = boostedBeam.vect().cross(boostedParent.vect());
+        Vector3 n2 = boostedPhoton.vect().cross(boostedParent.vect());
+        double costheta1T = boostedProton.vect().dot(n1) / (boostedProton.vect().mag() * boostedBeam.vect().mag() * boostedParent.vect().mag());
+        double costheta2T = boostedProton.vect().dot(n2) / (boostedProton.vect().mag() * boostedPhoton.vect().mag() * boostedParent.vect().mag());
+        kinematics.put("costheta1T",costheta1T);
+        kinematics.put("costheta2T",costheta2T);
     }
 
     /**
@@ -695,7 +698,7 @@ public class Kinematics {
     * @param LorentzVector gN
     * @param Vector3 gNBoost
     */
-    protected void getIndivKin(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, LorentzVector lv_target, LorentzVector q, LorentzVector gN, Vector3 gNBoost) {
+    protected void getIndivKin(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, LorentzVector lv_target, LorentzVector lv_beam, LorentzVector lv_max, LorentzVector q, LorentzVector gN, Vector3 gNBoost) {
         
         // Add individual hadron kinematics
         int k = 0;
@@ -724,6 +727,13 @@ public class Kinematics {
             double mx_     = lv_miss.mass();
             double phperp_ = lv.vect().cross(q.vect()).mag()/q.vect().mag();
 
+            // Get phi_h_ of momentum perpendicular to q relative to electron scattering plane
+            Vector3 nhat   = lv_max.vect().cross(lv_beam.vect());
+            Vector3 xhat   = nhat.cross(q.vect());
+            Vector3 p_perp = lv.vect().cross(q.vect()).cross(q.vect());
+            double phi_h_  = Math.acos(p_perp.dot(xhat)/(p_perp.mag()*xhat.mag()));
+            if (nhat.dot(p_perp)<0) phi_h_ = -phi_h_; //NOTE: Convert - angle for those stretching below scattering plane.
+
             // Add entries to kinematics map NOTE: The # of kinematics added here must exactly match the # set in this.setAddIndivKin() above.
             kinematics.put(this._ikin[k++],xF_);     //NOTE: x_Feynman
             kinematics.put(this._ikin[k++],z_);      //NOTE: z for individual hadron
@@ -731,6 +741,7 @@ public class Kinematics {
             kinematics.put(this._ikin[k++],zeta_);   //NOTE: E_h / E_target in gamma* - nucleon CoMass Frame
             kinematics.put(this._ikin[k++],mx_);     //NOTE: Missing mass
             kinematics.put(this._ikin[k++],phperp_); //NOTE: momentum of hadron perp to electron scattering plane
+            kinematics.put(this._ikin[k++],phi_h_);  //NOTE: Azimuthal angle of momentum perp to q relative to e eprime scattering plane.
         }
     }
 
@@ -743,7 +754,7 @@ public class Kinematics {
     * @param LorentzVector gN
     * @param Vector3 gNBoost
     */
-    protected void getGroupKin(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, LorentzVector lv_target, LorentzVector q, LorentzVector gN, Vector3 gNBoost) {
+    protected void getGroupKin(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, LorentzVector lv_target, LorentzVector lv_beam, LorentzVector lv_max, LorentzVector q, LorentzVector gN, Vector3 gNBoost) {
 
         int k = 0; //NOTE: counter for groups
         for (ArrayList<Integer> group : this._groups) { //NOTE: this._groups contains already sorted indices (indices to sorted this._decay) to access for each group.
@@ -782,15 +793,33 @@ public class Kinematics {
             double mx_     = lv_miss.mass();
             double phperp_ = lv.vect().cross(q.vect()).mag()/q.vect().mag();
 
-            // Get final state kinematics for parent
-            double mass_ = lv_parent.mass();
+            // Get phi_h_ of momentum perpendicular to q relative to electron scattering plane
+            Vector3 nhat   = lv_max.vect().cross(lv_beam.vect());
+            Vector3 xhat   = nhat.cross(q.vect());
+            Vector3 p_perp = lv_parent.vect().cross(q.vect()).cross(q.vect());
+            double phi_h_  = Math.acos(p_perp.dot(xhat)/(p_perp.mag()*xhat.mag()));
+            if (nhat.dot(p_perp)<0) phi_h_ = -phi_h_; //NOTE: Convert to - angle for those stretching below scattering plane.
+
+            // Get final state mass for parent
+            double mass_   = lv_parent.mass();
+
+            // Get longitudinal momentum asymmetry alpha
+            double alpha_ = (double) 0.0; double sum = (double) 0.0;
+            double sign = 1;
+            for (int i : group) {
+                DecayProduct p    = list.get(i);
+                if (!this._strict) { p.changePid(this._decay.get(i)); } //NOTE: Calculate with assumed mass unless strict option selected
+                LorentzVector lv_ = p.lv();
+                if (this._constants.getCharge(this._decay.get(i))<0) {sign = -1;}
+                alpha_ += sign * lv_parent.vect().dot(lv_.vect())/lv_parent.vect().mag();
+                sum += lv_parent.vect().dot(lv_.vect())/lv_parent.vect().mag();
+            }
+            alpha_ /= sum;
 
             // Get Transverse momentum relative to parent momentum
-            double pT = (double) 0.0;
-            for (LorentzVector lv_ : lvList) { pT += lv_parent.vect().cross(lv_.vect()).mag()/lv_parent.vect().mag(); } // for some reason using lvUnit.unit normalizes the parent vector
-            pT = pT / lvList.size();
-
-            //TODO: Get phi relative to electron scattering plane
+            double pT_ = (double) 0.0;
+            for (LorentzVector lv_ : lvList) { pT_ += lv_parent.vect().cross(lv_.vect()).mag()/lv_parent.vect().mag(); } // for some reason using lvUnit.unit normalizes the parent vector
+            pT_ = pT_ / lvList.size();
 
             // Add entries to kinematics map NOTE: The # of kinematics added here must exactly match the # set in this.setAddIndivKin() above.
             kinematics.put(this._gkin[k++],xF_);     //NOTE: x_Feynman
@@ -799,13 +828,13 @@ public class Kinematics {
             kinematics.put(this._gkin[k++],zeta_);   //NOTE: E_h / E_target in gamma* - nucleon CoMass Frame
             kinematics.put(this._gkin[k++],mx_);     //NOTE: Missing mass
             kinematics.put(this._gkin[k++],phperp_); //NOTE: momentum of hadron perp to electron scattering plane
+            kinematics.put(this._gkin[k++],phi_h_);  //NOTE: Azimuthal angle of momentum perp to q relative to e eprime scattering plane.
             kinematics.put(this._gkin[k++],mass_);   //NOTE: Invariant mass of grouped particles system
+            kinematics.put(this._gkin[k++],alpha_);  //NOTE: Longitudinal momentum asymmetry in CM frame (obviously not of parent)
+            kinematics.put(this._gkin[k++],pT_);     //NOTE: Average transverse momentum of decay products in CM frame (obviously not of parent)
             
-            //TODO: // Add Lambda kinematics if requested
-            // if (this._addLambdaKin) { this.getLambdaVars(kinematics,lvList); }
-
-            // // Add Dihadron kinematics if requested
-            // if (this._addDHKin) { this.getDHVars(kinematics,lvList); }
+            // Add Lambda kinematics if requested
+            if (this._addLambdaKin) { this.getLambdaVars(kinematics,lvList,lv_parent,q,lv_beam); }
 
         } // for (ArrayList<Integer> group : this._groups) {
     }
@@ -868,8 +897,8 @@ public class Kinematics {
         kinematics.put("W",W);
 
         // Get individual and group kinematics if requested
-        if (this._addIndivKin)  { this.getIndivKin(kinematics,list,lv_target,q,gN,gNBoost); }//TODO: Check this.
-        if (this._addGroupKin)  { this.getGroupKin(kinematics,list,lv_target,q,gN,gNBoost); }//TODO: Check this.
+        if (this._addIndivKin)  { this.getIndivKin(kinematics,list,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//TODO: Check this.
+        if (this._addGroupKin)  { this.getGroupKin(kinematics,list,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//TODO: Check this.
 
         return kinematics;
     }
@@ -927,8 +956,8 @@ public class Kinematics {
         for (int i = 1; i<list.size(); i++) {list_noparent.add(list.get(i)); }
 
         // Get individual and group kinematics if requested
-        if (this._addIndivKin)  { this.getIndivKin(kinematics,list_noparent,lv_target,q,gN,gNBoost); }//TODO: Check this.
-        if (this._addGroupKin)  { this.getGroupKin(kinematics,list_noparent,lv_target,q,gN,gNBoost); }//TODO: Check this.
+        if (this._addIndivKin)  { this.getIndivKin(kinematics,list_noparent,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//TODO: Check this.
+        if (this._addGroupKin)  { this.getGroupKin(kinematics,list_noparent,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//TODO: Check this.
 
         return kinematics;
     }
