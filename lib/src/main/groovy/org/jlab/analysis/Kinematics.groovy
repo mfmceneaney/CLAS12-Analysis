@@ -47,6 +47,7 @@ public class Kinematics {
     protected static boolean _addLambdaKin  = false;    // include special two particle decay kinematics from Lambda analysis
     protected static boolean _addIndivKin   = false;    // include individual kinematics
     protected static boolean _addGroupKin   = false;    // include grouped particles' kinematics
+    protected static boolean _addMxMomenta  = false;    // include px, py, pz from missing mass lorentz vector for exclusive analysis
 
     // built in lambdas
     protected ConfigVar _getEventNum = (HipoReader reader, Event event) -> {
@@ -246,6 +247,11 @@ public class Kinematics {
     protected boolean addStartTime() {return this._addStartTime;}
     protected void setAddRFTime(boolean addRFTime) {this._addRFTime = addRFTime; if (addRFTime) {this._configs.put("RFTime",this._getEventNum);} else {this._configs.remove("event");}}
     protected boolean addRFTime() {return this._addRFTime;}
+
+    protected void setAddMxMomenta(boolean addMxMomenta) {
+        this._addMxMomenta = addMxMomenta;
+        this._defaults = ["Q2", "nu", "y", "x", "W", "Mh", "Mx","px","py","pz"]; //NOTE: Make sure you change this too if you change the initial _defaults above!
+    }
 
     // Option for adding Lambda analysis variables
     protected void setAddLambdaKin(boolean addLambdaKin) {
@@ -899,6 +905,13 @@ public class Kinematics {
         kinematics.put("W",W);
         kinematics.put("Mh",Mh);
         kinematics.put("Mx",Mx);
+
+        // Add momenta from missing lv for exclusive analysis
+        if (this._addMxMomenta) {
+            kinematics.put("px",lv_miss.px());
+            kinematics.put("py",lv_miss.py());
+            kinematics.put("pz",lv_miss.pz());
+        }
 
         // Get individual and group kinematics if requested
         if (this._addIndivKin)  { this.getIndivKin(kinematics,list,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//TODO: Check this.
