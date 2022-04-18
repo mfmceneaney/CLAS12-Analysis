@@ -616,6 +616,7 @@ public class Analysis {
     protected void setExclusive(boolean require_ex) {
 
         this._require_ex = require_ex;
+        this._kinematics.setAddMxMomenta(require_ex); //NOTE: Adds px,py,pz for missing mass lorentz vector to output tree.
     }
 
     /**
@@ -635,11 +636,7 @@ public class Analysis {
     * @return boolean filter
     */
     protected boolean filter(ArrayList<DecayProduct> list) {
-        if (this._require_ex) {
-            for (DecayProduct p : list) {
-                if (!this._pid_filter.containsKey(p.pid())) { return false; }
-            }
-        }
+
         if (this._pid_filter.size()==0) { return true; }
         for (Integer key : this._pid_filter.keySet()){
             int count = 0; for (DecayProduct p : list) { if (p.pid()==key) { count += 1; } }
