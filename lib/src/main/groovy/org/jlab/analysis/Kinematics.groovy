@@ -720,8 +720,8 @@ public class Kinematics {
             if (nhat.dot(p_perp)<0) phi_h_ = -phi_h_; //NOTE: Convert - angle for those stretching below scattering plane.
 
             // Add entries to kinematics map NOTE: The # of kinematics added here must exactly match the # set in this.setAddIndivKin() above.
-            kinematics.put(this._ikin[k++],xF_);     //NOTE: x_Feynman
             kinematics.put(this._ikin[k++],z_);      //NOTE: z for individual hadron
+            kinematics.put(this._ikin[k++],xF_);     //NOTE: x_Feynman
             kinematics.put(this._ikin[k++],y_);      //NOTE: rapidity for individual hadron
             kinematics.put(this._ikin[k++],zeta_);   //NOTE: E_h / E_target in gamma* - nucleon CoMass Frame
             kinematics.put(this._ikin[k++],mx_);     //NOTE: Missing mass
@@ -734,7 +734,9 @@ public class Kinematics {
     * Compute additional particle correlation kinematics for particle groups.
     * @param HashMap<String, Double> kinematics
     * @param ArrayList<DecayProduct> list
-    * @param LorentzVector lv_parent
+    * @param LorentzVector lv_target
+    * @param LorentzVector lv_beam
+    * @param LorentzVector lv_max
     * @param LorentzVector q
     * @param LorentzVector gN
     * @param Vector3 gNBoost
@@ -808,8 +810,8 @@ public class Kinematics {
             pT_ = pT_ / lvList.size();
 
             // Add entries to kinematics map NOTE: The # of kinematics added here must exactly match the # set in this.setAddIndivKin() above.
-            kinematics.put(this._gkin[k++],xF_);     //NOTE: x_Feynman
             kinematics.put(this._gkin[k++],z_);      //NOTE: z for individual hadron
+            kinematics.put(this._gkin[k++],xF_);     //NOTE: x_Feynman
             kinematics.put(this._gkin[k++],y_);      //NOTE: rapidity for individual hadron
             kinematics.put(this._gkin[k++],zeta_);   //NOTE: E_h / E_target in gamma* - nucleon CoMass Frame
             kinematics.put(this._gkin[k++],mx_);     //NOTE: Missing mass
