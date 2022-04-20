@@ -975,6 +975,13 @@ public class Kinematics {
         kinematics.put("Mh",Mh);
         kinematics.put("Mx",Mx);
 
+        // Add momenta from missing lv for exclusive analysis
+        if (this._addMxMomenta) {
+            kinematics.put("px",lv_miss.px());
+            kinematics.put("py",lv_miss.py());
+            kinematics.put("pz",lv_miss.pz());
+        }
+
         // Get individual and group kinematics if requested
         if (this._addIndivKin)  { this.getIndivKin(kinematics,list,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//TODO: Check this.
         if (this._addGroupKin)  { this.getGroupKin(kinematics,list,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//TODO: Check this.
