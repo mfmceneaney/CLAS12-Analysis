@@ -80,7 +80,7 @@ public class Analysis {
     public Analysis() {
 
         this._constants        = new ExtendedConstants(); // If you know you don't need to look at decays just the particles in the recon banks you can just use the base Constants Class.
-        this._decay            = new ArrayList<Integer>(); this._decay.add(2212); this._decay.add(-211);
+        this._decay            = new ArrayList<Integer>(); this._decay.add(-211); this._decay.add(2212);
         this._mcdecay          = new ArrayList<Integer>(this._decay);
         this._parents          = new ArrayList<Integer>();
         this._groups           = new ArrayList<ArrayList<Integer>>();
@@ -761,6 +761,7 @@ public class Analysis {
 
         this._match   = match;
         this._mcdecay = new ArrayList<Integer>(this._decay);
+        Collections.sort(this._mcdecay); //NOTE: This is important!  Also, this._decay should be sorted later if not already.
     }
 
     /**
