@@ -163,7 +163,7 @@ public class MCDecays {
                 DecayProduct p = this._particleList.get(j);
                 if (p.pid()==pid) {
                     if (this._pidList.size()>0 && this._parents.size()!=0) {
-                        if (this._pidList.get(this._pidList.size()-1).parent()!=p.parent()) { continue; } //IMPORTANT: Check that daughters in decay all have same parent.
+                        // if (this._pidList.get(this._pidList.size()-1).parent()!=p.parent()) { continue; } //IMPORTANT: Check that daughters in decay all have same parent.
                     }
                     this._pidList.add(p); 
                 }
@@ -184,7 +184,7 @@ public class MCDecays {
                 DecayProduct p = this._particleList.get(j);
                 if (p.pid()==pid) {
                     if (this._parPidList.size()>0 && this._decay.size()!=0) {
-                        if (this._parPidList.get(this._parPidList.size()-1).parent()!=p.parent()) { continue; } //IMPORTANT: Check that parents all have same daughter.
+                        // if (this._parPidList.get(this._parPidList.size()-1).parent()!=p.parent()) { continue; } //IMPORTANT: Check that parents all have same daughter.
                     }
                     this._parPidList.add(p);
                 }
@@ -405,7 +405,7 @@ public class MCDecays {
                 DecayProduct p = this._particleList.get(j);
                 if (p.charge()==charge) {
                     if (this._chargeList.size()>0 && this._parCharges.size()!=0) {
-                        if (this._chargeList.get(this._chargeList.size()-1).parent()!=p.parent()) { continue; } //IMPORTANT: Check that daughters in decay all have same parent.
+                        // if (this._chargeList.get(this._chargeList.size()-1).parent()!=p.parent()) { continue; } //IMPORTANT: Check that daughters in decay all have same parent.
                     }
                     this._chargeList.add(p); 
                 }
@@ -426,7 +426,7 @@ public class MCDecays {
                 DecayProduct p = this._particleList.get(j);
                 if (p.charge()==charge) {
                     if (this._parChargeList.size()>0 && this._charges.size()!=0) {
-                        if (this._parChargeList.get(this._parChargeList.size()-1).parent()!=p.parent()) { continue; } //IMPORTANT: Check that parents all have same daughter.
+                        // if (this._parChargeList.get(this._parChargeList.size()-1).parent()!=p.parent()) { continue; } //IMPORTANT: Check that parents all have same daughter.
                     }
                     this._parChargeList.add(p);
                 }
