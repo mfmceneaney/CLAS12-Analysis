@@ -159,7 +159,7 @@ public class MCDecays {
         for (int i=0; i<this._decay.size(); i++) {
             int pid = this._decay.get(i);
             if (i!=0) { if (pid == this._decay.get(i-1)) { continue; } } //IMPORTANT: Just get unique entries.  This relies on the fact that decays is sorted!
-            for (int j=0; j<this._particleList.size(); j++) {
+            for (int j=3; j<this._particleList.size(); j++) { // NOTE: For MC Decays incoming electron, target, virtual photon, and scattered electron are always first so start and j = 3.
                 DecayProduct p = this._particleList.get(j);
                 if (p.pid()==pid) {
                     if (this._pidList.size()>0 && this._parents.size()!=0) {
@@ -289,7 +289,7 @@ public class MCDecays {
         if (this._parComboPidList.size()!=0) { return this._parComboPidList; }
         if (this._parPidList.size()==0) { this.setParPidList(); }
         ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>();
-        setParComboPidList(0,this._parPidList,newlist);
+        setParComboPidList(0,this._parPidList,newlist);        
         return this._parComboPidList;
     }
 
@@ -314,6 +314,7 @@ public class MCDecays {
                 boolean flag = true;
                 for (int i=0; i<check.size(); i++) {
                     if (combo.get(i).parent()!=check.get(size>1 ? i : 0).index() && check.get(size>1 ? i : 0).pid()!=0) { flag = false; break; } //NOTE: zero particles in check correspond to zero pid entry in this._parents where mother matching doesn't matter
+                    if (size==1 && i>0) { if (combo.get(i-1).parent()!=combo.get(i).parent()) { flag = false; break; } } //NOTE: If only one parent provided, check that all decay particles come from same parent.
                 }
                 if (flag) { checkedComboPidList.add(addList); }
             }
@@ -401,7 +402,7 @@ public class MCDecays {
         for (int i=0; i<this._charges.size(); i++) {
             int charge = this._charges.get(i);
             if (i!=0) { if (charge == this._charges.get(i-1)) { continue; } } //IMPORTANT: Just get unique entries.  This relies on the fact that decays is sorted!
-            for (int j=0; j<this._particleList.size(); j++) {
+            for (int j=3; j<this._particleList.size(); j++) { // NOTE: For MC Decays incoming electron, target, virtual photon, and scattered electron are always first so start and j = 3.
                 DecayProduct p = this._particleList.get(j);
                 if (p.charge()==charge) {
                     if (this._chargeList.size()>0 && this._parCharges.size()!=0) {
