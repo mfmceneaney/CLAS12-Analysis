@@ -244,6 +244,16 @@ public class MCDecays {
     */
     protected void setParComboPidList(int dIndex, ArrayList<DecayProduct> plist, ArrayList<DecayProduct> oldlist) {
 
+        //NOTE: Add zero particle if this._parents(dIndex) is zero and continue at same place in plist.
+        if (this._parents.get(dIndex)==0) {
+            DecayProduct p = new DecayProduct(0,0,0,0,0,0,0,-1,-1,0);
+            ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>(oldlist); // IMPORTANT: declare new list
+            newlist.add(p);
+            ArrayList<DecayProduct> newplist = new ArrayList<DecayProduct>(plist); // IMPORTANT: declare new list AND do NOT shorten
+            if (dIndex == this._parents.size()-1) { this._parComboPidList.add(newlist); } //Important: -1!
+            else { setParComboPidList(dIndex+1,newplist,newlist); }
+        }
+
         for (int pIndex=0; pIndex<plist.size(); pIndex++) {
             DecayProduct p = plist.get(pIndex);
             if (this._parents.get(dIndex)!=p.pid()) { continue; } //
@@ -280,7 +290,6 @@ public class MCDecays {
         if (this._parPidList.size()==0) { this.setParPidList(); }
         ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>();
         setParComboPidList(0,this._parPidList,newlist);
-
         return this._parComboPidList;
     }
 
@@ -296,9 +305,17 @@ public class MCDecays {
         ArrayList<ArrayList<DecayProduct>> checkedComboPidList = new ArrayList<ArrayList<DecayProduct>>();
         if (this._parents.size()==0) { return checkedComboPidList; }
         for (ArrayList<DecayProduct> combo : this.getComboPidList()) {
-            for (ArrayList<DecayProduct> check : this.getParComboPidList()) {
-                ArrayList<DecayProduct> addList = new ArrayList<DecayProduct>(combo);
-                if (combo.get(0).parent()==check.get(0).index()) { checkedComboPidList.add(addList); }
+            for (ArrayList<DecayProduct> check : this.getParComboPidList()) { //NOTE: Empty particles added at 0 pids.
+                ArrayList<DecayProduct> addList = new ArrayList<DecayProduct>(combo); //TODO: Add grouping for pid/index checks.
+                //OLD: if (check.size()==1) {if (combo.get(0).parent()==check.get(0).index()) { checkedComboPidList.add(addList); } }
+                
+                //NOTE: Check that all parents match daughters at each index
+                int size = check.size();
+                boolean flag = true;
+                for (int i=0; i<check.size(); i++) {
+                    if (combo.get(i).parent()!=check.get(size>1 ? i : 0).index() && check.get(size>1 ? i : 0).pid()!=0) { flag = false; break; } //NOTE: zero particles in check correspond to zero pid entry in this._parents where mother matching doesn't matter
+                }
+                if (flag) { checkedComboPidList.add(addList); }
             }
          }
 
