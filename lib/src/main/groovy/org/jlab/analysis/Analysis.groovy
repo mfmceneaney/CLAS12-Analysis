@@ -207,6 +207,7 @@ public class Analysis {
         this._decay = decay;
         Collections.sort(this._decay); //IMPORTANT: Combinations algorithm relies on this in Decays.groovy.
         this._kinematics.setDecay(decay); //NOTE: Using unsorted decay here though.
+        if (this._match) this.setMatch(this._match); //NOTE: Reset after setting decay
     }
 
     /**
@@ -270,6 +271,7 @@ public class Analysis {
             this._kinematics.setGroups(this._groups);
             this._kinematics.setAddGroupKin(true);//NOTE: This must occur after calling setGroups() above!
         }
+        if (this._match) this.setMatch(this._match); //NOTE: Reset after setting decay
     }
 
     /**
