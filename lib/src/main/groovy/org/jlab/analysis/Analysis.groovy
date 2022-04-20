@@ -28,23 +28,24 @@ import clasqa.QADB;
 
 public class Analysis {
 
-    protected Constants                     _constants;
-    protected ArrayList<Integer>            _decay;         //OLD: If you pass this to a Decays object make sure the parent pid is first.
-    protected ArrayList<Integer>            _mcdecay;       //OLD: If you pass this to a Decays object make sure the parent pid is first.
-    protected ArrayList<Integer>            _parents;       //OLD: Only contains pids for the parents of the parent in _decay.  DO NOT double enter parent pid.
-    protected ArrayList<ArrayList<Integer>> _groups;        //NOTE: Make sure the index ordering matches that for this._decay since this._decay must be sorted.
-    protected Kinematics                    _kinematics;
-    protected QADB                          _qa;
-    protected String                        _qaMethod;
-    protected FiducialCuts                  _fiducialCuts;
-    protected String                        _inPath;
-    protected String                        _outPath;
-    protected ROOTFile                      _outFile;
-    protected TNtuple                       _tuple;
-    protected String                        _treeName;
-    protected String                        _tupleNames;
-    protected int                           _event_counter;
-    protected int                           _data_counter;
+    protected Constants                      _constants;
+    protected ArrayList<Integer>             _decay;         //OLD: If you pass this to a Decays object make sure the parent pid is first.
+    protected ArrayList<Integer>             _mcdecay;       //OLD: If you pass this to a Decays object make sure the parent pid is first.
+    protected ArrayList<Integer>             _parents;       //OLD: Only contains pids for the parents of the parent in _decay.  DO NOT double enter parent pid.
+    protected ArrayList<ArrayList<Integer>>  _groups;        //NOTE: Make sure the index ordering matches that for this._decay since this._decay must be sorted.
+    protected LinkedHashMap<Integer,Integer> _decaymap;      //NOTE: Maps indices from unsorted decay to sorted decay for matching with this._groups and this._parents
+    protected Kinematics                     _kinematics;
+    protected QADB                           _qa;
+    protected String                         _qaMethod;
+    protected FiducialCuts                   _fiducialCuts;
+    protected String                         _inPath;
+    protected String                         _outPath;
+    protected ROOTFile                       _outFile;
+    protected TNtuple                        _tuple;
+    protected String                         _treeName;
+    protected String                         _tupleNames;
+    protected int                            _event_counter;
+    protected int                            _data_counter;
 
 	// Options
 	protected static int     _n_files      = 10; 					// max number of files to analyze
@@ -204,6 +205,14 @@ public class Analysis {
     */
     protected void setDecay(ArrayList<Integer> decay) {
 
+        // Create map for matching to the sorted this._decays
+        LinkedHashMap<Integer, Integer> map = new LinkedHashMap<Integer, Integer>(); //NOTE: Maps pid to original index in decay.
+        int i = 0; for (int pid : decay) { map.put(pid,i); i++; }
+        map = map.sort(); //NOTE: Now same sorting as this._decays will have.  Reassignment is important!
+        LinkedHashMap<Integer, Integer> map2 = new LinkedHashMap<Integer, Integer>(); //NOTE: Maps old indices to new.
+        int k = 0; for (Integer index : map.values()) { map2.put(index,k); k++; }
+        this._decaymap = map2;
+
         this._decay = decay;
         Collections.sort(this._decay); //IMPORTANT: Combinations algorithm relies on this in Decays.groovy.
         this._kinematics.setDecay(decay); //NOTE: Using unsorted decay here though.
@@ -253,14 +262,23 @@ public class Analysis {
         map = map.sort(); //NOTE: Now same sorting as this._decays will have.  Reassignment is important!
         LinkedHashMap<Integer, Integer> map2 = new LinkedHashMap<Integer, Integer>(); //NOTE: Maps old indices to new.
         int k = 0; for (Integer index : map.values()) { map2.put(index,k); k++; }
+        this._decaymap = map2;
 
         // Replace old indices with new in groups
         ArrayList<ArrayList<Integer>> sortedGroups = new ArrayList<ArrayList<Integer>>();
         for (ArrayList<Integer> group : groups) {
             ArrayList<Integer> sortedGroup = new ArrayList<Integer>();
-            for (Integer m : group) { sortedGroup.add(map2.get(m)); }
+            for (Integer m : group) { sortedGroup.add(this._decaymap.get(m)); }
             sortedGroups.add(sortedGroup);
         }
+
+        // Order this._parents if already set //TODO: Fix this: -> //NOTE: This needs to be set after already setting this._parent.
+        if (this._parents.size()==this._decay.size() && this._decay.size()>0) {
+            ArrayList<Integer> sortedParents = new ArrayList<Integer>();
+            for (Integer m : this._decaymap.values()) { sortedParents.add(this._parents.get(this._decaymap.get(m))); }        
+            this._parents = sortedParents; //NOTE: Copied these 2 lines from this.setParents();
+            this._kinematics.setParents(sortedParents);
+        }   
 
         // Reset groups and decays everywhere
         this._groups = sortedGroups;
@@ -300,8 +318,8 @@ public class Analysis {
     */
     protected void setParents(ArrayList<Integer> parents) {
 
-        this._parents = parents;
-        this._kinematics.setParents(parents);
+            this._parents = parents;
+            this._kinematics.setParents(parents);
     }
 
     /**
