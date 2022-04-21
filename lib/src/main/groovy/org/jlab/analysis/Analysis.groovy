@@ -255,13 +255,16 @@ public class Analysis {
     * @param ArrayList<Integer> decay
     */
     protected void setDecayAndGroups(ArrayList<Integer> decay, ArrayList<ArrayList<Integer>> groups) {
-
-        // Sort groups so to match this._decays
-        LinkedHashMap<Integer, Integer> map = new LinkedHashMap<Integer, Integer>(); //NOTE: Maps pid to original index in decay.
-        int i = 0; for (int pid : decay) { map.put(pid,i); i++; }
+        
+        // Sort groups so to match this._decays //NOTE: FIXED DUPLICATE KEYS ISSUE WITH GROUPS
+        LinkedHashMap<Integer, ArrayList<Integer>> map = new LinkedHashMap<Integer, ArrayList<Integer>>(); //NOTE: Maps pid to original index in decay.
+        int i = 0; for (int pid : decay) { 
+            if (map.containsKey(pid)) { ArrayList<Integer> l = new ArrayList<Integer>(map.get(pid)); l.add(i); map.put(pid,l); i++; } //NOTE: Not sure if this will modify in place the list at key==pid
+            else { ArrayList<Integer> l = new ArrayList<Integer>(); l.add(i); map.put(pid,l); i++; }
+        }
         map = map.sort(); //NOTE: Now same sorting as this._decays will have.  Reassignment is important!
         LinkedHashMap<Integer, Integer> map2 = new LinkedHashMap<Integer, Integer>(); //NOTE: Maps old indices to new.
-        int k = 0; for (Integer index : map.values()) { map2.put(index,k); k++; }
+        int k = 0; for (ArrayList<Integer> list : map.values()) { for (Integer index : list) { map2.put(index,k); k++; } }
         this._decaymap = map2;
 
         // Replace old indices with new in groups
@@ -273,9 +276,12 @@ public class Analysis {
         }
 
         // Order this._parents if already set //TODO: Fix this: -> //NOTE: This needs to be set after already setting this._parent.
+        ArrayList<Integer> reducedSortedParents = new ArrayList<Integer>();
         if (this._parents.size()==this._decay.size() && this._decay.size()>0) {
+
+            // Sort parents
             ArrayList<Integer> sortedParents = new ArrayList<Integer>();
-            for (Integer m : this._decaymap.values()) { sortedParents.add(this._parents.get(this._decaymap.get(m))); }        
+            for (Integer m : this._decaymap.values()) { sortedParents.add(this._parents.get(this._decaymap.get(m))); }
             this._parents = sortedParents; //NOTE: Copied these 2 lines from this.setParents();
             this._kinematics.setParents(sortedParents);
         }   
