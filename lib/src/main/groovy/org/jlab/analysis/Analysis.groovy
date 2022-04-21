@@ -277,7 +277,7 @@ public class Analysis {
 
         // Order this._parents if already set //TODO: Fix this: -> //NOTE: This needs to be set after already setting this._parent.
         ArrayList<Integer> reducedSortedParents = new ArrayList<Integer>();
-        if (this._parents.size()==this._decay.size() && this._decay.size()>0) {
+        if (this._parents.size()==decay.size() && decay.size()>0) { //NOTE: FIXED this._decay to decay since this._decay not yet reset.
 
             // Sort parents
             ArrayList<Integer> sortedParents = new ArrayList<Integer>();
