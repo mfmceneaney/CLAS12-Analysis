@@ -281,7 +281,9 @@ public class Analysis {
 
             // Sort parents
             ArrayList<Integer> sortedParents = new ArrayList<Integer>();
-            for (Integer m : this._decaymap.values()) { sortedParents.add(this._parents.get(this._decaymap.get(m))); }
+            LinkedHashMap<Integer, Integer> inverseDecaymap = new LinkedHashMap<Integer, Integer>(); //NOTE: FIXED mapping here
+            for (Integer key : this._decaymap.keySet()) { inverseDecaymap.put(this._decaymap.get(key),key); }
+            for (Integer m : inverseDecaymap.keySet()) { sortedParents.add(this._parents.get(inverseDecaymap.get(m))); }
             this._parents = sortedParents; //NOTE: Copied these 2 lines from this.setParents();
             this._kinematics.setParents(sortedParents);
         }   
