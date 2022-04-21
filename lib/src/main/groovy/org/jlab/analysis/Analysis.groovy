@@ -723,7 +723,6 @@ public class Analysis {
     */
     protected void setLambdaKin(boolean LK) {
 
-        if (!this._decay.size()==2) { return; }
         this._lambdaKin = LK;
         this._kinematics.setAddLambdaKin(LK);
     }
