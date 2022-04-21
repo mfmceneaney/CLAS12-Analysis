@@ -988,7 +988,7 @@ public class Analysis {
             this._event_counter += 1;
 
             // Read needed banks only once!
-            MCDecays decays = new MCDecays(this._decay,this._parents,reader,event,this._constants);
+            MCDecays decays = new MCDecays(this._decay,this._parents,this._groups,reader,event,this._constants);
 
             // Check for event pid tag if requested
             if (this._require_tag) {
@@ -1091,7 +1091,7 @@ public class Analysis {
             // Read needed banks only once!
             if (this._requireFC) { this._FC.setArrays(reader,event); }
             Decays decays     = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC); // Fiducial cuts implemented in Decays object
-            MCDecays mcdecays = new MCDecays(this._mcdecay,this._parents,reader,event,this._constants);
+            MCDecays mcdecays = new MCDecays(this._mcdecay,this._parents,this._groups,reader,event,this._constants);
 
             // Check for event pid tag and filters if requested
             if (this._require_tag) {
@@ -1206,7 +1206,7 @@ public class Analysis {
             // Read needed banks only once!
             if (this._requireFC) { this._FC.setArrays(reader,event); }
             Decays decays     = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC); // Fiducial cuts implemented in Decays object
-            MCDecays mcdecays = new MCDecays(this._mcdecay,this._parents,reader,event,this._constants);
+            MCDecays mcdecays = new MCDecays(this._mcdecay,this._parents,this._groups,reader,event,this._constants);
 
             // Check for event pid tag if requested
             if (this._require_tag) {
