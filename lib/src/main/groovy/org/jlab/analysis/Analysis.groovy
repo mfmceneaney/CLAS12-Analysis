@@ -285,6 +285,23 @@ public class Analysis {
             for (Integer key : this._decaymap.keySet()) { inverseDecaymap.put(this._decaymap.get(key),key); }
             for (Integer m : inverseDecaymap.keySet()) { sortedParents.add(this._parents.get(inverseDecaymap.get(m))); }
             this._parents = sortedParents; //NOTE: Copied these 2 lines from this.setParents();
+
+            // Now reduce parents according to groups: i.e. if you have same repeated parent pids not zero assume they all refer to the same parent
+            reducedSortedParents = new ArrayList<Integer>(sortedParents);
+            ArrayList<Integer> indicesToRemove = new ArrayList<Integer>();
+            for (ArrayList<Integer> group : sortedGroups) {
+                Integer pid0 = 0;
+                boolean flag = true;
+                for (int j=0; j<group.size(); j++) {
+                    Integer index = group.sort().get(j);
+                    Integer pid = sortedParents.get(index);
+                    if (j==0) { pid0=pid; }
+                    else if (pid==pid0) { indicesToRemove.add(index); }
+                }
+            }
+            for (Integer m : indicesToRemove.sort().reverse()) { reducedSortedParents.remove(m); } //NOTE: Remove after in descending order so you don't mess up later indices to remove.
+            
+            // Add parents to kinematics object
             this._kinematics.setParents(sortedParents);
         }   
 
