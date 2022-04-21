@@ -22,6 +22,7 @@ public class MCDecays {
     protected ArrayList<Integer>                 _decay;        // List of Lund pids with first entry as parent particle
     protected ArrayList<Integer>                 _charges;      // Mirrors this._decay but with corresponding electric charges in [e]
     protected ArrayList<Integer>                 _parents;      // List of Lund pids for parents of parent, just empty if nothing to check
+    protected ArrayList<ArrayList<Integer>>      _groups;       // List of Lund pids for parents of parent, just empty if nothing to check
     protected ArrayList<Integer>                 _parCharges;   // Mirrors this._parents but with corresponding electric charges in [e]
     protected HipoReader                         _reader;
     protected Event                              _event;
@@ -46,10 +47,11 @@ public class MCDecays {
     * @param Event event
     * @param Constants constants
     */
-    public MCDecays(ArrayList<Integer> decay, ArrayList<Integer> parents, HipoReader reader, Event event, Constants constants) {
+    public MCDecays(ArrayList<Integer> decay, ArrayList<Integer> parents, ArrayList<ArrayList<Integer>> groups, HipoReader reader, Event event, Constants constants) {
 
         this._decay     = decay;
         this._parents   = parents;
+        this._groups    = groups;
         this._reader    = reader;
         this._event     = event;
 	    this._schema    = this._reader.getSchemaFactory().getSchema("MC::Lund");
