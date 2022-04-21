@@ -300,7 +300,8 @@ public class Analysis {
                 }
             }
             for (Integer m : indicesToRemove.sort().reverse()) { reducedSortedParents.remove(m); } //NOTE: Remove after in descending order so you don't mess up later indices to remove.
-            
+            sortedParents = new ArrayList<Integer>(reducedSortedParents); //NOTE: Reassign!
+
             // Add parents to kinematics object
             this._kinematics.setParents(sortedParents);
         }   
