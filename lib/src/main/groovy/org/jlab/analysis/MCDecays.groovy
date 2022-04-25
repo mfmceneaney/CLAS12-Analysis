@@ -22,7 +22,7 @@ public class MCDecays {
     protected ArrayList<Integer>                 _decay;        // List of Lund pids with first entry as parent particle
     protected ArrayList<Integer>                 _charges;      // Mirrors this._decay but with corresponding electric charges in [e]
     protected ArrayList<Integer>                 _parents;      // List of Lund pids for parents of parent, just empty if nothing to check
-    protected ArrayList<ArrayList<Integer>>      _groups;       // List of Lund pids for parents of parent, just empty if nothing to check
+    protected ArrayList<Integer>                 _dpMap;       // Maps indices in this._decay to corresponding indices of parent in this._parents
     protected ArrayList<Integer>                 _parCharges;   // Mirrors this._parents but with corresponding electric charges in [e]
     protected HipoReader                         _reader;
     protected Event                              _event;
@@ -47,11 +47,11 @@ public class MCDecays {
     * @param Event event
     * @param Constants constants
     */
-    public MCDecays(ArrayList<Integer> decay, ArrayList<Integer> parents, ArrayList<ArrayList<Integer>> groups, HipoReader reader, Event event, Constants constants) {
+    public MCDecays(ArrayList<Integer> decay, ArrayList<Integer> parents, ArrayList<Integer> dpMap, HipoReader reader, Event event, Constants constants) {
 
         this._decay     = decay;
         this._parents   = parents;
-        this._groups    = groups;
+        this._dpMap     = dpMap;
         this._reader    = reader;
         this._event     = event;
 	    this._schema    = this._reader.getSchemaFactory().getSchema("MC::Lund");
@@ -311,11 +311,11 @@ public class MCDecays {
                 ArrayList<DecayProduct> addList = new ArrayList<DecayProduct>(combo); //TODO: Add grouping for pid/index checks.
                 //OLD: if (check.size()==1) {if (combo.get(0).parent()==check.get(0).index()) { checkedComboPidList.add(addList); } }
                 
-                //NOTE: Check that all parents match daughters at each index
+                //NOTE: Check that all parents match daughters at each index using parent daughter index map from instantiation
                 int size = check.size();
                 boolean flag = true;
-                for (int i=0; i<check.size(); i++) {
-                    if (combo.get(i).parent()!=check.get(size>1 ? i : 0).index() && check.get(size>1 ? i : 0).pid()!=0) { flag = false; break; } //NOTE: zero particles in check correspond to zero pid entry in this._parents where mother matching doesn't matter
+                for (int i=0; i<this._dpMap.size(); i++) {
+                    if (combo.get(i).parent()!=check.get(size>1 ? this._dpMap.get(i) : 0).index() && check.get(size>1 ? this._dpMap.get(i) : 0).pid()!=0) { flag = false; break; } //NOTE: zero particles in check correspond to zero pid entry in this._parents where mother matching doesn't matter
                     if (size==1 && i>0) { if (combo.get(i-1).parent()!=combo.get(i).parent()) { flag = false; break; } } //NOTE: If only one parent provided, check that all decay particles come from same parent.
                 }
                 if (flag) { checkedComboPidList.add(addList); }
