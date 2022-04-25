@@ -231,7 +231,7 @@ public class MCDecays {
             ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>(oldlist); // IMPORTANT: declare new list
             newlist.add(p);
             ArrayList<DecayProduct> newplist = new ArrayList<DecayProduct>(plist); // IMPORTANT: declare new list
-            newplist = newplist.subList(pIndex,newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._decay and this._pidList are sorted)
+            newplist = newplist.subList(Math.min(pIndex+1,newplist.size()),newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._decay and this._pidList are sorted)
             if (dIndex == this._decay.size()-1) { this._comboPidList.add(newlist); } //Important: -1!
             else { setComboPidList(dIndex+1,newplist,newlist); }
         }
@@ -262,7 +262,7 @@ public class MCDecays {
             ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>(oldlist); // IMPORTANT: declare new list
             newlist.add(p);
             ArrayList<DecayProduct> newplist = new ArrayList<DecayProduct>(plist); // IMPORTANT: declare new list
-            newplist = newplist.subList(pIndex,newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._decay and this._pidList are sorted)
+            newplist = newplist.subList(Math.min(pIndex+1,newplist.size()),newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._decay and this._pidList are sorted)
             if (dIndex == this._parents.size()-1) { this._parComboPidList.add(newlist); } //Important: -1!
             else { setParComboPidList(dIndex+1,newplist,newlist); }
         }
@@ -291,7 +291,8 @@ public class MCDecays {
         if (this._parComboPidList.size()!=0) { return this._parComboPidList; }
         if (this._parPidList.size()==0) { this.setParPidList(); }
         ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>();
-        setParComboPidList(0,this._parPidList,newlist);        
+        setParComboPidList(0,this._parPidList,newlist);
+        
         return this._parComboPidList;
     }
 
@@ -474,7 +475,7 @@ public class MCDecays {
             ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>(oldlist); // IMPORTANT: declare new list
             newlist.add(p);
             ArrayList<DecayProduct> newplist = new ArrayList<DecayProduct>(plist); // IMPORTANT: declare new list
-            newplist = newplist.subList(pIndex,newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._charges and this._chargeList are sorted)
+            newplist = newplist.subList(Math.min(pIndex+1,newplist.size()),newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._charges and this._chargeList are sorted)
             if (dIndex == this._charges.size()-1) { this._comboChargeList.add(newlist); } //Important: -1!
             else { setComboChargeList(dIndex+1,newplist,newlist); }
         }
@@ -495,7 +496,7 @@ public class MCDecays {
             ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>(oldlist); // IMPORTANT: declare new list
             newlist.add(p);
             ArrayList<DecayProduct> newplist = new ArrayList<DecayProduct>(plist); // IMPORTANT: declare new list
-            newplist = newplist.subList(pIndex,newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._charges and this._chargeList are sorted)
+            newplist = newplist.subList(Math.min(pIndex+1,newplist.size()),newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._charges and this._chargeList are sorted)
             if (dIndex == this._charges.size()-1) { this._parComboChargeList.add(newlist); } //Important: -1!
             else { setParComboChargeList(dIndex+1,newplist,newlist); }
         }
