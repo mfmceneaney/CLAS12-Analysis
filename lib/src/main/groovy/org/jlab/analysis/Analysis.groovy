@@ -914,6 +914,9 @@ public class Analysis {
         while(reader.hasNext()) {
             reader.nextEvent(event);
 
+            // Print notification if requested
+            if (this._notify>0 && (this._event_counter % this._notify)==0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
+
             // QADB Cuts
             Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
             Bank bank     = new Bank(schema);
@@ -1013,7 +1016,6 @@ public class Analysis {
                 }
             } // counts events selected not # of actual data entries added
             decays.clean(); // Careful! Wipes all lists!
-            if (this._notify>0 && (this._event_counter % this._notify)==0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
         }
         // this._tuple.write(); //TODO: Think this might just overwrite successive tuples if looking at multiple files...
     }  // processEvents
