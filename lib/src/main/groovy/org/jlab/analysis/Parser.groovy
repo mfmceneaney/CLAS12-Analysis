@@ -69,7 +69,7 @@ public class Parser {
         System.out.println("\t-rn            : Include run # in NTuple");
         System.out.println("\t-en            : Include event # in NTuple");
         System.out.println("\t-lk            : Include extra kinematics for Lambda analysis");
-        System.out.println("\t-ik            : Include extra kinematics for individual particles: NOTE: This must be called before setting the channel!");
+        System.out.println("\t-ik            : Include extra kinematics for individual particles");
         System.out.println("\t-be   [float]  : Beam energy (GeV) for kinematics   (def: 10.6)");
         System.out.println("\t-tm   [float]  : Target mass (GeV) for kinematics   (def: 0.9389)");
         System.out.println("\t-tpid [int]    : Target Lund pid for kinematics     (def: 2212)");
