@@ -913,7 +913,7 @@ public class Analysis {
             reader.nextEvent(event);
 
             // Print notification if requested
-            if (this._notify>0 && (this._event_counter % this._notify)==0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
+            if (this._notify>0 && (this._event_counter % this._notify)==0 && this._event_counter!=0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
 
             // QADB Cuts
             Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
@@ -1032,7 +1032,7 @@ public class Analysis {
             reader.nextEvent(event);
 
             // Print notification if requested
-            if (this._notify>0 && (this._event_counter % this._notify)==0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
+            if (this._notify>0 && (this._event_counter % this._notify)==0 && this._event_counter!=0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
 
             // Update counter
             this._event_counter += 1;
@@ -1130,7 +1130,7 @@ public class Analysis {
             reader.nextEvent(event);
 
             // Print notification if requested
-            if (this._notify>0 && (this._event_counter % this._notify)==0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
+            if (this._notify>0 && (this._event_counter % this._notify)==0 && this._event_counter!=0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
 
             // Update counter
             this._event_counter += 1;
@@ -1249,7 +1249,7 @@ public class Analysis {
             reader.nextEvent(event);
 
             // Print notification if requested
-            if (this._notify>0 && (this._event_counter % this._notify)==0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
+            if (this._notify>0 && (this._event_counter % this._notify)==0 && this._event_counter!=0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
 
             // Update counter
             this._event_counter += 1;
