@@ -221,6 +221,7 @@ public class Analysis {
         Collections.sort(this._decay); //IMPORTANT: Combinations algorithm relies on this in Decays.groovy.
         this._kinematics.setDecay(decay); //NOTE: Using unsorted decay here though.
         if (this._match) this.setMatch(this._match); //NOTE: Reset after setting decay
+        if (this._indivKin) { this.setIndivKin(this._indivKin); } //NOTE: Reset after setting decay just in case.
     }
 
     /**
@@ -321,10 +322,8 @@ public class Analysis {
             this._kinematics.setAddGroupKin(true);//NOTE: This must occur after calling setGroups() above!
         }
         if (this._match) this.setMatch(this._match); //NOTE: Reset after setting decay
-
-        if ((this._useMC && !this._combo && !this._match) || this._combo || this._match ) {
-            this.setDPMap();
-        }
+        if (this._indivKin) { this.setIndivKin(this._indivKin); } //NOTE: Reset after setting decay just in case.
+        if ((this._useMC && !this._combo && !this._match) || this._combo || this._match ) { this.setDPMap(); } //NOTE: Set daughter parent map from decays and groups.
     }
 
     /**
@@ -802,7 +801,6 @@ public class Analysis {
     */
     protected void setIndivKin(boolean IK) {
 
-        if (!this._decay.size()==2) { return; }
         this._indivKin = IK;
         this._kinematics.setAddIndivKin(IK);
     }
@@ -916,6 +914,7 @@ public class Analysis {
 
             // Print notification if requested
             if (this._notify>0 && (this._event_counter % this._notify)==0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
+            if (this._notify>0 && (this._event_counter % this._notify)!=0) { System.out.println("*** DEBUGGING "+this._event_counter+" % "+this._notify+" = "+(this._event_counter % this._notify)); }//DEBUGGING
 
             // QADB Cuts
             Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
