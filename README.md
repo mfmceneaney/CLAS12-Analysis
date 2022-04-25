@@ -44,7 +44,7 @@ Finally, you might have to run the following so that gradle can jobs can read yo
 chmod +r ~/.gradle/daemon/<version>/registry.bin
 ```
 
-However, you can run into thread permissions errors running gradle from `an-groovy` in jobs so it is better to just set `$CLASSPATH` manually like so (borrowed form `bin/clara-shell` script in `$CLARA_HOME`):
+However, you can run into thread permissions errors running gradle from `an-groovy` in jobs so it is better to just set `$CLASSPATH` manually like so (borrowed from `bin/clara-shell` script in `$CLARA_HOME`):
 
 ```bash
 # set default classpath
