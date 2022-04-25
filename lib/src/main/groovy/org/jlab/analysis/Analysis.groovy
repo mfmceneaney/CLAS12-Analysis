@@ -914,7 +914,6 @@ public class Analysis {
 
             // Print notification if requested
             if (this._notify>0 && (this._event_counter % this._notify)==0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
-            if (this._notify>0 && (this._event_counter % this._notify)!=0) { System.out.println("*** DEBUGGING "+this._event_counter+" % "+this._notify+" = "+(this._event_counter % this._notify)); }//DEBUGGING
 
             // QADB Cuts
             Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
@@ -1031,6 +1030,11 @@ public class Analysis {
         Event event = new Event();
         while(reader.hasNext()) {
             reader.nextEvent(event);
+
+            // Print notification if requested
+            if (this._notify>0 && (this._event_counter % this._notify)==0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
+
+            // Update counter
             this._event_counter += 1;
 
             // Read needed banks only once!
@@ -1107,8 +1111,7 @@ public class Analysis {
                     this.splitOutFile(this._data_counter);
                 }
             } // counts events selected not # of actual data entries added
-        decays.clean(); // Careful! Wipes all lists!
-        if (this._notify>0 && (this._event_counter % this._notify)==0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
+            decays.clean(); // Careful! Wipes all lists!
         }
         // this._tuple.write(); //TODO: Think this might just overwrite successive tuples if looking at multiple files...
     }  // processEventsMC
@@ -1125,6 +1128,11 @@ public class Analysis {
         Event event = new Event();
         while(reader.hasNext()) {
             reader.nextEvent(event);
+
+            // Print notification if requested
+            if (this._notify>0 && (this._event_counter % this._notify)==0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
+
+            // Update counter
             this._event_counter += 1;
 
             // Get Event # and Run #
@@ -1223,7 +1231,6 @@ public class Analysis {
                 }
             } // if (addedEvent)
             decays.clean(); // Careful! Wipes all lists!
-            if (this._notify>0 && (this._event_counter % this._notify)==0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
         }
         // this._tuple.write(); //TODO: Think this might just overwrite successive tuples if looking at multiple files...
     }  // processComboEvents
@@ -1240,6 +1247,11 @@ public class Analysis {
         Event event = new Event();
         while(reader.hasNext()) {
             reader.nextEvent(event);
+
+            // Print notification if requested
+            if (this._notify>0 && (this._event_counter % this._notify)==0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
+
+            // Update counter
             this._event_counter += 1;
 
             // Get Event # and Run #
@@ -1376,7 +1388,6 @@ public class Analysis {
                 }
             } // if (addedEvent)
             decays.clean(); // Careful! Wipes all lists!
-            if (this._notify>0 && (this._event_counter % this._notify)==0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
         }
         // this._tuple.write(); //TODO: Think this might just overwrite successive tuples if looking at multiple files...
     }  // processMatchEvents()
