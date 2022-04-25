@@ -34,6 +34,7 @@ public class Analysis {
     protected ArrayList<Integer>             _parents;       //OLD: Only contains pids for the parents of the parent in _decay.  DO NOT double enter parent pid.
     protected ArrayList<ArrayList<Integer>>  _groups;        //NOTE: Make sure the index ordering matches that for this._decay since this._decay must be sorted.
     protected LinkedHashMap<Integer,Integer> _decaymap;      //NOTE: Maps indices from unsorted decay to sorted decay for matching with this._groups and this._parents
+    protected ArrayList<Integer>             _dpMap;         //NOTE: List of parent indices of current daughter index in this._decay for MC parent/daughter matching.
     protected Kinematics                     _kinematics;
     protected QADB                           _qa;
     protected String                         _qaMethod;
@@ -85,6 +86,7 @@ public class Analysis {
         this._mcdecay          = new ArrayList<Integer>(this._decay);
         this._parents          = new ArrayList<Integer>();
         this._groups           = new ArrayList<ArrayList<Integer>>();
+        this._dpMap            = new ArrayList<Integer>();
         this._kinematics       = new Kinematics(this._constants, this._decay, this._groups);
         this._qaMethod         = new String("OkForAsymmetry");
         this._fiducialCuts     = new FiducialCuts();
@@ -110,6 +112,7 @@ public class Analysis {
         this._mcdecay          = new ArrayList<Integer>(this._decay);
         this._parents          = new ArrayList<Integer>();
         this._groups           = new ArrayList<ArrayList<Integer>>();
+        this._dpMap            = new ArrayList<Integer>();
         this._kinematics       = new Kinematics(this._constants, this._decay, this._groups);
         this._qaMethod         = new String("OkForAsymmetry");
         this._fiducialCuts     = new FiducialCuts();
@@ -139,6 +142,7 @@ public class Analysis {
         this._mcdecay          = mcdecay;
         this._parents          = parents;
         this._groups           = new ArrayList<ArrayList<Integer>>();
+        this._dpMap            = new ArrayList<Integer>();
         this._kinematics       = new Kinematics(this._constants, this._mcdecay, this._groups);
         this._qaMethod         = new String("OkForAsymmetry");
         this._fiducialCuts     = new FiducialCuts();
@@ -317,6 +321,43 @@ public class Analysis {
             this._kinematics.setAddGroupKin(true);//NOTE: This must occur after calling setGroups() above!
         }
         if (this._match) this.setMatch(this._match); //NOTE: Reset after setting decay
+
+        if ((this._useMC && !this._combo && !this._match) || this._combo || this._match ) {
+            this.setDPMap();
+        }
+    }
+
+    /**
+    * Set daughter to parent map (just a list with parent indices at each daughter index) 
+    * for MC parent daughter matching.
+    */
+    protected void setDPMap() {
+
+        // Replace daughter indices with first particle index for daughter particle's group
+        ArrayList<Integer> dpMap = new ArrayList<Integer>();
+        for (int idx=0; idx<this._decay.size(); idx++) { dpMap.add(idx); }
+        for (ArrayList<Integer> group : this._groups) {
+            int idx0 = -1;
+            for (int i=0; i<group.size(); i++) {
+                if (i==0) { idx0 = group.get(i); }
+                else { dpMap.set(group.get(i),idx0); }
+            }
+        }
+
+        // Subtract minimum to ensure lowest entry is zero
+        for (int i=0; i<dpMap.size(); i++) { dpMap.set(i,dpMap.get(i)-dpMap.min()); }
+
+        // Pull all indices down so they are consecutive and < length of this._parents
+        for (int k=-1; k<this._parents.size()-1; k++) {
+            for (int j=0; j<this._decay.size(); j++) {
+                boolean flag = true;
+                for (int i=0; i<dpMap.size(); i++) {
+                    if (flag && dpMap.get(i)==j) { flag = false; k++; dpMap.set(i,k); }
+                    if (!flag && dpMap.get(i)==j) { dpMap.set(i,k); }
+                }
+            }
+        }
+        this._dpMap = dpMap;
     }
 
     /**
@@ -808,6 +849,7 @@ public class Analysis {
         this._match   = match;
         this._mcdecay = new ArrayList<Integer>(this._decay);
         Collections.sort(this._mcdecay); //NOTE: This is important!  Also, this._decay should be sorted later if not already.
+        if (match && this._groups.size()>0) this.setDPMap();
     }
 
     /**
@@ -819,6 +861,7 @@ public class Analysis {
         this._combo   = combo;
         ArrayList<Integer> comboDecay = new ArrayList<Integer>(this._decay); comboDecay.addAll(this._mcdecay);
         this._kinematics.setDecay(comboDecay);//NOTE: Has to be called after setting this._mcdecay
+        if (combo && this._groups.size()>0) this.setDPMap();
     }
 
     /**
@@ -1208,7 +1251,7 @@ public class Analysis {
             // Read needed banks only once!
             if (this._requireFC) { this._FC.setArrays(reader,event); }
             Decays decays     = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC); // Fiducial cuts implemented in Decays object
-            MCDecays mcdecays = new MCDecays(this._mcdecay,this._parents,this._groups,reader,event,this._constants);
+            MCDecays mcdecays = new MCDecays(this._mcdecay,this._parents,this._dpMap,reader,event,this._constants);
 
             // Check for event pid tag if requested
             if (this._require_tag) {
