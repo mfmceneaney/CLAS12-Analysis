@@ -704,7 +704,6 @@ public class Kinematics {
             boostedLv.boost(gNBoost);
             LorentzVector lv_miss = new LorentzVector(gN); //NOTE: Missing mass should usually include scattered beam.
             lv_miss.sub(lv);
-            lv_miss.sub(lv_max);
 
             // Grab previously calculated kinematics
             double nu = kinematics.get("nu");
@@ -773,7 +772,6 @@ public class Kinematics {
             boostedLv.boost(gNBoost);
             LorentzVector lv_miss = new LorentzVector(gN); //NOTE: Missing mass should usually include scattered beam.
             lv_miss.sub(lv);
-            lv_miss.sub(lv_max);
             
             // Grab previously calculated kinematics
             double nu = kinematics.get("nu");
@@ -885,7 +883,6 @@ public class Kinematics {
         boostedMax.boost(gNBoost);
         LorentzVector lv_miss = new LorentzVector(gN); //NOTE: Missing mass should usually include scattered beam.
         lv_miss.sub(lv_parent);
-        lv_miss.sub(lv_max);
 
         // Compute SIDIS variables
         double Q2   = (-1) * (q.mass2());
@@ -954,7 +951,6 @@ public class Kinematics {
         boostedMax.boost(gNBoost);
         LorentzVector lv_miss = new LorentzVector(gN); //NOTE: Missing mass should usually include scattered beam.
         lv_miss.sub(lv_parent);
-        lv_miss.sub(lv_max);
 
         // Compute SIDIS variables
         double Q2   = (-1) * (q.mass2());
