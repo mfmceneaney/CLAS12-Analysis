@@ -566,8 +566,6 @@ public class Kinematics {
         // Set up Lorentz vectors
         Vector3 boost = lv_parent.boostVector();
         boost.negative();
-        LorentzVector boostedParent = new LorentzVector(lv_parent);
-        boostedParent.boost(boost);
         LorentzVector boostedBeam = new LorentzVector(lv_beam);
         boostedBeam.boost(boost);
         LorentzVector boostedPhoton = new LorentzVector(q);
@@ -582,10 +580,10 @@ public class Kinematics {
         kinematics.put("costheta2",costheta2);
 
         // Get transverse lambda kinematics
-        Vector3 n1 = boostedBeam.vect().cross(boostedParent.vect());
-        Vector3 n2 = boostedPhoton.vect().cross(boostedParent.vect());
-        double costhetaT1 = boostedProton.vect().dot(n1) / (boostedProton.vect().mag() * boostedBeam.vect().mag() * boostedParent.vect().mag());
-        double costhetaT2 = boostedProton.vect().dot(n2) / (boostedProton.vect().mag() * boostedPhoton.vect().mag() * boostedParent.vect().mag());
+        Vector3 n1 = boostedBeam.vect().cross(lv_parent.vect());
+        Vector3 n2 = boostedPhoton.vect().cross(lv_parent.vect());
+        double costhetaT1 = boostedProton.vect().dot(n1) / (boostedProton.vect().mag() * boostedBeam.vect().mag() * lv_parent.vect().mag());
+        double costhetaT2 = boostedProton.vect().dot(n2) / (boostedProton.vect().mag() * boostedPhoton.vect().mag() * lv_parent.vect().mag());
         kinematics.put("costhetaT1",costhetaT1);
         kinematics.put("costhetaT2",costhetaT2);
     }
