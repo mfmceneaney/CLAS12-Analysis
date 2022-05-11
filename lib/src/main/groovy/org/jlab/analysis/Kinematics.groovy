@@ -570,7 +570,7 @@ public class Kinematics {
         boostedBeam.boost(boost);
         LorentzVector boostedPhoton = new LorentzVector(q);
         boostedPhoton.boost(boost);
-        LorentzVector boostedProton = new LorentzVector(lvList.get(1)); //TODO: Can assume this is always 2nd now???
+        LorentzVector boostedProton = new LorentzVector(lvList.get(0)); //TODO: This assumes proton is first entry in group so passing -ch 2212:-211 but it flips if you do it the other way!!!
         boostedProton.boost(boost);
 
         // Get longitudinal lambda kinematics
