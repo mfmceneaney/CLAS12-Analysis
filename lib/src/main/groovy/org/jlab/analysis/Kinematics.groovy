@@ -223,7 +223,7 @@ public class Kinematics {
     protected boolean addRFTime() {return this._addRFTime;}
     protected void setAddLambdaKin(boolean addLambdaKin) {
         this._addLambdaKin = addLambdaKin;
-        String[] lkin = [ "alpha" , "costheta1" , "costheta2", "costheta1T", "costheta2T" , "col", "costhetab2b"]; String[] arr = new String[this._defaults.length + lkin.length];
+        String[] lkin = [ "alpha" , "costheta1" , "costheta2", "costhetaT1", "costhetaT2" , "col", "costhetab2b"]; String[] arr = new String[this._defaults.length + lkin.length];
         int i = 0;
 	for (String defaults : this._defaults) { arr[i] = defaults; i++; }
 	for (String kin : lkin) { arr[i] = kin; i++; }
@@ -481,8 +481,6 @@ public class Kinematics {
 
         Vector3 boost = lv_parent.boostVector();
         boost.negative();
-        LorentzVector boostedParent = new LorentzVector(lv_parent);
-        boostedParent.boost(boost);
         LorentzVector boostedBeam = new LorentzVector(beam.lv());
         boostedBeam.boost(boost);
         LorentzVector boostedPhoton = new LorentzVector(q);
@@ -491,14 +489,14 @@ public class Kinematics {
         LorentzVector boostedProton = new LorentzVector(lvList.get(this._decay.indexOf(posPid) - 1)); // IMPORTANT make a new one otherwise it modifies the list entry
         boostedProton.boost(boost);
 
-        Vector3 n1 = boostedBeam.vect().cross(boostedParent.vect());
-        Vector3 n2 = boostedPhoton.vect().cross(boostedParent.vect());
+        Vector3 n1 = boostedBeam.vect().cross(lv_parent.vect());
+        Vector3 n2 = boostedPhoton.vect().cross(lv_parent.vect());
 
-        double costheta1T = boostedProton.vect().dot(n1) / (boostedProton.vect().mag() * boostedBeam.vect().mag() * boostedParent.vect().mag());
-        double costheta2T = boostedProton.vect().dot(n2) / (boostedProton.vect().mag() * boostedPhoton.vect().mag() * boostedParent.vect().mag());
+        double costhetaT1 = boostedProton.vect().dot(n1) / (boostedProton.vect().mag() * boostedBeam.vect().mag() * lv_parent.vect().mag());
+        double costhetaT2 = boostedProton.vect().dot(n2) / (boostedProton.vect().mag() * boostedPhoton.vect().mag() * lv_parent.vect().mag());
 
-        kinematics.put("costheta1T",costheta1T);
-        kinematics.put("costheta2T",costheta2T);
+        kinematics.put("costhetaT1",costhetaT1);
+        kinematics.put("costhetaT2",costhetaT2);
 
     }
 
