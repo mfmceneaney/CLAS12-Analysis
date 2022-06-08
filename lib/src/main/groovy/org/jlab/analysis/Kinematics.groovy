@@ -713,14 +713,15 @@ public class Kinematics {
             double y_      = 1/2*Math.log((lv.e()+lv.pz())/(lv.e()-lv.pz()));
             double zeta_   = boostedLv.e() / boostedTarget.e();
             double mx_     = lv_miss.mass();
-            double phperp_ = lv.vect().cross(q.vect()).mag()/q.vect().mag();
+            // double phperp_ = lv.vect().cross(q.vect()).mag()/q.vect().mag(); //NOTE: OLD 6/8/22
 
             // Get phi_h_ of momentum perpendicular to q relative to electron scattering plane
-            Vector3 nhat   = lv_max.vect().cross(lv_beam.vect());
+            Vector3 nhat   = lv_beam.vect().cross(lv_max.vect()); //NOTE: OLD 6/8/22 lv_max.vect().cross(lv_beam.vect());
             Vector3 xhat   = nhat.cross(q.vect());
             Vector3 p_perp = lv.vect().cross(q.vect()).cross(q.vect());
+            double phperp_ = p_perp.mag()/(q.vect().mag()*q.vect().mag());
             double phi_h_  = Math.acos(p_perp.dot(xhat)/(p_perp.mag()*xhat.mag()));
-            if (nhat.dot(p_perp)<0) phi_h_ = -phi_h_; //NOTE: Convert - angle for those stretching below scattering plane.
+            if (nhat.dot(p_perp)<0) phi_h_ = 2*Math.PI-phi_h_; //NOTE: Convert - angle for those stretching below scattering plane.
 
             // Add entries to kinematics map NOTE: The # of kinematics added here must exactly match the # set in this.setAddIndivKin() above.
             kinematics.put(this._ikin[k++],z_);      //NOTE: z for individual hadron
@@ -781,14 +782,15 @@ public class Kinematics {
             double y_      = 1/2*Math.log((lv.e()+lv.pz())/(lv.e()-lv.pz()));
             double zeta_   = boostedLv.e() / boostedTarget.e();
             double mx_     = lv_miss.mass();
-            double phperp_ = lv.vect().cross(q.vect()).mag()/q.vect().mag();
+            // double phperp_ = lv.vect().cross(q.vect()).mag()/q.vect().mag(); //NOTE: OLD 6/8/22
 
             // Get phi_h_ of momentum perpendicular to q relative to electron scattering plane
-            Vector3 nhat   = lv_max.vect().cross(lv_beam.vect());
+            Vector3 nhat   = lv_beam.vect().cross(lv_max.vect()); //NOTE: OLD 6/8/22 lv_max.vect().cross(lv_beam.vect());
             Vector3 xhat   = nhat.cross(q.vect());
             Vector3 p_perp = lv_parent.vect().cross(q.vect()).cross(q.vect());
+            double phperp_ = p_perp.mag()/(q.vect().mag()*q.vect().mag());
             double phi_h_  = Math.acos(p_perp.dot(xhat)/(p_perp.mag()*xhat.mag()));
-            if (nhat.dot(p_perp)<0) phi_h_ = -phi_h_; //NOTE: Convert to - angle for those stretching below scattering plane.
+            if (nhat.dot(p_perp)<0) phi_h_ = 2*Math.PI-phi_h_; //NOTE: Convert to - angle for those stretching below scattering plane.
 
             // Get final state mass for parent
             double mass_   = lv_parent.mass();
