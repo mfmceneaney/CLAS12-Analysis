@@ -720,7 +720,7 @@ public class Kinematics {
             Vector3 xhat   = nhat.cross(q.vect());
             Vector3 p_perp = new Vector3(lv.vect());
             Vector3 p_par  = new Vector3(q.vect());
-            double coeff_  = p_perp.dot(q.vect())/(p_perp.mag()*q.vect().mag());
+            double coeff_  = p_perp.dot(q.vect())/(p_perp.mag()*q.vect().mag()*q.vect().mag());
             p_par.setXYZ(coeff_*p_par.x(),coeff_*p_par.y(),coeff_*p_par.z());
             p_perp.sub(p_par);
             double phperp_ = p_perp.mag();
@@ -789,6 +789,22 @@ public class Kinematics {
             // double phperp_ = lv.vect().cross(q.vect()).mag()/q.vect().mag(); //NOTE: OLD 6/8/22
 
             // Get phi_h_ of momentum perpendicular to q relative to electron scattering plane
+            // // Vector3 nhat   = lv_beam.vect().cross(lv_max.vect()); //NOTE: OLD 6/8/22 lv_max.vect().cross(lv_beam.vect());
+            // Vector3 xhat   = q.vect().cross(lv_max.vect());
+            Vector3 nhat   = lv_beam.vect().cross(lv_max.vect()); //NOTE: OLD 6/8/22 lv_max.vect().cross(lv_beam.vect());
+            Vector3 xhat   = nhat.cross(q.vect());
+            Vector3 p_perp = new Vector3(lv.vect());
+            Vector3 p_par  = new Vector3(q.vect());
+            double coeff_  = p_perp.dot(q.vect())/(p_perp.mag()*q.vect().mag()*q.vect().mag());
+            p_par.setXYZ(coeff_*p_par.x(),coeff_*p_par.y(),coeff_*p_par.z());
+            p_perp.sub(p_par);
+            double phperp_ = p_perp.mag();
+            double phi_h_  = Math.acos(p_perp.dot(xhat)/(p_perp.mag()*xhat.mag()));
+            if (nhat.dot(p_perp)<0) phi_h_ = 2*Math.PI-phi_h_; //NOTE: Convert to - angle for those stretching below scattering plane.
+
+            /* NOTE: DEBUGGING OLD!!!
+
+            // Get phi_h_ of momentum perpendicular to q relative to electron scattering plane
             Vector3 nhat   = lv_beam.vect().cross(lv_max.vect()); //NOTE: OLD 6/8/22 lv_max.vect().cross(lv_beam.vect());
             Vector3 xhat   = nhat.cross(q.vect());
             Vector3 p_perp = new Vector3(lv.vect());
@@ -798,7 +814,10 @@ public class Kinematics {
             p_perp.sub(p_par);
             double phperp_ = p_perp.mag();
             double phi_h_  = Math.acos(p_perp.dot(xhat)/(p_perp.mag()*xhat.mag()));
-            if (nhat.dot(p_perp)<0) phi_h_ = 2*Math.PI-phi_h_; //NOTE: Convert to - angle for those stretching below scattering plane.
+            if (nhat.dot(p_perp)<0) phi_h_ = 2*Math.PI-phi_h_; //NOTE: Convert to 
+            
+
+            */
 
             // Get final state mass for parent
             double mass_   = lv_parent.mass();
