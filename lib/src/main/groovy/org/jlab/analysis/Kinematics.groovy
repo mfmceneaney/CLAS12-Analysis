@@ -719,8 +719,9 @@ public class Kinematics {
             Vector3 nhat   = lv_beam.vect().cross(lv_max.vect()); //NOTE: OLD 6/8/22 lv_max.vect().cross(lv_beam.vect());
             Vector3 xhat   = nhat.cross(q.vect());
             Vector3 p_perp = new Vector3(lv.vect());
-            Vector3 p_par  = new Vector3(q);
-            p_par.multiply(p_perp.dot(q)/q.mag());
+            Vector3 p_par  = new Vector3(q.vect());
+            double coeff_  = p_perp.dot(q.vect())/(p_perp.mag()*q.vect().mag());
+            p_par.setXYZ(coeff_*p_par.x(),coeff_*p_par.y(),coeff_*p_par.z());
             p_perp.sub(p_par);
             double phperp_ = p_perp.mag();
             double phi_h_  = Math.acos(p_perp.dot(xhat)/(p_perp.mag()*xhat.mag()));
@@ -791,8 +792,9 @@ public class Kinematics {
             Vector3 nhat   = lv_beam.vect().cross(lv_max.vect()); //NOTE: OLD 6/8/22 lv_max.vect().cross(lv_beam.vect());
             Vector3 xhat   = nhat.cross(q.vect());
             Vector3 p_perp = new Vector3(lv.vect());
-            Vector3 p_par  = new Vector3(q);
-            p_par.multiply(p_perp.dot(q)/q.mag());
+            Vector3 p_par  = new Vector3(q.vect());
+            double coeff_  = p_perp.dot(q.vect())/(p_perp.mag()*q.vect().mag());
+            p_par.setXYZ(coeff_*p_par.x(),coeff_*p_par.y(),coeff_*p_par.z());
             p_perp.sub(p_par);
             double phperp_ = p_perp.mag();
             double phi_h_  = Math.acos(p_perp.dot(xhat)/(p_perp.mag()*xhat.mag()));
