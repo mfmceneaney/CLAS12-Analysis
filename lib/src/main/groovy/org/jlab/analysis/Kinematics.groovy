@@ -718,8 +718,11 @@ public class Kinematics {
             // Get phi_h_ of momentum perpendicular to q relative to electron scattering plane
             Vector3 nhat   = lv_beam.vect().cross(lv_max.vect()); //NOTE: OLD 6/8/22 lv_max.vect().cross(lv_beam.vect());
             Vector3 xhat   = nhat.cross(q.vect());
-            Vector3 p_perp = lv.vect().cross(q.vect()).cross(q.vect());
-            double phperp_ = p_perp.mag()/(q.vect().mag()*q.vect().mag());
+            Vector3 p_perp = new Vector3(lv.vect());
+            Vector3 p_par  = new Vector3(q);
+            p_par.multiply(p_perp.dot(q)/q.mag());
+            p_perp.sub(p_par);
+            double phperp_ = p_perp.mag();
             double phi_h_  = Math.acos(p_perp.dot(xhat)/(p_perp.mag()*xhat.mag()));
             if (nhat.dot(p_perp)<0) phi_h_ = 2*Math.PI-phi_h_; //NOTE: Convert - angle for those stretching below scattering plane.
 
@@ -787,8 +790,11 @@ public class Kinematics {
             // Get phi_h_ of momentum perpendicular to q relative to electron scattering plane
             Vector3 nhat   = lv_beam.vect().cross(lv_max.vect()); //NOTE: OLD 6/8/22 lv_max.vect().cross(lv_beam.vect());
             Vector3 xhat   = nhat.cross(q.vect());
-            Vector3 p_perp = lv_parent.vect().cross(q.vect()).cross(q.vect());
-            double phperp_ = p_perp.mag()/(q.vect().mag()*q.vect().mag());
+            Vector3 p_perp = new Vector3(lv.vect());
+            Vector3 p_par  = new Vector3(q);
+            p_par.multiply(p_perp.dot(q)/q.mag());
+            p_perp.sub(p_par);
+            double phperp_ = p_perp.mag();
             double phi_h_  = Math.acos(p_perp.dot(xhat)/(p_perp.mag()*xhat.mag()));
             if (nhat.dot(p_perp)<0) phi_h_ = 2*Math.PI-phi_h_; //NOTE: Convert to - angle for those stretching below scattering plane.
 
