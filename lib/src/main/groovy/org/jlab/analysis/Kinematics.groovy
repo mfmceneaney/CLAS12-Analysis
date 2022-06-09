@@ -713,19 +713,14 @@ public class Kinematics {
             double y_      = 1/2*Math.log((lv.e()+lv.pz())/(lv.e()-lv.pz()));
             double zeta_   = boostedLv.e() / boostedTarget.e();
             double mx_     = lv_miss.mass();
-            // double phperp_ = lv.vect().cross(q.vect()).mag()/q.vect().mag(); //NOTE: OLD 6/8/22
+            double phperp_ = lv.vect().mag()*(q.vect().cross(lv.vect()).mag()/(q.vect().mag()*lv.vect().mag()));
 
-            // Get phi_h_ of momentum perpendicular to q relative to electron scattering plane
-            Vector3 nhat   = lv_beam.vect().cross(lv_max.vect()); //NOTE: OLD 6/8/22 lv_max.vect().cross(lv_beam.vect());
-            Vector3 xhat   = nhat.cross(q.vect());
-            Vector3 p_perp = new Vector3(lv.vect());
-            Vector3 p_par  = new Vector3(q.vect());
-            double coeff_  = p_perp.dot(q.vect())/(p_perp.mag()*q.vect().mag()*q.vect().mag());
-            p_par.setXYZ(coeff_*p_par.x(),coeff_*p_par.y(),coeff_*p_par.z());
-            p_perp.sub(p_par);
-            double phperp_ = p_perp.mag();
-            double phi_h_  = Math.acos(p_perp.dot(xhat)/(p_perp.mag()*xhat.mag()));
-            if (nhat.dot(p_perp)<0) phi_h_ = 2*Math.PI-phi_h_; //NOTE: Convert - angle for those stretching below scattering plane.
+            // Get phi_h_ of momentum perpendicular to q relative to electron scattering plane ( just angle between q x l and q x p_hadron planes)
+            Vector3 nhat   = q.vect().cross(lv_max.vect()); // vA x vB
+            Vector3 phihat = q.vect().cross(lv.vect());     // vC x vD
+            double sign__  = nhat.dot(lv.vect())>=0 ? 1 : -1; // sign of (vA x vB) . vD
+            double phi_h_  = sign__ * Math.acos(nhat.dot(phihat)/(nhat.mag()*phihat.mag()));
+            if (phi_h_<0) phi_h_ = 2*Math.PI + phi_h_;
 
             // Add entries to kinematics map NOTE: The # of kinematics added here must exactly match the # set in this.setAddIndivKin() above.
             kinematics.put(this._ikin[k++],z_);      //NOTE: z for individual hadron
@@ -786,38 +781,14 @@ public class Kinematics {
             double y_      = 1/2*Math.log((lv.e()+lv.pz())/(lv.e()-lv.pz()));
             double zeta_   = boostedLv.e() / boostedTarget.e();
             double mx_     = lv_miss.mass();
-            // double phperp_ = lv.vect().cross(q.vect()).mag()/q.vect().mag(); //NOTE: OLD 6/8/22
+            double phperp_ = lv.vect().mag()*(q.vect().cross(lv.vect()).mag()/(q.vect().mag()*lv.vect().mag()));
 
-            // Get phi_h_ of momentum perpendicular to q relative to electron scattering plane
-            // // Vector3 nhat   = lv_beam.vect().cross(lv_max.vect()); //NOTE: OLD 6/8/22 lv_max.vect().cross(lv_beam.vect());
-            // Vector3 xhat   = q.vect().cross(lv_max.vect());
-            Vector3 nhat   = lv_beam.vect().cross(lv_max.vect()); //NOTE: OLD 6/8/22 lv_max.vect().cross(lv_beam.vect());
-            Vector3 xhat   = nhat.cross(q.vect());
-            Vector3 p_perp = new Vector3(lv.vect());
-            Vector3 p_par  = new Vector3(q.vect());
-            double coeff_  = p_perp.dot(q.vect())/(p_perp.mag()*q.vect().mag()*q.vect().mag());
-            p_par.setXYZ(coeff_*p_par.x(),coeff_*p_par.y(),coeff_*p_par.z());
-            p_perp.sub(p_par);
-            double phperp_ = p_perp.mag();
-            double phi_h_  = Math.acos(p_perp.dot(xhat)/(p_perp.mag()*xhat.mag()));
-            if (nhat.dot(p_perp)<0) phi_h_ = 2*Math.PI-phi_h_; //NOTE: Convert to - angle for those stretching below scattering plane.
-
-            /* NOTE: DEBUGGING OLD!!!
-
-            // Get phi_h_ of momentum perpendicular to q relative to electron scattering plane
-            Vector3 nhat   = lv_beam.vect().cross(lv_max.vect()); //NOTE: OLD 6/8/22 lv_max.vect().cross(lv_beam.vect());
-            Vector3 xhat   = nhat.cross(q.vect());
-            Vector3 p_perp = new Vector3(lv.vect());
-            Vector3 p_par  = new Vector3(q.vect());
-            double coeff_  = p_perp.dot(q.vect())/(p_perp.mag()*q.vect().mag());
-            p_par.setXYZ(coeff_*p_par.x(),coeff_*p_par.y(),coeff_*p_par.z());
-            p_perp.sub(p_par);
-            double phperp_ = p_perp.mag();
-            double phi_h_  = Math.acos(p_perp.dot(xhat)/(p_perp.mag()*xhat.mag()));
-            if (nhat.dot(p_perp)<0) phi_h_ = 2*Math.PI-phi_h_; //NOTE: Convert to 
-            
-
-            */
+            // Get phi_h_ of momentum perpendicular to q relative to electron scattering plane ( just angle between q x l and q x p_hadron planes)
+            Vector3 nhat   = q.vect().cross(lv_max.vect()); // vA x vB
+            Vector3 phihat = q.vect().cross(lv.vect());     // vC x vD
+            double sign__  = nhat.dot(lv.vect())>=0 ? 1 : -1; // sign of (vA x vB) . vD
+            double phi_h_  = sign__ * Math.acos(nhat.dot(phihat)/(nhat.mag()*phihat.mag()));
+            if (phi_h_<0) phi_h_ = 2*Math.PI + phi_h_;
 
             // Get final state mass for parent
             double mass_   = lv_parent.mass();
