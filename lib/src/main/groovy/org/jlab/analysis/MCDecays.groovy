@@ -1,5 +1,8 @@
 package org.jlab.analysis;
 
+// Groovy Imports
+import groovy.transform.CompileStatic
+
 // Java Imports
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +20,7 @@ import org.jlab.jnp.physics.*;
 * @author  Matthew McEneaney
 */
 
+@CompileStatic
 public class MCDecays {
 
     protected ArrayList<Integer>                 _decay;        // List of Lund pids with first entry as parent particle
@@ -59,13 +63,13 @@ public class MCDecays {
         this._constants = constants;
 
         this._particleList       = new ArrayList<DecayProduct>();
-        this._pidList            = new ArrayList<ArrayList<DecayProduct>>();
+        this._pidList            = new ArrayList<DecayProduct>();
         this._comboPidList       = new ArrayList<ArrayList<DecayProduct>>();
-        this._chargeList         = new ArrayList<ArrayList<DecayProduct>>();
+        this._chargeList         = new ArrayList<DecayProduct>();
         this._comboChargeList    = new ArrayList<ArrayList<DecayProduct>>();
-        this._parPidList         = new ArrayList<ArrayList<DecayProduct>>();
+        this._parPidList         = new ArrayList<DecayProduct>();
         this._parComboPidList    = new ArrayList<ArrayList<DecayProduct>>();
-        this._parChargeList      = new ArrayList<ArrayList<DecayProduct>>();
+        this._parChargeList      = new ArrayList<DecayProduct>();
         this._parComboChargeList = new ArrayList<ArrayList<DecayProduct>>();
 
         this._charges = new ArrayList<Integer>();
@@ -196,9 +200,9 @@ public class MCDecays {
 
     /**
     * Access list of all possible decay particle combinations identified by Lund pid.
-    * @return ArrayList<ArrayList<DecayProduct>> _pidList
+    * @return ArrayList<DecayProduct> _pidList
     */
-    protected ArrayList<ArrayList<DecayProduct>> getPidList() {
+    protected ArrayList<DecayProduct> getPidList() {
 
         if (this._pidList.size()==0) { this.setPidList(); }
 
@@ -207,9 +211,9 @@ public class MCDecays {
 
     /**
     * Access list of all possible decay particle combinations identified by Lund pid.
-    * @return ArrayList<ArrayList<DecayProduct>> _parPidList
+    * @return ArrayList<DecayProduct> _parPidList
     */
-    protected ArrayList<ArrayList<DecayProduct>> getParPidList() {
+    protected ArrayList<DecayProduct> getParPidList() {
 
         if (this._parPidList.size()==0) { this.setParPidList(); }
 
@@ -231,7 +235,7 @@ public class MCDecays {
             ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>(oldlist); // IMPORTANT: declare new list
             newlist.add(p);
             ArrayList<DecayProduct> newplist = new ArrayList<DecayProduct>(plist); // IMPORTANT: declare new list
-            newplist = newplist.subList(Math.min(pIndex+1,newplist.size()),newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._decay and this._pidList are sorted)
+            newplist = (ArrayList<DecayProduct>)newplist.subList(Math.min(pIndex+1,newplist.size()),newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._decay and this._pidList are sorted)
             if (dIndex == this._decay.size()-1) { this._comboPidList.add(newlist); } //Important: -1!
             else { setComboPidList(dIndex+1,newplist,newlist); }
         }
@@ -262,7 +266,7 @@ public class MCDecays {
             ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>(oldlist); // IMPORTANT: declare new list
             newlist.add(p);
             ArrayList<DecayProduct> newplist = new ArrayList<DecayProduct>(plist); // IMPORTANT: declare new list
-            newplist = newplist.subList(Math.min(pIndex+1,newplist.size()),newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._decay and this._pidList are sorted)
+            newplist = (ArrayList<DecayProduct>)newplist.subList(Math.min(pIndex+1,newplist.size()),newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._decay and this._pidList are sorted)
             if (dIndex == this._parents.size()-1) { this._parComboPidList.add(newlist); } //Important: -1!
             else { setParComboPidList(dIndex+1,newplist,newlist); }
         }
@@ -377,7 +381,7 @@ public class MCDecays {
             // Get charge and parent and daughter indices
             int pid        = this._bank.getInt("pid", i);
             int charge     = this._bank.getInt("charge", i);
-            if (!this._charges.contains(charge) && !this._parCharges.contains(charge) && !this._constants.getQ(this._constants.getBeamPID())==charge) { continue; }
+            if (!this._charges.contains(charge) && !this._parCharges.contains(charge) && !this._constants.getCharge(this._constants.getBeamPID())==charge) { continue; }
             int parent     = this._bank.getInt("parent", i);
             int daughter   = this._bank.getInt("daughter", i);
             
@@ -440,9 +444,9 @@ public class MCDecays {
 
     /**
     * Access list of all possible decay particle combinations identified by charge.
-    * @return ArrayList<ArrayList<DecayProduct>> _chargeList
+    * @return ArrayList<DecayProduct> _chargeList
     */
-    protected ArrayList<ArrayList<DecayProduct>> getChargeList() {
+    protected ArrayList<DecayProduct> getChargeList() {
 
         if (this._chargeList.size()==0) { this.setChargeList(); }
 
@@ -451,9 +455,9 @@ public class MCDecays {
 
     /**
     * Access list of all possible decay particle combinations identified by charge.
-    * @return ArrayList<ArrayList<DecayProduct>> _parChargeList
+    * @return ArrayList<DecayProduct> _parChargeList
     */
-    protected ArrayList<ArrayList<DecayProduct>> getParChargeList() {
+    protected ArrayList<DecayProduct> getParChargeList() {
 
         if (this._parChargeList.size()==0) { this.setParChargeList(); }
 
@@ -475,7 +479,7 @@ public class MCDecays {
             ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>(oldlist); // IMPORTANT: declare new list
             newlist.add(p);
             ArrayList<DecayProduct> newplist = new ArrayList<DecayProduct>(plist); // IMPORTANT: declare new list
-            newplist = newplist.subList(Math.min(pIndex+1,newplist.size()),newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._charges and this._chargeList are sorted)
+            newplist = (ArrayList<DecayProduct>)newplist.subList(Math.min(pIndex+1,newplist.size()),newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._charges and this._chargeList are sorted)
             if (dIndex == this._charges.size()-1) { this._comboChargeList.add(newlist); } //Important: -1!
             else { setComboChargeList(dIndex+1,newplist,newlist); }
         }
@@ -496,7 +500,7 @@ public class MCDecays {
             ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>(oldlist); // IMPORTANT: declare new list
             newlist.add(p);
             ArrayList<DecayProduct> newplist = new ArrayList<DecayProduct>(plist); // IMPORTANT: declare new list
-            newplist = newplist.subList(Math.min(pIndex+1,newplist.size()),newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._charges and this._chargeList are sorted)
+            newplist = (ArrayList<DecayProduct>)newplist.subList(Math.min(pIndex+1,newplist.size()),newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._charges and this._chargeList are sorted)
             if (dIndex == this._charges.size()-1) { this._parComboChargeList.add(newlist); } //Important: -1!
             else { setParComboChargeList(dIndex+1,newplist,newlist); }
         }
@@ -638,7 +642,7 @@ public class MCDecays {
     protected ArrayList<DecayProduct> getParents() {
         if (this._particleList.size()==0) { this.setParticleList(); }
 	    if (this._particleList.size() < 4 ) { return new ArrayList<DecayProduct>(); }
-        try { return this._particleList.subList(0,4); } catch (Exception e) { System.out.println("+ *** WARNING *** Trying to access non-existent element of MC particle list."); return new ArrayList<DecayProduct>(); }
+        try { return (ArrayList<DecayProduct>)this._particleList.subList(0,4); } catch (Exception e) { System.out.println("+ *** WARNING *** Trying to access non-existent element of MC particle list."); return new ArrayList<DecayProduct>(); }
     }
     
     /**
