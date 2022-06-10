@@ -75,7 +75,7 @@ public class Parser {
         System.out.println("\t-lk            : Include extra kinematics for Lambda analysis");
         System.out.println("\t-ik            : Include extra kinematics for individual particles");
         System.out.println("\t-be   [float]  : Beam energy (GeV) for kinematics   (def: 10.6)");
-        System.out.println("\t-tm   [float]  : Target mass (GeV) for kinematics   (def: 0.9389)");
+        System.out.println("\t-tm   [float]  : Target mass (GeV) for kinematics   (def: 0.9383)");
         System.out.println("\t-tpid [int]    : Target Lund pid for kinematics     (def: 2212)");
         System.out.println("\t-qa            : Use clasqaDB check");
         System.out.println("\t-qm   [string] : Specify clasqaDB check method (def: OkForAsymmetry)");
@@ -112,7 +112,7 @@ public class Parser {
         System.out.println("\t-h/--help      : Show this message");
         System.out.println("\t-m/--maps      : Show available pid maps");
         System.out.println("\t-v/--version   : Show version info");
-        System.out.println("\t-k/--kin       : Show availabe kinematics");
+        System.out.println("\t-k/--kin       : Show available kinematics");
 
         System.out.println("------------------------------------------------------------------------------");
         return false;
