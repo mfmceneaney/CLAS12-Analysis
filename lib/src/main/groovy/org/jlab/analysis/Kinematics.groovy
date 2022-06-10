@@ -719,15 +719,21 @@ public class Kinematics {
             double mx_     = lv_miss.mass();
             double phperp_ = lv.vect().mag()*(q.vect().cross(lv.vect()).mag()/(q.vect().mag()*lv.vect().mag()));
 
-            // // Get phi_h_ of momentum perpendicular to q relative to electron scattering plane ( just angle between q x l and q x p_hadron planes)
-            // Vector3 nhat   = q.vect().cross(lv_max.vect()); // vA x vB
-            // Vector3 phihat = q.vect().cross(lv.vect());     // vC x vD
-            // double sign__  = nhat.dot(lv.vect())>=0 ? 1 : -1; // sign of (vA x vB) . vD
-            // double phi_h_  = sign__ * Math.acos(nhat.dot(phihat)/(nhat.mag()*phihat.mag()));
-            // if (phi_h_<0) phi_h_ = 2*Math.PI + phi_h_;
+            // Get phi_h_ in gN frame of momentum perpendicular to q relative to electron scattering plane ( just angle between q x l and q x p_hadron planes)
+            LorentzVector q__ = new LorentzVector(q);
+            q__.boost(gNBoost);
+            LorentzVector lv__ = new LorentzVector(lv);
+            lv__.boost(gNBoost);
+            LorentzVector lv_max__ = new LorentzVector(lv_max);
+            lv_max__.boost(gNBoost);
+            Vector3 nhat   = q__.vect().cross(lv_max__.vect()); // vA x vB
+            Vector3 phihat = q__.vect().cross(lv__.vect());     // vC x vD
+            double sign__  = nhat.dot(lv.vect())>=0 ? 1 : -1; // sign of (vA x vB) . vD
+            double phi_h_  = sign__ * Math.acos(nhat.dot(phihat)/(nhat.mag()*phihat.mag()));
+            if (phi_h_<0) phi_h_ = 2*Math.PI + phi_h_;
 
-            // Get new phi_h
-            double phi_h_ = boostedLv.phi();
+            // // Get new phi_h
+            // double phi_h_ = boostedLv.phi();
 
             // Add entries to kinematics map NOTE: The # of kinematics added here must exactly match the # set in this.setAddIndivKin() above.
             kinematics.put(this._ikin[k++],z_);      //NOTE: z for individual hadron
@@ -790,15 +796,18 @@ public class Kinematics {
             double mx_     = lv_miss.mass();
             double phperp_ = lv.vect().mag()*(q.vect().cross(lv.vect()).mag()/(q.vect().mag()*lv.vect().mag()));
 
-            // // Get phi_h_ of momentum perpendicular to q relative to electron scattering plane ( just angle between q x l and q x p_hadron planes)
-            // Vector3 nhat   = q.vect().cross(lv_max.vect()); // vA x vB
-            // Vector3 phihat = q.vect().cross(lv.vect());     // vC x vD
-            // double sign__  = nhat.dot(lv.vect())>=0 ? 1 : -1; // sign of (vA x vB) . vD
-            // double phi_h_  = sign__ * Math.acos(nhat.dot(phihat)/(nhat.mag()*phihat.mag()));
-            // if (phi_h_<0) phi_h_ = 2*Math.PI + phi_h_;
-
-            // Get new phi_h
-            double phi_h_ = boostedLv.phi();
+            // Get phi_h_ in gN frame of momentum perpendicular to q relative to electron scattering plane ( just angle between q x l and q x p_hadron planes)
+            LorentzVector q__ = new LorentzVector(q);
+            q__.boost(gNBoost);
+            LorentzVector lv__ = new LorentzVector(boostedLv);
+            lv__.boost(gNBoost);
+            LorentzVector lv_max__ = new LorentzVector(lv_max);
+            lv_max__.boost(gNBoost);
+            Vector3 nhat   = q__.vect().cross(lv_max__.vect()); // vA x vB
+            Vector3 phihat = q__.vect().cross(lv__.vect());     // vC x vD
+            double sign__  = nhat.dot(lv.vect())>=0 ? 1 : -1; // sign of (vA x vB) . vD
+            double phi_h_  = sign__ * Math.acos(nhat.dot(phihat)/(nhat.mag()*phihat.mag()));
+            if (phi_h_<0) phi_h_ = 2*Math.PI + phi_h_;
 
             // Get final state mass for parent
             double mass_   = lv_parent.mass();
