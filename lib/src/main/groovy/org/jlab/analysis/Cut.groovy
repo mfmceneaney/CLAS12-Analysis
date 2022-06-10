@@ -1,13 +1,7 @@
 package org.jlab.analysis;
 
-// Java Imports
-import java.io.*;
-import java.util.*;
-
-// CLAS Physics Imports
-import org.jlab.jnp.hipo4.data.*;
-import org.jlab.jnp.hipo4.io.*;
-import org.jlab.jnp.physics.*;
+// Groovy Imports
+import groovy.transform.CompileStatic
 
 /**
 * Interface for lambda expressions to cut kinematic variables.
@@ -16,6 +10,7 @@ import org.jlab.jnp.physics.*;
 * @author  Matthew McEneaney
 */
 
+@CompileStatic
 public interface Cut {
     boolean cut(double var);
 }
