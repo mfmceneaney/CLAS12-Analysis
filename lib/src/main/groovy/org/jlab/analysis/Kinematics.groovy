@@ -1,5 +1,8 @@
 package org.jlab.analysis;
 
+// Groovy Imports
+import groovy.transform.CompileStatic
+
 // Java Imports
 import java.io.*;
 import java.util.*;
@@ -20,6 +23,7 @@ import org.jlab.jnp.physics.*;
 * @author  Matthew McEneaney
 */
 
+@CompileStatic
 public class Kinematics {
 
     protected static ArrayList<Integer>            _decay;        // List of Lund pids with first entry as parent particle
@@ -50,28 +54,28 @@ public class Kinematics {
     protected static boolean _addMxMomenta  = false;    // include px, py, pz from missing mass lorentz vector for exclusive analysis
 
     // built in lambdas
-    protected ConfigVar _getEventNum = (HipoReader reader, Event event) -> {
+    protected ConfigVar _getEventNum = (ConfigVar)(HipoReader reader, Event event) -> {
         Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
         Bank bank     = new Bank(schema);
         event.read(bank);
 		double num = bank.getInt("event",0);
 		return num; };
 
-    protected ConfigVar _getRunNum = (HipoReader reader, Event event) -> {
+    protected ConfigVar _getRunNum = (ConfigVar)(HipoReader reader, Event event) -> {
         Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
         Bank bank     = new Bank(schema);
         event.read(bank);
 		double num = bank.getInt("run",0);
 		return num; };
 
-    protected ConfigVar _getTorus = (HipoReader reader, Event event) -> {
+    protected ConfigVar _getTorus = (ConfigVar)(HipoReader reader, Event event) -> {
         Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
         Bank bank     = new Bank(schema);
         event.read(bank);
 		double torus = (double) bank.getFloat("torus",0);
 		return torus; };
 
-    protected ConfigVar _getHelicity = (HipoReader reader, Event event) -> {
+    protected ConfigVar _getHelicity = (ConfigVar)(HipoReader reader, Event event) -> {
         double helicity  = 0.0;
 		Schema schema = reader.getSchemaFactory().getSchema("REC::Event");
         Bank bank     = new Bank(schema);
@@ -79,7 +83,7 @@ public class Kinematics {
 		helicity = (double) bank.getByte("helicity",0);
 		return helicity; };
 
-    protected ConfigVar _getHelicityMC = (HipoReader reader, Event event) -> {
+    protected ConfigVar _getHelicityMC = (ConfigVar)(HipoReader reader, Event event) -> {
         double helicity  = 0.0;
         Schema schema = reader.getSchemaFactory().getSchema("MC::Header");
         Bank bank     = new Bank(schema);
@@ -87,7 +91,7 @@ public class Kinematics {
         helicity = (double) bank.getFloat("helicity",0);
         return helicity; };
 
-    protected ConfigVar _getBeamCharge = (HipoReader reader, Event event) -> {
+    protected ConfigVar _getBeamCharge = (ConfigVar)(HipoReader reader, Event event) -> {
         double bc = 9999;
 		Schema schema = reader.getSchemaFactory().getSchema("REC::Event");
         Bank bank     = new Bank(schema);
@@ -95,7 +99,7 @@ public class Kinematics {
 		bc = (double) bank.getFloat("beamCharge",0);
 		return bc; };
 
-    protected ConfigVar _getLiveTime = (HipoReader reader, Event event) -> {
+    protected ConfigVar _getLiveTime = (ConfigVar)(HipoReader reader, Event event) -> {
         double liveTime = 9999;
 		Schema schema = reader.getSchemaFactory().getSchema("REC::Event");
         Bank bank     = new Bank(schema);
@@ -103,7 +107,7 @@ public class Kinematics {
 		liveTime = (double) bank.getFloat("liveTime",0);
 		return liveTime; };
 
-    protected ConfigVar _getStartTime = (HipoReader reader, Event event) -> {
+    protected ConfigVar _getStartTime = (ConfigVar)(HipoReader reader, Event event) -> {
         double startTime = 9999;
 		Schema schema = reader.getSchemaFactory().getSchema("REC::Event");
         Bank bank     = new Bank(schema);
@@ -111,7 +115,7 @@ public class Kinematics {
 		startTime = (double) bank.getFloat("startTime",0);
 		return startTime; };
 
-    protected ConfigVar _getRFTime = (HipoReader reader, Event event) -> {
+    protected ConfigVar _getRFTime = (ConfigVar)(HipoReader reader, Event event) -> {
         double RFTime = 9999;
 		Schema schema = reader.getSchemaFactory().getSchema("REC::Event");
         Bank bank     = new Bank(schema);
@@ -275,7 +279,7 @@ public class Kinematics {
         // Loop this._decay pids and individual kinematics names and add to keyset
         int k = 0;
         HashMap<Integer,Integer> pidCounts = new HashMap<Integer,Integer>();
-        ArrayList<Integer> unique_pids = this._decay.stream().distinct().collect(Collectors.toList());
+        ArrayList<Integer> unique_pids = (ArrayList<Integer>)this._decay.stream().distinct().collect(Collectors.toList());
         for (Integer pid : unique_pids) { pidCounts.put(pid,0); }
         for (int i=0; i<this._decay.size(); i++) {
             Integer pid = this._decay.get(i);
@@ -306,7 +310,7 @@ public class Kinematics {
         // Loop this._decay pids and get particle name endings
         int k = 0;
         HashMap<Integer,Integer> pidCounts = new HashMap<Integer,Integer>();
-        ArrayList<Integer> unique_pids = this._decay.stream().distinct().collect(Collectors.toList());
+        ArrayList<Integer> unique_pids = (ArrayList<Integer>)this._decay.stream().distinct().collect(Collectors.toList());
         for (Integer pid : unique_pids) { pidCounts.put(pid,0); }
         for (int i=0; i<this._decay.size(); i++) {
             Integer pid = this._decay.get(i);
@@ -875,8 +879,8 @@ public class Kinematics {
         
         // Set final state lorentz vectors
         LorentzVector lv_max    = beam.lv();
-        LorentzVector lv_beam   = new LorentzVector(); lv_beam.setPxPyPzM(0.0, 0.0, Math.sqrt(Math.pow(this._constants.getBeamE(),2) - Math.pow(this._constants.getBeamM(),2)), this._constants.getBeamM()); // Assumes all energy is along pz...?
-        LorentzVector lv_target = new LorentzVector(); lv_target.setPxPyPzM(0.0, 0.0, this._constants.getTargetE(), this._constants.getTargetM()); //TODO: should fix this so mirrors line above...
+        LorentzVector lv_beam   = new LorentzVector(); lv_beam.setPxPyPzM(0, 0, Math.sqrt(Math.pow(this._constants.getBeamE(),2) - Math.pow(this._constants.getBeamM(),2)), this._constants.getBeamM()); // Assumes all energy is along pz...?
+        LorentzVector lv_target = new LorentzVector(); lv_target.setPxPyPzM(0, 0, this._constants.getTargetE(), this._constants.getTargetM()); //TODO: should fix this so mirrors line above...
         LorentzVector q = new LorentzVector(lv_beam);
         q.sub(lv_max);
         LorentzVector gN = new LorentzVector(q);
