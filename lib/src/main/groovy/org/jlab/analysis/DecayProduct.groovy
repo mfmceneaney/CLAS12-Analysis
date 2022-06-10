@@ -1,7 +1,7 @@
 package org.jlab.analysis;
 
-// Java Imports
-import java.util.*;
+// Groovy Imports
+import groovy.transform.CompileStatic
 
 // CLAS Physics Imports
 import org.jlab.jnp.physics.*;
@@ -15,6 +15,7 @@ import org.jlab.jnp.physics.*;
 * @author  Matthew McEneaney
 */
 
+@CompileStatic
 public class DecayProduct {
 
     int       _pid;
@@ -417,9 +418,9 @@ public class DecayProduct {
     * @param double px
     * @param double py
     * @param double pz
-    * @param double m
+    * @param double mass
     */
-    protected void setPxPyPzM(double px, double py, double pz, double e) {
+    protected void setPxPyPzM(double px, double py, double pz, double mass) {
 
         this._px = px; this._py = py; this._pz = pz; this.m(mass);
     }
