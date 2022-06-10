@@ -1,13 +1,11 @@
 package org.jlab.analysis;
 
-// Java Imports
-import java.io.*;
-import java.util.*;
+// Groovy Imports
+import groovy.transform.CompileStatic
 
 // CLAS Physics Imports
-import org.jlab.jnp.hipo4.data.*;
-import org.jlab.jnp.hipo4.io.*;
-import org.jlab.jnp.physics.*;
+import org.jlab.jnp.hipo4.data.Event;
+import org.jlab.jnp.hipo4.io.HipoReader;
 
 /**
 * Interface for lambda expressions to access run configuration variables
@@ -16,7 +14,9 @@ import org.jlab.jnp.physics.*;
 * @version 1.0
 * @author  Matthew McEneaney
 */
+import groovy.transform.CompileStatic
 
+@CompileStatic
 public interface ConfigVar {
     double get(HipoReader reader, Event event);
 }
