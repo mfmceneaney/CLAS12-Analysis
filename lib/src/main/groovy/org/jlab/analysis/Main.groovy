@@ -23,8 +23,7 @@ import org.jlab.jroot.TNtuple;
 * @author  Matthew McEneaney
 */
 
-
-@CompileStatic
+// @CompileStatic
 public class Main {
 
     /**
