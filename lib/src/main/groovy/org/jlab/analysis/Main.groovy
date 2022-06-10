@@ -1,5 +1,8 @@
 package org.jlab.analysis;
 
+// Groovy Imports
+import groovy.transform.CompileStatic
+
 // Java Imports
 import java.io.*;
 import java.util.*;
@@ -20,6 +23,8 @@ import org.jlab.jroot.TNtuple;
 * @author  Matthew McEneaney
 */
 
+
+@CompileStatic
 public class Main {
 
     /**
