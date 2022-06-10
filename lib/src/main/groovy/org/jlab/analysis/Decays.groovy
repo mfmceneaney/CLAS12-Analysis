@@ -1,5 +1,8 @@
 package org.jlab.analysis;
 
+// Groovy Imports
+import groovy.transform.CompileStatic
+
 // Java Imports
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +19,7 @@ import org.jlab.jnp.physics.*;
 * @author  Matthew McEneaney
 */
 
+@CompileStatic
 public class Decays {
 
     protected ArrayList<Integer>                 _decay;        // List of Lund pids with first entry as parent particle
@@ -29,9 +33,9 @@ public class Decays {
     protected Constants                          _constants;
     protected FiducialCuts                       _FC;
     protected boolean                            _requireFC;
-    protected ArrayList<ArrayList<DecayProduct>> _pidList;        // List of lists for each pid in decay
+    protected ArrayList<DecayProduct>            _pidList;        // List of lists for each pid in decay
     protected ArrayList<ArrayList<DecayProduct>> _comboPidList;
-    protected ArrayList<ArrayList<DecayProduct>> _chargeList;     // List of lists for each charge in decay
+    protected ArrayList<DecayProduct>            _chargeList;     // List of lists for each charge in decay
     protected ArrayList<ArrayList<DecayProduct>> _comboChargeList;
 
     /** 
@@ -196,7 +200,7 @@ public class Decays {
             ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>(oldlist); // IMPORTANT: declare new list
             newlist.add(p);
             ArrayList<DecayProduct> newplist = new ArrayList<DecayProduct>(plist); // IMPORTANT: declare new list
-            newplist = newplist.subList(Math.min(pIndex+1,newplist.size()),newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._decay and this._pidList are sorted)
+            newplist = (ArrayList<DecayProduct>)newplist.subList(Math.min(pIndex+1,newplist.size()),newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._decay and this._pidList are sorted)
             if (dIndex == this._decay.size()-1) { this._comboPidList.add(newlist); } //Important: -1!
             else { setComboPidList(dIndex+1,newplist,newlist); }
         }
@@ -300,7 +304,7 @@ public class Decays {
 
     /**
     * Recursive helper function to create combo list for all possible decay particle combinations in event.
-    * Relies on this._charges and this._ChargeList (passed as plist argument the first time) 
+    * Relies on this._charges and this._chargeList (passed as plist argument the first time) 
     * being sorted.  If these are not sorted this will NOT work!
     * @param int dIndex
     * @param ArrayList<DecayProduct> oldlist
@@ -313,7 +317,7 @@ public class Decays {
             ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>(oldlist); // IMPORTANT: declare new list
             newlist.add(p);
             ArrayList<DecayProduct> newplist = new ArrayList<DecayProduct>(plist); // IMPORTANT: declare new list
-            newplist = newplist.subList(Math.min(pIndex+1,newplist.size()),newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._charges and this._ChargeList are sorted)
+            newplist = (ArrayList<DecayProduct>)newplist.subList(Math.min(pIndex+1,newplist.size()),newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._charges and this._chargeList are sorted)
             if (dIndex == this._charges.size()-1) { this._comboChargeList.add(newlist); } //Important: -1!
             else { setComboChargeList(dIndex+1,newplist,newlist); }
         }
@@ -326,9 +330,9 @@ public class Decays {
     protected ArrayList<ArrayList<DecayProduct>> getComboChargeList() {
 
         if (this._comboChargeList.size()!=0) { return this._comboChargeList; }
-        if (this._ChargeList.size()==0) { this.setChargeList(); }
+        if (this._chargeList.size()==0) { this.setChargeList(); }
         ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>();
-        setComboChargeList(0,this._ChargeList,newlist);
+        setComboChargeList(0,this._chargeList,newlist);
 
         return this._comboChargeList;
     }
