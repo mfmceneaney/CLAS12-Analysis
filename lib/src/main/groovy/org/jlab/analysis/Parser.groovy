@@ -1,5 +1,8 @@
 package org.jlab.analysis;
 
+// Groovy Imports
+import groovy.transform.CompileStatic
+
 // Java Imports
 import java.io.*;
 import java.util.*;
@@ -12,6 +15,7 @@ import java.text.*;
 * @author  Matthew McEneaney
 */
 
+@CompileStatic
 public class Parser {
 
     /**
@@ -174,8 +178,9 @@ public class Parser {
 
         // Check for drive file
         if (args[0].equals("-d")) {
+            String drivePath = args[1];
             try {
-                String drivePath = args[1]; File driveFile = new File(drivePath);
+                File driveFile = new File(drivePath);
                 Scanner reader = new Scanner(driveFile);
                 System.out.println(" Loading options:");
                 String options = "";
@@ -265,7 +270,7 @@ public class Parser {
                         String[] arr = args[i+1].replace(',',':').split(':'); //TODO: Make sure to change later instances!
 
                         // Get particle groups delimited with just commas
-                        ArrayList<ArrayList<String>> arrnew = args[i+1].split(':').collect{ el -> return el.split(',')};
+                        ArrayList<ArrayList<String>> arrnew = (ArrayList<ArrayList<String>>)args[i+1].split(':').collect{ el -> return el.split(',')};
                         int k = 0;
                         ArrayList<ArrayList<Integer>> groups = new ArrayList<ArrayList<Integer>>();
                         for (ArrayList<String> group : arrnew) {
@@ -303,7 +308,7 @@ public class Parser {
                         String[] arr = args[i+1].replace(',',':').split(':'); //TODO: Make sure to change later instances!
 
                         // Get particle groups delimited with just commas
-                        ArrayList<ArrayList<String>> arrnew = args[i+1].split(':').collect{ el -> return el.split(',')};
+                        ArrayList<ArrayList<String>> arrnew = (ArrayList<ArrayList<String>>)args[i+1].split(':').collect{ el -> return el.split(',')};
                         int k = 0;
                         ArrayList<ArrayList<Integer>> groups = new ArrayList<ArrayList<Integer>>();
                         for (ArrayList<String> group : arrnew) {
@@ -373,7 +378,7 @@ public class Parser {
                     if (args.length>2) { try {
                         ArrayList<Integer> pids    = new ArrayList<Integer>();
                         ArrayList<Integer> filters = new ArrayList<Integer>();
-                        String[] arr = (arg.contains(':') ? args[i+1].split(':') : [args[i+1]] );
+                        String[] arr = (String[])(arg.contains(':') ? args[i+1].split(':') : [args[i+1]]);
                         for (String el : arr) {
                             pids.add(Integer.parseInt(el.split(',')[0]));
                             filters.add(Integer.parseInt(el.split(',')[1]));
