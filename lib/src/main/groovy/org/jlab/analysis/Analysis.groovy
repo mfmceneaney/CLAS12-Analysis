@@ -1,5 +1,8 @@
 package org.jlab.analysis;
 
+// Groovy Imports
+import groovy.transform.CompileStatic
+
 // Java Imports
 import java.io.*;
 import java.util.*;
@@ -26,6 +29,7 @@ import clasqa.QADB;
 * @author  Matthew McEneaney
 */
 
+@CompileStatic
 public class Analysis {
 
     protected Constants                      _constants;
@@ -89,7 +93,7 @@ public class Analysis {
         this._dpMap            = new ArrayList<Integer>();
         this._kinematics       = new Kinematics(this._constants, this._decay, this._groups);
         this._qaMethod         = new String("OkForAsymmetry");
-        this._fiducialCuts     = new FiducialCuts();
+        this._fiducialCuts     = new FiducialCuts(this._constants);
         this._inPath           = new String("");
         this._outPath          = new String("Analysis.root");
         this._tupleNames       = new String("");
@@ -115,7 +119,7 @@ public class Analysis {
         this._dpMap            = new ArrayList<Integer>();
         this._kinematics       = new Kinematics(this._constants, this._decay, this._groups);
         this._qaMethod         = new String("OkForAsymmetry");
-        this._fiducialCuts     = new FiducialCuts();
+        this._fiducialCuts     = new FiducialCuts(this._constants);
         this._inPath           = inPath;
         this._outPath          = outPath;
         this._tupleNames       = new String("");
@@ -145,7 +149,7 @@ public class Analysis {
         this._dpMap            = new ArrayList<Integer>();
         this._kinematics       = new Kinematics(this._constants, this._mcdecay, this._groups);
         this._qaMethod         = new String("OkForAsymmetry");
-        this._fiducialCuts     = new FiducialCuts();
+        this._fiducialCuts     = new FiducialCuts(this._constants);
         this._inPath           = inPath;
         this._outPath          = outPath;
         this._tupleNames       = new String("");
@@ -212,7 +216,7 @@ public class Analysis {
         // Create map for matching to the sorted this._decays
         LinkedHashMap<Integer, Integer> map = new LinkedHashMap<Integer, Integer>(); //NOTE: Maps pid to original index in decay.
         int i = 0; for (int pid : decay) { map.put(pid,i); i++; }
-        map = map.sort(); //NOTE: Now same sorting as this._decays will have.  Reassignment is important!
+        map = (LinkedHashMap<Integer,Integer>)map.sort(); //NOTE: Now same sorting as this._decays will have.  Reassignment is important!
         LinkedHashMap<Integer, Integer> map2 = new LinkedHashMap<Integer, Integer>(); //NOTE: Maps old indices to new.
         int k = 0; for (Integer index : map.values()) { map2.put(index,k); k++; }
         this._decaymap = map2;
@@ -267,7 +271,7 @@ public class Analysis {
             if (map.containsKey(pid)) { ArrayList<Integer> l = new ArrayList<Integer>(map.get(pid)); l.add(i); map.put(pid,l); i++; } //NOTE: Not sure if this will modify in place the list at key==pid
             else { ArrayList<Integer> l = new ArrayList<Integer>(); l.add(i); map.put(pid,l); i++; }
         }
-        map = map.sort(); //NOTE: Now same sorting as this._decays will have.  Reassignment is important!
+        map = (LinkedHashMap<Integer, ArrayList<Integer>>)map.sort(); //NOTE: Now same sorting as this._decays will have.  Reassignment is important!
         LinkedHashMap<Integer, Integer> map2 = new LinkedHashMap<Integer, Integer>(); //NOTE: Maps old indices to new.
         int k = 0; for (ArrayList<Integer> list : map.values()) { for (Integer index : list) { map2.put(index,k); k++; } }
         this._decaymap = map2;
@@ -693,6 +697,17 @@ public class Analysis {
     protected void setTag(int... tag_pids) {
 
         this._require_tag = true;
+        this._tag_pids    = new ArrayList<Integer>();
+        for (int i : tag_pids) { this._tag_pids.add(i); }
+    }
+
+    /**
+    * Set boolean for requiring pid tag(s) in event and lund pid(s) to tag.
+    * @param ArrayList<Integer> tag_pid
+    */
+    protected void setTag(ArrayList<Integer> tag_pids) {
+
+        this._require_tag = true;
         this._tag_pids    = tag_pids;
     }
 
@@ -933,7 +948,7 @@ public class Analysis {
             this._event_counter += 1;
 
             // Read needed banks only once!
-            if (this._requireFC) { this._FC.setArrays(reader,event); }
+            if (this._requireFC) { this._fiducialCuts.setArrays(reader,event); }
             Decays decays = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC); // Fiducial cuts implemented in Decays object
 
             // Check for event pid tag and filters if requested
@@ -976,7 +991,7 @@ public class Analysis {
                         data.add(beam.phi());
                     }
                     data.add(beam.chi2pid());
-                    data.add(beam.status());
+                    data.add((double)beam.status());
                 }
                 for (DecayProduct p : l) {
                     data.add(p.px());
@@ -993,9 +1008,9 @@ public class Analysis {
                         data.add(p.phi());
                     }
                     data.add(p.chi2pid());
-                    data.add(p.status());
+                    data.add((double)p.status());
                     if (!this._require_pid) {
-                        data.add(p.pid());
+                        data.add((double)p.pid());
                     }
                 }
 		
@@ -1038,7 +1053,7 @@ public class Analysis {
             this._event_counter += 1;
 
             // Read needed banks only once!
-            MCDecays decays = new MCDecays(this._decay,this._parents,this._groups,reader,event,this._constants);
+            MCDecays decays = new MCDecays(this._decay,this._parents,this._dpMap,reader,event,this._constants);
 
             // Check for event pid tag if requested
             if (this._require_tag) {
@@ -1093,7 +1108,7 @@ public class Analysis {
                         data.add(p.phi());
                     }
                     if (!this._require_pid) {
-                        data.add(p.pid());
+                        data.add((double)p.pid());
                     }
                 }
 		
@@ -1143,9 +1158,9 @@ public class Analysis {
             int evnum  = bank.getInt('event',0);
 
             // Read needed banks only once!
-            if (this._requireFC) { this._FC.setArrays(reader,event); }
+            if (this._requireFC) { this._fiducialCuts.setArrays(reader,event); }
             Decays decays     = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC); // Fiducial cuts implemented in Decays object
-            MCDecays mcdecays = new MCDecays(this._mcdecay,this._parents,this._groups,reader,event,this._constants);
+            MCDecays mcdecays = new MCDecays(this._mcdecay,this._parents,this._dpMap,reader,event,this._constants);
 
             // Check for event pid tag and filters if requested
             if (this._require_tag) {
@@ -1191,7 +1206,7 @@ public class Analysis {
                         data.add(beam.phi());
                     }
                     data.add(beam.chi2pid());
-                    data.add(beam.status());
+                    data.add((double)beam.status());
                 }
                 for (DecayProduct p : l) {
                     data.add(p.px());
@@ -1208,9 +1223,9 @@ public class Analysis {
                         data.add(p.phi());
                     }
                     data.add(p.chi2pid());
-                    data.add(p.status());
+                    data.add((double)p.status());
                     if (!this._require_pid) {
-                        data.add(p.pid());
+                        data.add((double)p.pid());
                     }
                 }
 		
@@ -1262,7 +1277,7 @@ public class Analysis {
             int evnum  = bank.getInt('event',0);
 
             // Read needed banks only once!
-            if (this._requireFC) { this._FC.setArrays(reader,event); }
+            if (this._requireFC) { this._fiducialCuts.setArrays(reader,event); }
             Decays decays     = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC); // Fiducial cuts implemented in Decays object
             MCDecays mcdecays = new MCDecays(this._mcdecay,this._parents,this._dpMap,reader,event,this._constants);
 
@@ -1310,7 +1325,7 @@ public class Analysis {
                         data.add(beam.phi());
                     }
                     data.add(beam.chi2pid());
-                    data.add(beam.status());
+                    data.add((double)beam.status());
 
                     // Add MC::Lund beam
                     data.add(mcbeam.px());
@@ -1327,7 +1342,7 @@ public class Analysis {
                         data.add(mcbeam.phi());
                     }
                     data.add(mcbeam.chi2pid());
-                    data.add(mcbeam.status());
+                    data.add((double)mcbeam.status());
                 }
 
                 // Add REC::Particle particles
@@ -1346,9 +1361,9 @@ public class Analysis {
                         data.add(p.phi());
                     }
                     data.add(p.chi2pid());
-                    data.add(p.status());
+                    data.add((double)p.status());
                     if (!this._require_pid) {
-                        data.add(p.pid());
+                        data.add((double)p.pid());
                     }
                 }
                 
@@ -1368,7 +1383,7 @@ public class Analysis {
                         data.add(p.phi());
                     }
                     if (!this._require_pid) {
-                        data.add(p.pid());
+                        data.add((double)p.pid());
                     }
                 }
 		
@@ -1429,7 +1444,7 @@ public class Analysis {
         }
 
         HashMap<Integer,Integer> pidCounts = new HashMap<Integer,Integer>();
-        ArrayList<Integer> unique_pids = this._decay.stream().distinct().collect(Collectors.toList());
+        ArrayList<Integer> unique_pids = (ArrayList<Integer>)this._decay.stream().distinct().collect(Collectors.toList());
         for (Integer pid : unique_pids) { pidCounts.put(pid,0); }
         for (int i=0; i<this._decay.size(); i++) {
             Integer pid = this._decay.get(i);
@@ -1443,7 +1458,7 @@ public class Analysis {
         if (this._combo) { //NOTE: MC Part for MC/REC combo //TODO: Note: vt and chi2pid/status entries (all 0) are added for combo MC particles...could make nicer...
             this._tupleNames += ":"; // IMPORTANT! Not added to last entry from above.
             HashMap<Integer,Integer> pidCountsMC = new HashMap<Integer,Integer>();
-            ArrayList<Integer> unique_pidsMC = this._mcdecay.stream().distinct().collect(Collectors.toList());
+            ArrayList<Integer> unique_pidsMC = (ArrayList<Integer>)this._mcdecay.stream().distinct().collect(Collectors.toList());
             for (Integer pid : unique_pidsMC) { pidCountsMC.put(pid,0); }
             for (int i=0; i<this._mcdecay.size(); i++) {
                 Integer pid = this._mcdecay.get(i);
@@ -1500,7 +1515,8 @@ public class Analysis {
         System.out.println(" Events selected:  "+this._data_counter+"/"+this._event_counter);
 
         // Create ROOT Output file
-        int index = num/this._split-1;
+        float ratio = num/this._split; //NOTE: //TODO: Possible loss of precision here...
+        int index = (int)ratio-1;
         int last; if (num == this._split) { last = 6; } else { last = 6+(index>10 ? 3 : 2); /*TODO: Handle >100 case -> just set some global basename variable.*/}
         this._outPath = this._outPath[0..-last] + "_" + index + ".root"; // just a groovy capability, assumes file name end is .root
         this._outFile = new ROOTFile(this._outPath); //WARNING: This will currently overwrite existing files
