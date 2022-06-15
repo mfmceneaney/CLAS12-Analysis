@@ -365,6 +365,15 @@ public class DecayProduct {
     }
 
     /**
+    * Change particle's mass leaving pid same
+    * @param int pid
+    */
+    protected void changeMass(int pid) {
+
+        this.m(this._constants.getMass(pid));
+    }
+
+    /**
     * Access particle's mass.
     * @return double _m
     */
