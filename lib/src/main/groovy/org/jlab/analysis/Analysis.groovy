@@ -1435,7 +1435,7 @@ public class Analysis {
         if (!this._require_pid) {names += [":pid_"]; } //NOTE: Just a groovy capability // use .addAll() for java
         String pname = this._constants.getName(this._constants.getBeamPID());
         if (this._require_e) {
-            for (String name : names) { this._tupleNames += name + pname; }
+            for (String name : names) { if (name==":pid_") continue; /*NOTE: ADDED 6/15/22*/ this._tupleNames += name + pname; }
             this._tupleNames += ":";
             if (this._match) {//NOTE: Double entries for matching MC/REC banks
                 for (String name : names) { this._tupleNames += name + pname + "_MC"; }
