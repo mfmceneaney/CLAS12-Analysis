@@ -698,7 +698,7 @@ public class Kinematics {
         boostedTarget.boost(gNBoost);
         for (int i=0; i<list.size(); i++) { //IMPORTANT: start at 0 since beam is separate from list { //NOTE: IMPORTANT: Should already be ordered same as this._decay
             DecayProduct p = list.get(i);
-            if (!this._strict) { p.changePid(this._decay.get(i)); } //NOTE: Calculate with assumed mass unless strict option selected
+            if (!this._strict) { p.changeMass(this._decay.get(i)); } //NOTE: Calculate with assumed mass unless strict option selected
 
             // Grab lorentz vectors and boost
             LorentzVector lv = p.lv();
@@ -766,7 +766,7 @@ public class Kinematics {
             ArrayList<LorentzVector> lvList = new ArrayList<LorentzVector>();
             for (int i : group) {
                 DecayProduct p = list.get(i);
-                if (!this._strict) { p.changePid(this._decay.get(i)); } //NOTE: Calculate with assumed mass unless strict option selected
+                if (!this._strict) { p.changeMass(this._decay.get(i)); } //NOTE: Calculate with assumed mass unless strict option selected
                 lvList.add(p.lv());
             }
 
@@ -817,7 +817,7 @@ public class Kinematics {
             double sign = 1;
             for (int i : group) {
                 DecayProduct p    = list.get(i);
-                if (!this._strict) { p.changePid(this._decay.get(i)); } //NOTE: Calculate with assumed mass unless strict option selected
+                if (!this._strict) { p.changeMass(this._decay.get(i)); } //NOTE: Calculate with assumed mass unless strict option selected
                 LorentzVector lv_ = p.lv();
                 if (this._constants.getCharge(this._decay.get(i))<0) {sign = -1;}
                 alpha_ += sign * lv_parent.vect().dot(lv_.vect())/lv_parent.vect().mag();
@@ -881,7 +881,7 @@ public class Kinematics {
         LorentzVector lv_parent = new LorentzVector(); double px = 0; double py = 0; double pz = 0; double en = 0;
         for (int i=0; i<list.size(); i++) {
             DecayProduct p = list.get(i);
-            if (!this._strict) { p.changePid(this._decay.get(i)); } //NOTE: Calculate with assumed mass unless strict option selected
+            if (!this._strict) { p.changeMass(this._decay.get(i)); } //NOTE: Calculate with assumed mass unless strict option selected
             px += p.px(); py += p.py(); pz += p.pz(); en += p.e();
         }
         lv_parent.setPxPyPzE(px,py,pz,en); //NOTE: for some reason lv_parent.add(lv) doesn't do what it's supposed to...it seems like it's boosting to some other frame in the process
