@@ -1110,6 +1110,8 @@ public class Analysis {
                     if (!this._require_pid) {
                         data.add((double)p.pid());
                     }
+                    data.add((double)p.parent()); //TODO:DEBUGGING parent index (for matching)
+                    data.add((double)p.ppid()); //TODO:DEBUGGING parent pid
                 }
 		
                 // Fill TNTuple
@@ -1435,9 +1437,10 @@ public class Analysis {
         if (this._addAngles) { names += [":theta_",":phi_"]; } //NOTE: Just a groovy capability
         if (!this._useMC || this._combo || this._match) { names += [":chi2pid_",":status_"]; }
         if (!this._require_pid) {names += [":pid_"]; } //NOTE: Just a groovy capability // use .addAll() for java
+        if (this._useMC && !this._combo && !this._match) { names += [":pidx_",":ppid_"]; } //NOTE: Add parent index and pid for MC only events
         String pname = this._constants.getName(this._constants.getBeamPID());
         if (this._require_e) {
-            for (String name : names) { if (name==":pid_") continue; /*NOTE: ADDED 6/15/22*/ this._tupleNames += name + pname; }
+            for (String name : names) { if (name==":pid_" || name==":pidx_" || name==":ppid_") continue; /*NOTE: ADDED 6/15/22*/ this._tupleNames += name + pname; }
             this._tupleNames += ":";
             if (this._match) {//NOTE: Double entries for matching MC/REC banks
                 for (String name : names) { this._tupleNames += name + pname + "_MC"; }
