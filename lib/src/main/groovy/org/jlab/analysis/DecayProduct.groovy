@@ -22,6 +22,7 @@ public class DecayProduct {
     int       _index;
     int       _parent;
     int       _daughter;
+    int       _ppid; //NOTE: ADDED
     int       _charge;
     double    _px;
     double    _py;
@@ -46,6 +47,12 @@ public class DecayProduct {
     public DecayProduct(int pid, double px, double py, double pz, double vx, double vy, double vz, int index, int parent, int daughter) {
         this.setVector(pid,px,py,pz,vx,vy,vz);
         this.setIndices(index,parent,daughter);
+    } //NOTE: ADDED
+
+    public DecayProduct(int pid, double px, double py, double pz, double vx, double vy, double vz, int index, int parent, int daughter, int ppid) {
+        this.setVector(pid,px,py,pz,vx,vy,vz);
+        this.setIndices(index,parent,daughter);
+        this.ppid(ppid);
     }
 
     public DecayProduct(int pid, double px, double py, double pz, double vx, double vy, double vz) {
@@ -81,6 +88,8 @@ public class DecayProduct {
         this._vt       = (double) p.vt();
         this._chi2pid  = (double) p.chi2pid();
         this._stat     = (int)    p.status();
+        this.setIndices(p.index(),p.parent(),p.daughter());//NOTE: ADDED
+        this.ppid(p.ppid());//NOTE: ADDED    
     }
 
     /**
@@ -196,6 +205,24 @@ public class DecayProduct {
     protected int parent() {
 
         return this._parent;
+    }
+
+    /**
+    * Set particle's parent pid.
+    * @param int ppid
+    */
+    protected void ppid(int ppid) {
+
+        this._ppid = ppid;
+    }
+
+    /**
+    * Access particle's parent pid.
+    * @return int _ppid
+    */
+    protected int ppid() {
+
+        return this._ppid;
     }
 
     /**
