@@ -93,6 +93,7 @@ public class MCDecays {
             int pid        = this._bank.getInt("pid", i);
             int parent     = this._bank.getInt("parent", i);
             int daughter   = this._bank.getInt("daughter", i);
+            int ppid       = this._bank.getInt("pid", parent-1); //NOTE: Lund index begins at 1 but bank index at 0
             
             // Get momenta and vertices
             double px = this._bank.getFloat("px", i);
@@ -102,7 +103,7 @@ public class MCDecays {
             double vy = this._bank.getFloat("vy", i);
             double vz = this._bank.getFloat("vz", i);
 
-            DecayProduct p = new DecayProduct(pid,px,py,pz,vx,vy,vz,i+1,parent,daughter);
+            DecayProduct p = new DecayProduct(pid,px,py,pz,vx,vy,vz,i+1,parent,daughter,ppid);
             this._particleList.add(p);
         }
     }
@@ -131,6 +132,7 @@ public class MCDecays {
             if (!this._decay.contains(pid) && !this._parents.contains(pid) && !this._constants.getBeamPID()==pid) { continue; }
             int parent     = this._bank.getInt("parent", i);
             int daughter   = this._bank.getInt("daughter", i);
+            int ppid       = this._bank.getInt("pid", parent-1); //NOTE: Lund index begins at 1 but bank index at 0
             
             // Get momenta and vertices
             double px = this._bank.getFloat("px", i);
@@ -140,7 +142,7 @@ public class MCDecays {
             double vy = this._bank.getFloat("vy", i);
             double vz = this._bank.getFloat("vz", i);
 
-            DecayProduct p = new DecayProduct(pid,px,py,pz,vx,vy,vz,i+1,parent,daughter);
+            DecayProduct p = new DecayProduct(pid,px,py,pz,vx,vy,vz,i+1,parent,daughter,ppid);
             this._particleList.add(p);
         }
     }
@@ -384,6 +386,7 @@ public class MCDecays {
             if (!this._charges.contains(charge) && !this._parCharges.contains(charge) && !this._constants.getCharge(this._constants.getBeamPID())==charge) { continue; }
             int parent     = this._bank.getInt("parent", i);
             int daughter   = this._bank.getInt("daughter", i);
+            int ppid       = this._bank.getInt("pid", parent-1);
             
             // Get momenta and vertices
             double px = this._bank.getFloat("px", i);
@@ -393,7 +396,7 @@ public class MCDecays {
             double vy = this._bank.getFloat("vy", i);
             double vz = this._bank.getFloat("vz", i);
 
-            DecayProduct p = new DecayProduct(pid,px,py,pz,vx,vy,vz,i+1,parent,daughter);
+            DecayProduct p = new DecayProduct(pid,px,py,pz,vx,vy,vz,i+1,parent,daughter,ppid);
             p.charge(charge); //TODO: Necessary?
             //TODO: sector cut
             this._particleList.add(p);
