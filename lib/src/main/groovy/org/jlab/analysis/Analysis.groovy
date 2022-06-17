@@ -1385,6 +1385,8 @@ public class Analysis {
                     if (!this._require_pid) {
                         data.add((double)p.pid());
                     }
+                    data.add((double)p.parent()); //TODO:DEBUGGING parent index (for matching)
+                    data.add((double)p.ppid()); //TODO:DEBUGGING parent pid
                 }
 		
                 // Fill TNTuple
@@ -1475,6 +1477,7 @@ public class Analysis {
         if (this._addVertices) { names += [":vx_",":vy_",":vz_",":vt_"]; } //NOTE: Just a groovy capability, MC::Lund does not have vt entry
         if (this._addAngles) { names += [":theta_",":phi_"]; } //NOTE: Just a groovy capability
         if (!this._require_pid) {names += [":pid_"]; } //NOTE: Just a groovy capability // use .addAll() for java
+        names += [":pidx_",":ppid_"]; //NOTE:  Add parent index and pid //TODO:DEBUGGING
 
         // Double entries if requiring MC::Lund and REC::Particle (matching option)
         if (this._match) {
