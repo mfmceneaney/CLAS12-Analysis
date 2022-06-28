@@ -44,6 +44,8 @@ public class Kinematics {
     protected static boolean _addRunNum     = false;    // include event number in TNTuple
     protected static boolean _addTorus      = false;    // include torus scale in TNTuple
     protected static boolean _addHelicity   = true;     // include helicity in TNTuple
+    protected static boolean _addMLPred     = false;    // include ML prediction in TNTuple
+    protected static boolean _addMLLabel    = false;    // include ML label in TNTuple
     protected static boolean _addBeamCharge = false;    // include beam charge in TNTuple
     protected static boolean _addLiveTime   = false;    // include live time in TNTuple
     protected static boolean _addStartTime  = false;    // include start time in TNTuple
@@ -82,6 +84,22 @@ public class Kinematics {
         event.read(bank);
 		helicity = (double) bank.getByte("helicity",0);
 		return helicity; };
+
+    protected ConfigVar _getMLPred = (ConfigVar)(HipoReader reader, Event event) -> {
+        double pred  = 0.0;
+		Schema schema = reader.getSchemaFactory().getSchema("ML::pred");
+        Bank bank     = new Bank(schema);
+        event.read(bank);
+		pred = (double) bank.getFloat("pred",0);
+		return pred; };
+
+    protected ConfigVar _getMLLabel = (ConfigVar)(HipoReader reader, Event event) -> {
+        double label  = 0.0;
+		Schema schema = reader.getSchemaFactory().getSchema("ML::pred");
+        Bank bank     = new Bank(schema);
+        event.read(bank);
+		label = (double) bank.getFloat("label",0);
+		return label; };
 
     protected ConfigVar _getHelicityMC = (ConfigVar)(HipoReader reader, Event event) -> {
         double helicity  = 0.0;
@@ -243,6 +261,10 @@ public class Kinematics {
     protected boolean addTorus() {return this._addTorus;}
     protected void setAddHelicity(boolean addHelicity) {this._addHelicity = addHelicity; if (addHelicity) {this._configs.put("helicity",this._getHelicity);} else {this._configs.remove("helicity");}}
     protected boolean addHelicity() {return this._addHelicity;}
+    protected void setAddMLPred(boolean addMLPred) {this._addMLPred = addMLPred; if (addMLPred) {this._configs.put("MLPred",this._getMLPred);} else {this._configs.remove("MLPred");}}
+    protected boolean addMLPred() {return this._addMLPred;}
+    protected void setAddMLLabel(boolean addMLLabel) {this._addMLLabel = addMLLabel; if (addMLLabel) {this._configs.put("MLLabel",this._getMLLabel);} else {this._configs.remove("MLLabel");}}
+    protected boolean addMLLabel() {return this._addMLLabel;}
     protected void setAddBeamCharge(boolean addBeamCharge) {this._addBeamCharge = addBeamCharge; if (addBeamCharge) {this._configs.put("beamCharge",this._getBeamCharge);} else {this._configs.remove("beamCharge");}}
     protected boolean addBeamCharge() {return this._addBeamCharge;}
     protected void setAddLiveTime(boolean addLiveTime) {this._addLiveTime = addLiveTime; if (addLiveTime) {this._configs.put("liveTime",this._getLiveTime);} else {this._configs.remove("liveTime");}}
