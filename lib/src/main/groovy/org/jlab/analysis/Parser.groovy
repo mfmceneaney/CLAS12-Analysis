@@ -335,6 +335,7 @@ public class Parser {
                 case "-s":   analysis.setStrict(true); valid_opt = true; break;
                 case "-rn":  analysis.setAddRunNum(true); valid_opt = true; break;
                 case "-en":  analysis.setAddEvNum(true); valid_opt = true; break;
+                case "-ml":  analysis.setAddML(true); valid_opt = true; break;
                 case "-lk":  analysis.setLambdaKin(true); valid_opt = true; break;
                 case "-ik":  analysis.setIndivKin(true); valid_opt = true; break;
                 case "-qa":  analysis.setQA(true); valid_opt = true; break;
