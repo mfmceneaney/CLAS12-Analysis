@@ -239,17 +239,17 @@ public class Kinematics {
     protected boolean addEvNum() {return this._addEvNum;}
     protected void setAddRunNum(boolean addRunNum) {this._addRunNum = addRunNum; if (addRunNum) {this._configs.put("run",this._getRunNum);} else {this._configs.remove("run");}}
     protected boolean addRunNum() {return this._addRunNum;}
-    protected void setAddTorus(boolean addTorus) {this._addTorus = addTorus; if (addTorus) {this._configs.put("torus",this._getEventNum);} else {this._configs.remove("event");}}
+    protected void setAddTorus(boolean addTorus) {this._addTorus = addTorus; if (addTorus) {this._configs.put("torus",this._getTorus);} else {this._configs.remove("torus");}}
     protected boolean addTorus() {return this._addTorus;}
-    protected void setAddHelicity(boolean addHelicity) {this._addHelicity = addHelicity; if (addHelicity) {this._configs.put("helicity",this._getEventNum);} else {this._configs.remove("event");}}
+    protected void setAddHelicity(boolean addHelicity) {this._addHelicity = addHelicity; if (addHelicity) {this._configs.put("helicity",this._getHelicity);} else {this._configs.remove("helicity");}}
     protected boolean addHelicity() {return this._addHelicity;}
-    protected void setAddBeamCharge(boolean addBeamCharge) {this._addBeamCharge = addBeamCharge; if (addBeamCharge) {this._configs.put("beamCharge",this._getEventNum);} else {this._configs.remove("event");}}
+    protected void setAddBeamCharge(boolean addBeamCharge) {this._addBeamCharge = addBeamCharge; if (addBeamCharge) {this._configs.put("beamCharge",this._getBeamCharge);} else {this._configs.remove("beamCharge");}}
     protected boolean addBeamCharge() {return this._addBeamCharge;}
-    protected void setAddLiveTime(boolean addLiveTime) {this._addLiveTime = addLiveTime; if (addLiveTime) {this._configs.put("liveTime",this._getEventNum);} else {this._configs.remove("event");}}
+    protected void setAddLiveTime(boolean addLiveTime) {this._addLiveTime = addLiveTime; if (addLiveTime) {this._configs.put("liveTime",this._getLiveTime);} else {this._configs.remove("liveTime");}}
     protected boolean addLiveTime() {return this._addLiveTime;}
-    protected void setAddStartTime(boolean addStartTime) {this._addStartTime = addStartTime; if (addStartTime) {this._configs.put("startTime",this._getEventNum);} else {this._configs.remove("event");}}
+    protected void setAddStartTime(boolean addStartTime) {this._addStartTime = addStartTime; if (addStartTime) {this._configs.put("startTime",this._getStartTime);} else {this._configs.remove("startTime");}}
     protected boolean addStartTime() {return this._addStartTime;}
-    protected void setAddRFTime(boolean addRFTime) {this._addRFTime = addRFTime; if (addRFTime) {this._configs.put("RFTime",this._getEventNum);} else {this._configs.remove("event");}}
+    protected void setAddRFTime(boolean addRFTime) {this._addRFTime = addRFTime; if (addRFTime) {this._configs.put("RFTime",this._getRFTime);} else {this._configs.remove("RFTime");}}
     protected boolean addRFTime() {return this._addRFTime;}
 
     protected void setAddMxMomenta(boolean addMxMomenta) {
