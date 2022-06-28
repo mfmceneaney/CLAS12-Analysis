@@ -63,6 +63,7 @@ public class Analysis {
     protected static boolean _strict       = false;					// strict mass from pid assignment for kinematics calculations
     protected static boolean _addRunNum    = false;					// include event number in TNTuple (always added as zeroeth entry)
     protected static boolean _addEvNum     = false;					// include event number in TNTuple (always added as zeroeth entry or just after run #)
+    protected static boolean _addML        = false;					// include ML predictions and labels in TNTuple (NOTE: NOT SURE WHERE THIS WILL BE ADDED... TODO...)
     protected static boolean _lambdaKin    = false;					// include special two particle decay kinematics for Lambda baryons
     protected static boolean _indivKin     = false;					// include extra individual particle kinematics
     protected static boolean _groupKin     = false;					// include extra grouped particles' kinematics
@@ -796,6 +797,17 @@ public class Analysis {
 
         this._addRunNum = addRunNum;
         this._kinematics.setAddRunNum(addRunNum);
+    }
+
+    /**
+    * Set boolean for adding ML predictions and labels to TNTuple and propagate changes to kinematics.
+    * @param boolean addEvNum
+    */
+    protected void setAddML(boolean addML) {
+
+        this._addML = addML;
+        this._kinematics.setAddMLPred(addML);
+        this._kinematics.setAddMLLabel(addML);
     }
 
     /**
