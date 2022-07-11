@@ -1,7 +1,7 @@
 package org.jlab.analysis;
 
 // Groovy Imports
-import groovy.transform.CompileStatic
+import groovy.transform.CompileStatic;
 
 // CLAS Physics Imports
 import org.jlab.jnp.physics.*;

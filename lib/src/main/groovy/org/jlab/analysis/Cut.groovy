@@ -1,7 +1,7 @@
 package org.jlab.analysis;
 
 // Groovy Imports
-import groovy.transform.CompileStatic
+import groovy.transform.CompileStatic;
 
 /**
 * Interface for lambda expressions to cut kinematic variables.

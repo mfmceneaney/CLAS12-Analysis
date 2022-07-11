@@ -1,7 +1,7 @@
 package org.jlab.analysis;
 
 // Groovy Imports
-import groovy.transform.CompileStatic
+import groovy.transform.CompileStatic;
 
 // Java Imports
 import java.util.ArrayList;
@@ -167,7 +167,7 @@ public class MCDecays {
         for (int i=0; i<this._decay.size(); i++) {
             int pid = this._decay.get(i);
             if (i!=0) { if (pid == this._decay.get(i-1)) { continue; } } //IMPORTANT: Just get unique entries.  This relies on the fact that decays is sorted!
-            for (int j=3; j<this._particleList.size(); j++) { // NOTE: For MC Decays incoming electron, target, virtual photon, and scattered electron are always first so start and j = 3.
+            for (int j=3; j<this._particleList.size(); j++) { // NOTE: For MC Decays incoming electron, target, virtual photon, and scattered electron are always first so start at j = 3.
                 DecayProduct p = this._particleList.get(j);
                 if (p.pid()==pid) {
                     if (this._pidList.size()>0 && this._parents.size()!=0) {
@@ -642,10 +642,10 @@ public class MCDecays {
     * Get list of entries 0:3 from MC::Lund bank, corresponding to beam, target, Q, and scattered beam.
     * @return ArrayList<DecayProduct> parents
     */
-    protected ArrayList<DecayProduct> getParents() {
+    protected ArrayList<DecayProduct> getParents() { //TODO: This does not match logic for setParticleList() method above.... 7/5/22
         if (this._particleList.size()==0) { this.setParticleList(); }
 	    if (this._particleList.size() < 4 ) { return new ArrayList<DecayProduct>(); }
-        try { return (ArrayList<DecayProduct>)this._particleList.subList(0,4); } catch (Exception e) { System.out.println("+ *** WARNING *** Trying to access non-existent element of MC particle list."); return new ArrayList<DecayProduct>(); }
+        try { return (ArrayList<DecayProduct>)this._particleList.subList(0,4); } catch (Exception e) { System.out.println("*** WARNING *** Trying to access non-existent element of MC particle list."); return new ArrayList<DecayProduct>(); }
     }
     
     /**
