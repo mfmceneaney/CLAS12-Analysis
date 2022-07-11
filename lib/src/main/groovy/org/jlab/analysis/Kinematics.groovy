@@ -981,6 +981,10 @@ public class Kinematics {
         LorentzVector lv_max    = max.lv();
         LorentzVector lv_parent = parent.lv();
 
+        //DEBUGGING
+        q = new LorentzVector(lv_beam); //NOTE NOT SURE WHY THIS IS NECESSARY...
+        q.sub(lv_max);
+
         // Setup additional lorentz vectors
         LorentzVector gN = new LorentzVector(q);
         gN.add(lv_target);
