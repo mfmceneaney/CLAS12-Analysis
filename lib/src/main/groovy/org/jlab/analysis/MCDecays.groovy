@@ -129,7 +129,7 @@ public class MCDecays {
 
             // Get pid and parent and daughter indices
             int pid        = this._bank.getInt("pid", i);
-            if (!this._decay.contains(pid) && !this._parents.contains(pid) && !this._constants.getBeamPID()==pid) { continue; }
+            // if (!this._decay.contains(pid) && !this._parents.contains(pid) && !this._constants.getBeamPID()==pid) { continue; } //DEBUGGING: COMMENTED OUT
             int parent     = this._bank.getInt("parent", i);
             int daughter   = this._bank.getInt("daughter", i);
             int ppid       = this._bank.getInt("pid", parent-1); //NOTE: Lund index begins at 1 but bank index at 0
