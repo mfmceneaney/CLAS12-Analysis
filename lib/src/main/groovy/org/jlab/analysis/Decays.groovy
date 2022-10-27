@@ -281,7 +281,6 @@ public class Decays {
 
         if (this._particleList.size()==0) {this.setParticleListByCharge();}
         for (int i=0; i<this._charges.size(); i++) {
-            ArrayList<DecayProduct> list = new ArrayList<DecayProduct>();
             int charge = this._charges.get(i);
             if (i!=0) { if (charge == this._charges.get(i-1)) { continue; } } //IMPORTANT: Just get unique entries.  This relies on the fact that decays is sorted!
             for (int j=0; j<this._particleList.size(); j++) {
