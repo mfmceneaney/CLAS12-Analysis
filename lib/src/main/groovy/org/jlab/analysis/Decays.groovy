@@ -68,7 +68,9 @@ public class Decays {
         
         this._charges = new ArrayList<Integer>();
         for (Integer pid : this._decay) { this._charges.add(this._constants.getCharge(pid)); }
-        Collections.sort(this._charges); //IMPORTANT: Must be sorted otherwise algorithm won't work.
+        //IMPORTANT: this._decays must be sorted otherwise algorithm won't work. 
+        // this._charges should NOT be sorted otherwise the selected charges will be out of 
+        // order and not correspond to branch names set by pid in Analysis.groovy.
     }
 
     /**
@@ -280,14 +282,15 @@ public class Decays {
     protected void setChargeList() {
 
         if (this._particleList.size()==0) {this.setParticleListByCharge();}
-        for (int i=0; i<this._charges.size(); i++) {
-            int charge = this._charges.get(i);
-            if (i!=0) { if (charge == this._charges.get(i-1)) { continue; } } //IMPORTANT: Just get unique entries.  This relies on the fact that decays is sorted!
-            for (int j=0; j<this._particleList.size(); j++) {
-                DecayProduct p = this._particleList.get(j);
-                if (p.charge()==charge) { this._chargeList.add(p); }
-            }
-        }
+        // for (int i=0; i<this._charges.size(); i++) {
+        //     int charge = this._charges.get(i);
+        //     if (i!=0) { if (charge == this._charges.get(i-1)) { continue; } } //IMPORTANT: Just get unique entries.  This relies on the fact that decays is sorted!
+        //     for (int j=0; j<this._particleList.size(); j++) {
+        //         DecayProduct p = this._particleList.get(j);
+        //         if (p.charge()==charge) { this._chargeList.add(p); }
+        //     }
+        // }
+        this._chargeList = new ArrayList<DecayProduct>(this._particleList); //NOTE: Method obsolete as of 10/27/22.
     }
 
     /**
@@ -312,11 +315,11 @@ public class Decays {
 
         for (int pIndex=0; pIndex<plist.size(); pIndex++) {
             DecayProduct p = plist.get(pIndex);
-            if (this._charges.get(dIndex)!=p.charge()) { continue; } //
+            if (this._charges.get(dIndex)!=p.charge()) { continue; } //NOTE: Don't sort this._charges instead keep same order as this._decays so that it will have the correct order when added to the leaves which are named by the pid.
             ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>(oldlist); // IMPORTANT: declare new list
             newlist.add(p);
             ArrayList<DecayProduct> newplist = new ArrayList<DecayProduct>(plist); // IMPORTANT: declare new list
-            newplist = (ArrayList<DecayProduct>)newplist.subList(Math.min(pIndex+1,newplist.size()),newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._charges and this._chargeList are sorted)
+            newplist = (ArrayList<DecayProduct>)newplist.minus([pIndex]); // IMPORTANT: Guarantees combos are unique (assumes this._charges and this._chargeList are sorted)
             if (dIndex == this._charges.size()-1) { this._comboChargeList.add(newlist); } //Important: -1!
             else { setComboChargeList(dIndex+1,newplist,newlist); }
         }
@@ -329,9 +332,9 @@ public class Decays {
     protected ArrayList<ArrayList<DecayProduct>> getComboChargeList() {
 
         if (this._comboChargeList.size()!=0) { return this._comboChargeList; }
-        if (this._chargeList.size()==0) { this.setChargeList(); }
+        if (this._particleList.size()==0) { this.setParticleListByCharge(); }
         ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>();
-        setComboChargeList(0,this._chargeList,newlist);
+        setComboChargeList(0,this._particleList,newlist);
 
         return this._comboChargeList;
     }
