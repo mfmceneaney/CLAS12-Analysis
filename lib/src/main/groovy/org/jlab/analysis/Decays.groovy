@@ -248,7 +248,7 @@ public class Decays {
     protected void setParticleListByCharge() {
 
         this._event.read(this._bank);
-        for (int i = 0; i < this._bank.getRows(); i++) {
+        for (int i = 0; i < this._bank.getRows(); i++) { //NOTE: Should add option here so you don't add in scattered electron into combos...
 
             // Get pid, chi2pid, status and charge
             int charge     = this._bank.getInt("charge", i);
@@ -334,7 +334,7 @@ public class Decays {
         if (this._comboChargeList.size()!=0) { return this._comboChargeList; }
         if (this._particleList.size()==0) { this.setParticleListByCharge(); }
         ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>();
-        setComboChargeList(0,this._particleList,newlist);
+        setComboChargeList(0,(ArrayList)this._particleList.minus([0]),newlist); //NOTE: Remove first entry since that should be scattered electron...
 
         return this._comboChargeList;
     }
