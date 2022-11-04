@@ -252,7 +252,7 @@ public class Decays {
 
             // Get pid, chi2pid, status and charge
             int charge     = this._bank.getInt("charge", i);
-            if (!this._charges.contains(charge)) { continue; }
+            if (!this._charges.contains(charge) && i!=0) { continue; }
             int pid        = this._bank.getInt("pid", i);
             double chi2pid = this._bank.getFloat("chi2pid", i);
             int status     = this._bank.getInt("status", i);
@@ -282,15 +282,11 @@ public class Decays {
     protected void setChargeList() {
 
         if (this._particleList.size()==0) {this.setParticleListByCharge();}
-        // for (int i=0; i<this._charges.size(); i++) {
-        //     int charge = this._charges.get(i);
-        //     if (i!=0) { if (charge == this._charges.get(i-1)) { continue; } } //IMPORTANT: Just get unique entries.  This relies on the fact that decays is sorted!
-        //     for (int j=0; j<this._particleList.size(); j++) {
-        //         DecayProduct p = this._particleList.get(j);
-        //         if (p.charge()==charge) { this._chargeList.add(p); }
-        //     }
-        // }
-        this._chargeList = new ArrayList<DecayProduct>(this._particleList); //NOTE: Method obsolete as of 10/27/22.
+        this._chargeList = new ArrayList<DecayProduct>(); //NOTE: Updated 11/4/22, just add entries with matching charges for speed.
+        for (int i=1; i<this._particleList.size(); i++) { //NOTE: Exclude scattered electron which should have index 0 if it's the trigger particle.
+            DecayProduct p = this._particleList.get(i);
+            if (this._charges.contains(p.charge())) { this._chargeList.add(p); }
+        }
     }
 
     /**
@@ -332,9 +328,9 @@ public class Decays {
     protected ArrayList<ArrayList<DecayProduct>> getComboChargeList() {
 
         if (this._comboChargeList.size()!=0) { return this._comboChargeList; }
-        if (this._particleList.size()==0) { this.setParticleListByCharge(); }
+        if (this._chargeList.size()==0) { this.setChargeList(); } //NOTE: STILL GRABS SCATTERED ELECTRON IN INDEX 0 FOR this._particleList.
         ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>();
-        setComboChargeList(0,(ArrayList)this._particleList.minus([0]),newlist); //NOTE: Remove first entry since that should be scattered electron...
+        setComboChargeList(0,this._chargeList,newlist);
 
         return this._comboChargeList;
     }
