@@ -99,11 +99,12 @@ public class MCDecays {
             double px = this._bank.getFloat("px", i);
             double py = this._bank.getFloat("py", i);
             double pz = this._bank.getFloat("pz", i);
+            double bt = this._bank.getFloat("beta", i);
             double vx = this._bank.getFloat("vx", i);
             double vy = this._bank.getFloat("vy", i);
             double vz = this._bank.getFloat("vz", i);
 
-            DecayProduct p = new DecayProduct(pid,px,py,pz,vx,vy,vz,i+1,parent,daughter,ppid);
+            DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,i+1,parent,daughter,ppid);
             this._particleList.add(p);
         }
     }
@@ -138,11 +139,12 @@ public class MCDecays {
             double px = this._bank.getFloat("px", i);
             double py = this._bank.getFloat("py", i);
             double pz = this._bank.getFloat("pz", i);
+            double bt = this._bank.getFloat("beta", i);
             double vx = this._bank.getFloat("vx", i);
             double vy = this._bank.getFloat("vy", i);
             double vz = this._bank.getFloat("vz", i);
 
-            DecayProduct p = new DecayProduct(pid,px,py,pz,vx,vy,vz,i+1,parent,daughter,ppid);
+            DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,i+1,parent,daughter,ppid);
             this._particleList.add(p);
         }
     }
@@ -254,7 +256,7 @@ public class MCDecays {
 
         //NOTE: Add zero particle if this._parents(dIndex) is zero and continue at same place in plist.
         if (this._parents.get(dIndex)==0) {
-            DecayProduct p = new DecayProduct(0,0,0,0,0,0,0,-1,-1,0);
+            DecayProduct p = new DecayProduct(0,0,0,0,0,0,0,0,-1,-1,0);
             ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>(oldlist); // IMPORTANT: declare new list
             newlist.add(p);
             ArrayList<DecayProduct> newplist = new ArrayList<DecayProduct>(plist); // IMPORTANT: declare new list AND do NOT shorten
@@ -392,11 +394,12 @@ public class MCDecays {
             double px = this._bank.getFloat("px", i);
             double py = this._bank.getFloat("py", i);
             double pz = this._bank.getFloat("pz", i);
+            double bt = this._bank.getFloat("beta", i);
             double vx = this._bank.getFloat("vx", i);
             double vy = this._bank.getFloat("vy", i);
             double vz = this._bank.getFloat("vz", i);
 
-            DecayProduct p = new DecayProduct(pid,px,py,pz,vx,vy,vz,i+1,parent,daughter,ppid);
+            DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,i+1,parent,daughter,ppid);
             p.charge(charge); //TODO: Necessary?
             //TODO: sector cut
             this._particleList.add(p);
@@ -604,8 +607,8 @@ public class MCDecays {
     */
     protected DecayProduct getBeam() {
         if (this._particleList.size()==0) { this.setParticleList(); }
-	    if (this._particleList.size()==0) { return new DecayProduct(0,0,0,0); }
-        try { return this._particleList[0]; } catch (Exception e) { System.out.println("*** WARNING *** Trying to access non-existent element of MC particle list."); return new DecayProduct(0,0,0,0); }
+	    if (this._particleList.size()==0) { return new DecayProduct(0,0,0,0,0); }
+        try { return this._particleList[0]; } catch (Exception e) { System.out.println("*** WARNING *** Trying to access non-existent element of MC particle list."); return new DecayProduct(0,0,0,0,0); }
     }
 
     /**
@@ -614,8 +617,8 @@ public class MCDecays {
     */
     protected DecayProduct getTarget() {
         if (this._particleList.size()==0) { this.setParticleList(); }
-	    if (this._particleList.size()==0) { return new DecayProduct(0,0,0,0); }
-        try { return this._particleList[1]; } catch (Exception e) { System.out.println("*** WARNING *** Trying to access non-existent element of MC particle list."); return new DecayProduct(0,0,0,0); }
+	    if (this._particleList.size()==0) { return new DecayProduct(0,0,0,0,0); }
+        try { return this._particleList[1]; } catch (Exception e) { System.out.println("*** WARNING *** Trying to access non-existent element of MC particle list."); return new DecayProduct(0,0,0,0,0); }
     }
 
     /**
@@ -624,8 +627,8 @@ public class MCDecays {
     */
     protected DecayProduct getQ() {
         if (this._particleList.size()==0) { this.setParticleList(); }
-        if (this._particleList.size()==0) { return new DecayProduct(0,0,0,0); }
-        try { return this._particleList[2]; } catch (Exception e) { System.out.println("*** WARNING *** Trying to access non-existent element of MC particle list."); return new DecayProduct(0,0,0,0); }
+        if (this._particleList.size()==0) { return new DecayProduct(0,0,0,0,0); }
+        try { return this._particleList[2]; } catch (Exception e) { System.out.println("*** WARNING *** Trying to access non-existent element of MC particle list."); return new DecayProduct(0,0,0,0,0); }
     }
 
     /**
@@ -634,8 +637,8 @@ public class MCDecays {
     */
     protected DecayProduct getScatteredBeam() {
         if (this._particleList.size()==0) { this.setParticleList(); } 
-	    if (this._particleList.size()==0) { return new DecayProduct(0,0,0,0); }
-        try { return this._particleList[3]; } catch (Exception e) { System.out.println("*** WARNING *** Trying to access non-existent element of MC particle list."); return new DecayProduct(0,0,0,0); }
+	    if (this._particleList.size()==0) { return new DecayProduct(0,0,0,0,0); }
+        try { return this._particleList[3]; } catch (Exception e) { System.out.println("*** WARNING *** Trying to access non-existent element of MC particle list."); return new DecayProduct(0,0,0,0,0); }
     }
 
     /**

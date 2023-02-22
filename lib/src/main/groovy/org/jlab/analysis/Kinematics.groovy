@@ -546,7 +546,7 @@ public class Kinematics {
     */
     protected DecayProduct getScatteredBeam(ArrayList<DecayProduct> list) { // TODO: kind of obviated by getScatteredBeam method for Decays/MCDecays classes
 
-        DecayProduct beam = new DecayProduct(0,0,0,0);
+        DecayProduct beam = new DecayProduct(0,0,0,0,0);
         for (DecayProduct p : list) {
             if (p.p()>beam.p() && p.pid()==this._constants.getBeamPID() && Math.abs(p.chi2pid())<3 && p.status()<=-2000) {beam.clone(p);}
         }
@@ -566,7 +566,7 @@ public class Kinematics {
     */
     protected DecayProduct getScatteredBeam(ArrayList<DecayProduct> list, float chi2pid, int status) { // TODO: kind of obviated by getScatteredBeam method for Decays/MCDecays classes
 
-        DecayProduct beam = new DecayProduct(0,0,0,0);
+        DecayProduct beam = new DecayProduct(0,0,0,0,0);
         int sign = 1;
         if (status>0) { sign = -1; }
         for (DecayProduct p : list) {
@@ -1092,7 +1092,7 @@ public class Kinematics {
 
         int beamIndex = 3; // TODO: Fairly certain this should be the same for all lund banks... Beam, Target, q, e, final state particles...
         DecayProduct beam; HashMap<String,Double> map = new HashMap<String,Double>();
-        try { beam = ilist.get(beamIndex); } catch (Exception e) { System.out.println(" *** WARNING *** ilist empty setting beam to 0"); beam = new DecayProduct(0,0,0,0); return map; }
+        try { beam = ilist.get(beamIndex); } catch (Exception e) { System.out.println(" *** WARNING *** ilist empty setting beam to 0"); beam = new DecayProduct(0,0,0,0,0); return map; }
         HashMap<String,Double> defaults = this.getMCDefaultVars(list,ilist);
         for (String key : defaults.keySet()) { map.put(key,defaults.get(key)); }
         HashMap<String,Double> var = this.getSIDISVariables(list, beam);

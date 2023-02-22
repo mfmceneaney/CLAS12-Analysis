@@ -27,6 +27,7 @@ public class DecayProduct {
     double    _px;
     double    _py;
     double    _pz;
+    double    _beta;
     double    _m;
     double    _e;
     double    _vx;
@@ -37,40 +38,46 @@ public class DecayProduct {
     int       _stat;
     Constants _constants = new ExtendedConstants(); //TODO: Might slow things down a lot...
 
-    public DecayProduct(int pid, double px, double py, double pz, double vx, double vy, double vz, double vt, double chi2pid, int stat) {
+    public DecayProduct(int pid, double px, double py, double pz, double beta, double vx, double vy, double vz, double vt, double chi2pid, int stat) {
         this.setVector(pid,px,py,pz,vx,vy,vz);
+        this._beta     = beta;
         this._vt       = vt;
         this._chi2pid  = chi2pid;
         this._stat     = stat;
     }
 
-    public DecayProduct(int pid, double px, double py, double pz, double vx, double vy, double vz, int index, int parent, int daughter) {
+    public DecayProduct(int pid, double px, double py, double pz, double beta, double vx, double vy, double vz, int index, int parent, int daughter) {
         this.setVector(pid,px,py,pz,vx,vy,vz);
         this.setIndices(index,parent,daughter);
+        this._beta = beta;
     } //NOTE: ADDED
 
-    public DecayProduct(int pid, double px, double py, double pz, double vx, double vy, double vz, int index, int parent, int daughter, int ppid) {
+    public DecayProduct(int pid, double px, double py, double pz, double beta, double vx, double vy, double vz, int index, int parent, int daughter, int ppid) {
         this.setVector(pid,px,py,pz,vx,vy,vz);
         this.setIndices(index,parent,daughter);
         this.ppid(ppid);
+        this._beta = beta;
     }
 
-    public DecayProduct(int pid, double px, double py, double pz, double vx, double vy, double vz) {
+    public DecayProduct(int pid, double px, double py, double pz, double beta, double vx, double vy, double vz) {
         this.setVector(pid,px,py,pz,vx,vy,vz);
+        this._beta     = beta;
         this._vt       = (double) 0;
         this._chi2pid  = (double) 0;
         this._stat     = (int)    0;
     }
 
-    public DecayProduct(int pid, double px, double py, double pz) {
+    public DecayProduct(int pid, double px, double py, double pz, double beta) {
         this.setVector(pid,px,py,pz,0,0,0);
+        this._beta     = beta;
         this._vt       = (double) 0;
         this._chi2pid  = (double) 0;
         this._stat     = (int)    0;
     }
 
-    public DecayProduct(Particle p, double vt, double chi2pid, int stat) {
+    public DecayProduct(Particle p, double beta, double vt, double chi2pid, int stat) {
         this.setVector(p.pid(),p.px(),p.py(),p.pz(),p.vx(),p.vy(),p.vz());
+        this._beta     = (double) beta;
         this._vt       = (double) vt;
         this._chi2pid  = (double) chi2pid;
         this._stat     = (int)    stat;
@@ -78,6 +85,7 @@ public class DecayProduct {
 
     public DecayProduct(Particle p) {
         this.setVector(p.pid(),p.px(),p.py(),p.pz(),p.vx(),p.vy(),p.vz());
+        this._beta     = (double) 0;
         this._vt       = (double) 0;
         this._chi2pid  = (double) 0;
         this._stat     = (int)    0;
@@ -85,9 +93,10 @@ public class DecayProduct {
 
     public DecayProduct(DecayProduct p) {
         this.setVector(p.pid(),p.px(),p.py(),p.pz(),p.vx(),p.vy(),p.vz());
-        this._vt       = (double) p.vt();
-        this._chi2pid  = (double) p.chi2pid();
-        this._stat     = (int)    p.status();
+        this._beta    = (double) p.beta();
+        this._vt      = (double) p.vt();
+        this._chi2pid = (double) p.chi2pid();
+        this._stat    = (int)    p.status();
         this.setIndices(p.index(),p.parent(),p.daughter());//NOTE: ADDED
         this.ppid(p.ppid());//NOTE: ADDED    
     }
@@ -99,6 +108,7 @@ public class DecayProduct {
     protected void clone(DecayProduct p) {
 
         this.setVector(p.pid(),p.px(),p.py(),p.pz(),p.vx(),p.vy(),p.vz());
+        this._beta    = (double) p.beta();
         this._vt      = (double) p.vt();
         this._chi2pid = (double) p.chi2pid();
         this._stat    = (int)    p.status();
@@ -313,6 +323,24 @@ public class DecayProduct {
     protected double pz() {
 
         return this._pz;
+    }
+
+    /**
+    * Set particle's beta.
+    * @param double beta
+    */
+    protected void beta(double beta) {
+
+        this._beta = beta;
+    }
+
+    /**
+    * Access particle's beta.
+    * @return double _beta
+    */
+    protected double beta() {
+
+        return this._beta;
     }
 
     /**

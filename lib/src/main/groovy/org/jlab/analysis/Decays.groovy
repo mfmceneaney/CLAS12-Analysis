@@ -91,12 +91,13 @@ public class Decays {
             double px = this._bank.getFloat("px", i);
             double py = this._bank.getFloat("py", i);
             double pz = this._bank.getFloat("pz", i);
+            double bt = this._bank.getFloat("beta", i);
             double vx = this._bank.getFloat("vx", i);
             double vy = this._bank.getFloat("vy", i);
             double vz = this._bank.getFloat("vz", i);
             double vt = this._bank.getFloat("vt", i);
 
-            DecayProduct p = new DecayProduct(pid,px,py,pz,vx,vy,vz,vt,chi2pid,status);
+            DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,vt,chi2pid,status);
             p.charge(charge); //TODO: Is this necessary??
             if (!this._requireFC) { this._particleList.add(p); continue; }
             // if (this._sectorCut) //TODO
@@ -135,12 +136,13 @@ public class Decays {
             double px = this._bank.getFloat("px", i);
             double py = this._bank.getFloat("py", i);
             double pz = this._bank.getFloat("pz", i);
+            double bt = this._bank.getFloat("beta", i);
             double vx = this._bank.getFloat("vx", i);
             double vy = this._bank.getFloat("vy", i);
             double vz = this._bank.getFloat("vz", i);
             double vt = this._bank.getFloat("vt", i);
 
-            DecayProduct p = new DecayProduct(pid,px,py,pz,vx,vy,vz,vt,chi2pid,status);
+            DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,vt,chi2pid,status);
             p.charge(charge); //TODO: Is this necessary?
             if (!this._requireFC) { this._particleList.add(p); continue; }
             // if (this._sectorCut) //TODO
@@ -261,12 +263,13 @@ public class Decays {
             double px = this._bank.getFloat("px", i);
             double py = this._bank.getFloat("py", i);
             double pz = this._bank.getFloat("pz", i);
+            double bt = this._bank.getFloat("beta", i);
             double vx = this._bank.getFloat("vx", i);
             double vy = this._bank.getFloat("vy", i);
             double vz = this._bank.getFloat("vz", i);
             double vt = this._bank.getFloat("vt", i);
 
-            DecayProduct p = new DecayProduct(pid,px,py,pz,vx,vy,vz,vt,chi2pid,status);
+            DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,vt,chi2pid,status);
             p.pid(pid); //NOTE: Not really sure why this is a problem and needs to be added...
             p.charge(charge);
             if (!this._requireFC) { this._particleList.add(p); continue; }
@@ -362,7 +365,7 @@ public class Decays {
     */
     protected DecayProduct getScatteredBeam() {
 
-        DecayProduct beam = new DecayProduct(0,0,0,0);
+        DecayProduct beam = new DecayProduct(0,0,0,0,0);
         if (this._particleList.size()==0) { this.setParticleList(); }
         for (DecayProduct p : this._particleList) {
             if (p.p()>beam.p() && p.pid()==this._constants.getBeamPID() && Math.abs(p.chi2pid())<3 && p.status()<=-2000) { beam.clone(p); }
@@ -382,7 +385,7 @@ public class Decays {
     */
     protected DecayProduct getScatteredBeam(float chi2pid, int stat) {
 
-        DecayProduct beam = new DecayProduct(0,0,0,0);
+        DecayProduct beam = new DecayProduct(0,0,0,0,0);
         int sign = 1;
         if (this._particleList.size()==0) { this.setParticleList(); }
         if (stat>0) { sign = -1; }
