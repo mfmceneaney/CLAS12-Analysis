@@ -992,6 +992,7 @@ public class Analysis {
                     data.add(beam.px());
                     data.add(beam.py());
                     data.add(beam.pz());
+                    data.add(beam.beta());
                     if (this._addVertices) {
                         data.add(beam.vx());
                         data.add(beam.vy());
@@ -1009,6 +1010,7 @@ public class Analysis {
                     data.add(p.px());
                     data.add(p.py());
                     data.add(p.pz());
+                    data.add(p.beta());
                     if (this._addVertices) {
                         data.add(p.vx());
                         data.add(p.vy());
@@ -1096,6 +1098,7 @@ public class Analysis {
                     data.add(beam.px());
                     data.add(beam.py());
                     data.add(beam.pz());
+                    data.add(beam.beta());
                     if (this._addVertices) {
                         data.add(beam.vx());
                         data.add(beam.vy());
@@ -1110,6 +1113,7 @@ public class Analysis {
                     data.add(p.px());
                     data.add(p.py());
                     data.add(p.pz());
+                    data.add(p.beta());
                     if (this._addVertices) {
                         data.add(p.vx());
                         data.add(p.vy());
@@ -1209,6 +1213,7 @@ public class Analysis {
                     data.add(beam.px());
                     data.add(beam.py());
                     data.add(beam.pz());
+                    data.add(beam.beta());
                     if (this._addVertices) {
                         data.add(beam.vx());
                         data.add(beam.vy());
@@ -1226,6 +1231,7 @@ public class Analysis {
                     data.add(p.px());
                     data.add(p.py());
                     data.add(p.pz());
+                    data.add(p.beta());
                     if (this._addVertices) {
                         data.add(p.vx());
                         data.add(p.vy());
@@ -1328,6 +1334,7 @@ public class Analysis {
                     data.add(beam.px());
                     data.add(beam.py());
                     data.add(beam.pz());
+                    data.add(beam.beta());
                     if (this._addVertices) {
                         data.add(beam.vx());
                         data.add(beam.vy());
@@ -1345,6 +1352,7 @@ public class Analysis {
                     data.add(mcbeam.px());
                     data.add(mcbeam.py());
                     data.add(mcbeam.pz());
+                    data.add(mcbeam.beta());
                     if (this._addVertices) {
                         data.add(mcbeam.vx());
                         data.add(mcbeam.vy());
@@ -1364,6 +1372,7 @@ public class Analysis {
                     data.add(p.px());
                     data.add(p.py());
                     data.add(p.pz());
+                    data.add(p.beta());
                     if (this._addVertices) {
                         data.add(p.vx());
                         data.add(p.vy());
@@ -1386,6 +1395,7 @@ public class Analysis {
                     data.add(p.px());
                     data.add(p.py());
                     data.add(p.pz());
+                    data.add(p.beta());
                     if (this._addVertices) {
                         data.add(p.vx());
                         data.add(p.vy());
@@ -1444,7 +1454,7 @@ public class Analysis {
         if (this._match) {//NOTE: Double kinematics if matching REC/MC banks
             for (String kin : this._kinematics.keySet()) { this._tupleNames += kin + "_MC" + ":"; }
         }
-        String[] names = ["px_",":py_",":pz_"];
+        String[] names = ["px_",":py_",":pz_",":beta_"];
         if (this._addVertices) { names += ((this._useMC && !this._combo && !this._match) ? [":vx_",":vy_",":vz_"] : [":vx_",":vy_",":vz_",":vt_"]); } //NOTE: Just a groovy capability //TODO: CHECK THIS CONDITION
         if (this._addAngles) { names += [":theta_",":phi_"]; } //NOTE: Just a groovy capability
         if (!this._useMC || this._combo || this._match) { names += [":chi2pid_",":status_"]; }
@@ -1488,7 +1498,7 @@ public class Analysis {
         }
 
         // Reset names
-        names = ["px_",":py_",":pz_"];
+        names = ["px_",":py_",":pz_",":beta_"];
         if (this._addVertices) { names += [":vx_",":vy_",":vz_",":vt_"]; } //NOTE: Just a groovy capability, MC::Lund does not have vt entry
         if (this._addAngles) { names += [":theta_",":phi_"]; } //NOTE: Just a groovy capability
         if (!this._require_pid) {names += [":pid_"]; } //NOTE: Just a groovy capability // use .addAll() for java
