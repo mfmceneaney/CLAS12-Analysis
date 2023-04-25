@@ -99,10 +99,12 @@ public class MCDecays {
             double px = this._bank.getFloat("px", i);
             double py = this._bank.getFloat("py", i);
             double pz = this._bank.getFloat("pz", i);
-            double bt = this._bank.getFloat("beta", i);
+            double ms = this._bank.getFloat("mass", i);
             double vx = this._bank.getFloat("vx", i);
             double vy = this._bank.getFloat("vy", i);
             double vz = this._bank.getFloat("vz", i);
+
+            double bt = Math.sqrt(1 - 1 / (1 + (px*px+py*py+pz*pz)/(ms*ms) ) );
 
             DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,i+1,parent,daughter,ppid);
             this._particleList.add(p);
@@ -139,10 +141,12 @@ public class MCDecays {
             double px = this._bank.getFloat("px", i);
             double py = this._bank.getFloat("py", i);
             double pz = this._bank.getFloat("pz", i);
-            double bt = this._bank.getFloat("beta", i);
+            double ms = this._bank.getFloat("mass", i);
             double vx = this._bank.getFloat("vx", i);
             double vy = this._bank.getFloat("vy", i);
             double vz = this._bank.getFloat("vz", i);
+
+            double bt = Math.sqrt(1 - 1 / (1 + (px*px+py*py+pz*pz)/(ms*ms) ) );
 
             DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,i+1,parent,daughter,ppid);
             this._particleList.add(p);
@@ -394,10 +398,12 @@ public class MCDecays {
             double px = this._bank.getFloat("px", i);
             double py = this._bank.getFloat("py", i);
             double pz = this._bank.getFloat("pz", i);
-            double bt = this._bank.getFloat("beta", i);
+            double ms = this._bank.getFloat("mass", i);
             double vx = this._bank.getFloat("vx", i);
             double vy = this._bank.getFloat("vy", i);
             double vz = this._bank.getFloat("vz", i);
+
+            double bt = Math.sqrt(1 - 1 / (1 + (px*px+py*py+pz*pz)/(ms*ms) ) );
 
             DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,i+1,parent,daughter,ppid);
             p.charge(charge); //TODO: Necessary?
