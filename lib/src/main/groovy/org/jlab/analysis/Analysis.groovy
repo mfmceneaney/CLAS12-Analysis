@@ -1321,15 +1321,20 @@ public class Analysis {
 
             // Loop through combinations
             boolean addedEvent = false;
+            double first_combo = 1.0;
             for (ArrayList<DecayProduct> l : list) {
-                if (l.size()==0) { continue; } //IMPORTANT!
-                HashMap<String, Double> kinematics = this._kinematics.processEvent(reader, event, (ArrayList<DecayProduct>)l.subList(0,this._decay.size()), beam);
-                HashMap<String, Double> mckinematics = this._kinematics.processMCEvent(reader, event, (ArrayList<DecayProduct>)l.subList(this._decay.size(),this._decay.size()*2), mcdecays.getParents());
-                if (kinematics.size()==0 || mckinematics.size()==0) { continue; } else { addedEvent = true; }
+                if (l.size()==0) { continue; } //IMPORTANT! //NOTE: Decays.mergeCombo*List() will add a default list of 0.0 momentum particles if
+                ArrayList<DecayProduct> _list    = (ArrayList<DecayProduct>)l.subList(0,this._decay.size());
+                ArrayList<DecayProduct> _mc_list = (ArrayList<DecayProduct>)l.subList(this._decay.size(),this._decay.size()*2);
+                HashMap<String, Double> kinematics = _list.size()>0 ? this._kinematics.processEvent(reader, event, _list, beam) : this._kinematics.processEventDefault();
+                HashMap<String, Double> mckinematics = _mc_list.size()>0 ? this._kinematics.processMCEvent(reader, event, _mc_list, mcdecays.getParents()) : this._kinematics.processEventDefault();
+                addedEvent = true;
                 ArrayList<Double> data = new ArrayList<Double>();
                 if (this._require_e) { //TODO: Evaluate if this requirement makes sense for all kinematics?  Always should see scattered electron though...
                     for (String key : this._kinematics.keySet()) { data.add(kinematics.get(key)); }
                     for (String key : this._kinematics.keySet()) { data.add(mckinematics.get(key)); }
+                    data.add(first_combo);
+                    first_combo = 0.0; //NOTE: IMPORTANT RESET AFTER FIRST ADDITION.
                     // Add REC::Particle Beam
                     data.add(beam.px());
                     data.add(beam.py());
@@ -1365,10 +1370,13 @@ public class Analysis {
                     }
                     data.add(mcbeam.chi2pid());
                     data.add((double)mcbeam.status());
+                } else { //NOTE: IMPORTANT SINCE KINEMATICS KEYSETS CAN BE ZERO BELOW IN SetTupleNames().
+                    data.add(first_combo);
+                    first_combo = 0.0;//NOTE: IMPORTANT RESET AFTER FIRST ADDITION.
                 }
 
                 // Add REC::Particle particles
-                for (DecayProduct p : l.subList(0,this._decay.size())) {
+                for (DecayProduct p : _list) {
                     data.add(p.px());
                     data.add(p.py());
                     data.add(p.pz());
@@ -1391,7 +1399,7 @@ public class Analysis {
                 }
                 
                 // Add MC::Lund Particles
-                for (DecayProduct p : l.subList(this._decay.size(),this._decay.size()*2)) {
+                for (DecayProduct p : _mc_list) {
                     data.add(p.px());
                     data.add(p.py());
                     data.add(p.pz());
@@ -1453,6 +1461,7 @@ public class Analysis {
         for (String kin : this._kinematics.keySet()) { this._tupleNames += kin + ":"; }
         if (this._match) {//NOTE: Double kinematics if matching REC/MC banks
             for (String kin : this._kinematics.keySet()) { this._tupleNames += kin + "_MC" + ":"; }
+            this._tupleNames += "firstCombo_MC:";
         }
         String[] names = ["px_",":py_",":pz_",":beta_"];
         if (this._addVertices) { names += ((this._useMC && !this._combo && !this._match) ? [":vx_",":vy_",":vz_"] : [":vx_",":vy_",":vz_",":vt_"]); } //NOTE: Just a groovy capability //TODO: CHECK THIS CONDITION
