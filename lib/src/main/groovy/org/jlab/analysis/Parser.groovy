@@ -92,9 +92,9 @@ public class Parser {
         System.out.println("\t                  (delimiter ':', default 2212:-211).");
         System.out.println("\t                  Denote groups for kinematics by just separating with commas,");
         System.out.println("\t                  e.g., 22:2212,-211:321 groups 2212 and -211.");
-        System.out.println("\t-mch  [int...] : Specify more pids to look for in MC::Lund bank");
+        System.out.println("\t-mch  [int...] : Specify pids of channel to find in MC::Lund bank");
         System.out.println("\t-pch  [int...] : Specify parent pids to look for in MC::Lund bank");
-        System.out.println("\t-ma            : Require matching decay in MC::Lund bank");
+        System.out.println("\t-ma            : Require matching channel in MC::Lund bank");
         //TODO: Add mixing options and sector cut options
         //TODO: Option to include parents in tree or not -> Methods for reading all momenta and vertices or not?  And -> Finish mcmatch methods match just copies decay to mcchan
         System.out.println("\t-mc           : Look for decay in MC::Lund bank");
