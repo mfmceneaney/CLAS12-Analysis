@@ -36,6 +36,7 @@ public class Kinematics {
     protected HashMap<String,ConfigVar>            _configs;      // HashMap of name to lambda expression for computing
     protected HashMap<String,SIDISVar>             _vars;         // HashMap of name to lambda expression for computing
     protected HashMap<String,Cut>                  _cuts;         // HashMap of name to boolean(double) lambda expression cut
+    protected HashMap<String,Double>               _emap_def;     // Default HashMap of event kinematics
 
     // Options
     protected static boolean _strict        = false;    // use strict pid to mass assignment in kinematics calculations
@@ -154,6 +155,7 @@ public class Kinematics {
         this._configs   = new HashMap<String,ConfigVar>();
         this._vars      = new HashMap<String,SIDISVar>();
         this._cuts      = new HashMap<String,Cut>();
+        this._emap_def  = new HashMap<String,Double>();
 
         this._configs.put("helicity",this._getHelicity);
     }
@@ -1103,6 +1105,25 @@ public class Kinematics {
 
 	    this._configs.put("helicity",this._getHelicity);
         return map;
+    }
+
+    /**
+    * Get default hashmap with all variable entries set to zero.
+    * @return HashMap<String,Double>
+    */
+    protected HashMap<String,Double> processEventDefault() {
+        
+        if (this._emap_def.size()==0) { //NOTE: ONLY CREATE ONCE!  Make sure you call this after initializing your Kinematics object completely.
+            HashMap<String,Double> map = new HashMap<String,Double>();
+            for (String kin : this._defaults) map.put(kin,(double)0.0); //NOTE: Lambda kinematics are automatically added to this._defaults
+            if (this._addIndivKin) { for (String kin : this._ikin) { map.put(kin,(double)0.0); } }
+            if (this._addGroupKin) { for (String kin : this._gkin) { map.put(kin,(double)0.0); } }
+            for (String key : this._defaults) { map.put(key,(double)0.0); }
+            for (String key : this._vars.keySet()) { map.put(key,(double)0.0); }
+            for (String key : this._configs.keySet()) { map.put(key,(double)0.0); }
+            this._emap_def = map;
+        }
+        return this._emap_def;
     }
 
 } // class
