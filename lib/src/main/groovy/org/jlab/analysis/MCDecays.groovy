@@ -291,6 +291,19 @@ public class MCDecays {
         ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>();
         setComboPidList(0,this._pidList,newlist);
 
+        //NOTE: SINCE THIS IS MC WE SHOULD ALWAYS RETURN AT LEAST ONE COMBO FOR MATCHING PURPOSES.
+        //NOTE: SO HERE WE ADD A DUMMY COMBO WITH THE CORRECT PIDS BUT ALL ZERO MOMENTUM.
+        //NOTE: THE KINEMATICS OBJECT CAN RETURN A DEFAULT MAP WITHOUT CALCULATING ANYTHING.
+        //NOTE: SO DO NOT WORRY ABOUT ALL THE MOMENTA BEING ZERO RUNNING INTO COMPUTATIONAL PROBLEMS.
+        if (this._comboPidList.size()==0) {
+            ArrayList<DecayProduct> dummyCombo = new ArrayList<DecayProduct>();
+            for (int pid : this._decay) {
+                DecayProduct dp = new DecayProduct(pid,(double)0.0,(double)0.0,(double)0.0,(double)0.0);
+                dummyCombo.add(dp);
+            }
+            this._comboPidList.add(dummyCombo)
+        }
+
         return this._comboPidList;
     }
 
@@ -333,7 +346,20 @@ public class MCDecays {
                 }
                 if (flag) { checkedComboPidList.add(addList); }
             }
-         }
+        }
+
+        //NOTE: SINCE THIS IS MC WE SHOULD ALWAYS RETURN AT LEAST ONE COMBO FOR MATCHING PURPOSES.
+        //NOTE: SO HERE WE ADD A DUMMY COMBO WITH THE CORRECT PIDS BUT ALL ZERO MOMENTUM.
+        //NOTE: THE KINEMATICS OBJECT CAN RETURN A DEFAULT MAP WITHOUT CALCULATING ANYTHING.
+        //NOTE: SO DO NOT WORRY ABOUT ALL THE MOMENTA BEING ZERO RUNNING INTO COMPUTATIONAL PROBLEMS.
+        if (checkedComboPidList.size()==0) {
+            ArrayList<DecayProduct> dummyCombo = new ArrayList<DecayProduct>();
+            for (int pid : this._decay) {
+                DecayProduct dp = new DecayProduct(pid,(double)0.0,(double)0.0,(double)0.0,(double)0.0);
+                dummyCombo.add(dp);
+            }
+            checkedComboPidList.add(dummyCombo)
+        }
 
         return checkedComboPidList;
     }
