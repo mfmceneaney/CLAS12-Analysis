@@ -1,5 +1,8 @@
 package org.jlab.analysis;
 
+// Groovy Imports
+import groovy.transform.CompileStatic;
+
 // Java Imports
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +19,7 @@ import org.jlab.jnp.physics.*;
 * @author  Matthew McEneaney
 */
 
+@CompileStatic
 public class Decays {
 
     protected ArrayList<Integer>                 _decay;        // List of Lund pids with first entry as parent particle
@@ -29,9 +33,9 @@ public class Decays {
     protected Constants                          _constants;
     protected FiducialCuts                       _FC;
     protected boolean                            _requireFC;
-    protected ArrayList<ArrayList<DecayProduct>> _pidList;        // List of lists for each pid in decay
+    protected ArrayList<DecayProduct>            _pidList;        // List of lists for each pid in decay
     protected ArrayList<ArrayList<DecayProduct>> _comboPidList;
-    protected ArrayList<ArrayList<DecayProduct>> _chargeList;     // List of lists for each charge in decay
+    protected ArrayList<DecayProduct>            _chargeList;     // List of lists for each charge in decay
     protected ArrayList<ArrayList<DecayProduct>> _comboChargeList;
 
     /** 
@@ -64,7 +68,9 @@ public class Decays {
         
         this._charges = new ArrayList<Integer>();
         for (Integer pid : this._decay) { this._charges.add(this._constants.getCharge(pid)); }
-        Collections.sort(this._charges); //IMPORTANT: Must be sorted otherwise algorithm won't work.
+        //IMPORTANT: this._decays must be sorted otherwise algorithm won't work. 
+        // this._charges should NOT be sorted otherwise the selected charges will be out of 
+        // order and not correspond to branch names set by pid in Analysis.groovy.
     }
 
     /**
@@ -85,12 +91,13 @@ public class Decays {
             double px = this._bank.getFloat("px", i);
             double py = this._bank.getFloat("py", i);
             double pz = this._bank.getFloat("pz", i);
+            double bt = this._bank.getFloat("beta", i);
             double vx = this._bank.getFloat("vx", i);
             double vy = this._bank.getFloat("vy", i);
             double vz = this._bank.getFloat("vz", i);
             double vt = this._bank.getFloat("vt", i);
 
-            DecayProduct p = new DecayProduct(pid,px,py,pz,vx,vy,vz,vt,chi2pid,status);
+            DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,vt,chi2pid,status);
             p.charge(charge); //TODO: Is this necessary??
             if (!this._requireFC) { this._particleList.add(p); continue; }
             // if (this._sectorCut) //TODO
@@ -129,12 +136,13 @@ public class Decays {
             double px = this._bank.getFloat("px", i);
             double py = this._bank.getFloat("py", i);
             double pz = this._bank.getFloat("pz", i);
+            double bt = this._bank.getFloat("beta", i);
             double vx = this._bank.getFloat("vx", i);
             double vy = this._bank.getFloat("vy", i);
             double vz = this._bank.getFloat("vz", i);
             double vt = this._bank.getFloat("vt", i);
 
-            DecayProduct p = new DecayProduct(pid,px,py,pz,vx,vy,vz,vt,chi2pid,status);
+            DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,vt,chi2pid,status);
             p.charge(charge); //TODO: Is this necessary?
             if (!this._requireFC) { this._particleList.add(p); continue; }
             // if (this._sectorCut) //TODO
@@ -196,7 +204,7 @@ public class Decays {
             ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>(oldlist); // IMPORTANT: declare new list
             newlist.add(p);
             ArrayList<DecayProduct> newplist = new ArrayList<DecayProduct>(plist); // IMPORTANT: declare new list
-            newplist = newplist.subList(pIndex,newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._decay and this._pidList are sorted)
+            newplist = (ArrayList<DecayProduct>)newplist.subList(Math.min(pIndex+1,newplist.size()),newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._decay and this._pidList are sorted)
             if (dIndex == this._decay.size()-1) { this._comboPidList.add(newlist); } //Important: -1!
             else { setComboPidList(dIndex+1,newplist,newlist); }
         }
@@ -242,11 +250,11 @@ public class Decays {
     protected void setParticleListByCharge() {
 
         this._event.read(this._bank);
-        for (int i = 0; i < this._bank.getRows(); i++) {
+        for (int i = 0; i < this._bank.getRows(); i++) { //NOTE: Should add option here so you don't add in scattered electron into combos...
 
             // Get pid, chi2pid, status and charge
             int charge     = this._bank.getInt("charge", i);
-            if (!this._charges.contains(charge)) { continue; }
+            if (!this._charges.contains(charge) && i!=0) { continue; }
             int pid        = this._bank.getInt("pid", i);
             double chi2pid = this._bank.getFloat("chi2pid", i);
             int status     = this._bank.getInt("status", i);
@@ -255,12 +263,13 @@ public class Decays {
             double px = this._bank.getFloat("px", i);
             double py = this._bank.getFloat("py", i);
             double pz = this._bank.getFloat("pz", i);
+            double bt = this._bank.getFloat("beta", i);
             double vx = this._bank.getFloat("vx", i);
             double vy = this._bank.getFloat("vy", i);
             double vz = this._bank.getFloat("vz", i);
             double vt = this._bank.getFloat("vt", i);
 
-            DecayProduct p = new DecayProduct(pid,px,py,pz,vx,vy,vz,vt,chi2pid,status);
+            DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,vt,chi2pid,status);
             p.pid(pid); //NOTE: Not really sure why this is a problem and needs to be added...
             p.charge(charge);
             if (!this._requireFC) { this._particleList.add(p); continue; }
@@ -276,14 +285,10 @@ public class Decays {
     protected void setChargeList() {
 
         if (this._particleList.size()==0) {this.setParticleListByCharge();}
-        for (int i=0; i<this._charges.size(); i++) {
-            ArrayList<DecayProduct> list = new ArrayList<DecayProduct>();
-            int charge = this._charges.get(i);
-            if (i!=0) { if (charge == this._charges.get(i-1)) { continue; } } //IMPORTANT: Just get unique entries.  This relies on the fact that decays is sorted!
-            for (int j=0; j<this._particleList.size(); j++) {
-                DecayProduct p = this._particleList.get(j);
-                if (p.charge()==charge) { this._chargeList.add(p); }
-            }
+        this._chargeList = new ArrayList<DecayProduct>(); //NOTE: Updated 11/4/22, just add entries with matching charges for speed.
+        for (int i=1; i<this._particleList.size(); i++) { //NOTE: Exclude scattered electron which should have index 0 if it's the trigger particle.
+            DecayProduct p = this._particleList.get(i);
+            if (this._charges.contains(p.charge())) { this._chargeList.add(p); }
         }
     }
 
@@ -300,7 +305,7 @@ public class Decays {
 
     /**
     * Recursive helper function to create combo list for all possible decay particle combinations in event.
-    * Relies on this._charges and this._ChargeList (passed as plist argument the first time) 
+    * Relies on this._charges and this._chargeList (passed as plist argument the first time) 
     * being sorted.  If these are not sorted this will NOT work!
     * @param int dIndex
     * @param ArrayList<DecayProduct> oldlist
@@ -309,11 +314,11 @@ public class Decays {
 
         for (int pIndex=0; pIndex<plist.size(); pIndex++) {
             DecayProduct p = plist.get(pIndex);
-            if (this._charges.get(dIndex)!=p.charge()) { continue; } //
+            if (this._charges.get(dIndex)!=p.charge()) { continue; } //NOTE: Don't sort this._charges instead keep same order as this._decays so that it will have the correct order when added to the leaves which are named by the pid.
             ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>(oldlist); // IMPORTANT: declare new list
             newlist.add(p);
             ArrayList<DecayProduct> newplist = new ArrayList<DecayProduct>(plist); // IMPORTANT: declare new list
-            newplist = newplist.subList(pIndex,newplist.size()); // IMPORTANT: Guarantees combos are unique (assumes this._charges and this._ChargeList are sorted)
+            newplist = (ArrayList<DecayProduct>)newplist.minus([pIndex]); // IMPORTANT: Guarantees combos are unique (assumes this._charges and this._chargeList are sorted)
             if (dIndex == this._charges.size()-1) { this._comboChargeList.add(newlist); } //Important: -1!
             else { setComboChargeList(dIndex+1,newplist,newlist); }
         }
@@ -326,9 +331,9 @@ public class Decays {
     protected ArrayList<ArrayList<DecayProduct>> getComboChargeList() {
 
         if (this._comboChargeList.size()!=0) { return this._comboChargeList; }
-        if (this._ChargeList.size()==0) { this.setChargeList(); }
+        if (this._chargeList.size()==0) { this.setChargeList(); } //NOTE: STILL GRABS SCATTERED ELECTRON IN INDEX 0 FOR this._particleList.
         ArrayList<DecayProduct> newlist = new ArrayList<DecayProduct>();
-        setComboChargeList(0,this._ChargeList,newlist);
+        setComboChargeList(0,this._chargeList,newlist);
 
         return this._comboChargeList;
     }
@@ -360,7 +365,7 @@ public class Decays {
     */
     protected DecayProduct getScatteredBeam() {
 
-        DecayProduct beam = new DecayProduct(0,0,0,0);
+        DecayProduct beam = new DecayProduct(0,0,0,0,0);
         if (this._particleList.size()==0) { this.setParticleList(); }
         for (DecayProduct p : this._particleList) {
             if (p.p()>beam.p() && p.pid()==this._constants.getBeamPID() && Math.abs(p.chi2pid())<3 && p.status()<=-2000) { beam.clone(p); }
@@ -380,7 +385,7 @@ public class Decays {
     */
     protected DecayProduct getScatteredBeam(float chi2pid, int stat) {
 
-        DecayProduct beam = new DecayProduct(0,0,0,0);
+        DecayProduct beam = new DecayProduct(0,0,0,0,0);
         int sign = 1;
         if (this._particleList.size()==0) { this.setParticleList(); }
         if (stat>0) { sign = -1; }

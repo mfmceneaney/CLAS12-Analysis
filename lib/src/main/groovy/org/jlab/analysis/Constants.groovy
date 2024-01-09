@@ -1,5 +1,8 @@
 package org.jlab.analysis;
 
+// Groovy Imports
+import groovy.transform.CompileStatic;
+
 // Java Imports
 import java.util.HashMap;
 
@@ -10,6 +13,7 @@ import java.util.HashMap;
 * @author  Matthew McEneaney
 */
 
+@CompileStatic
 public class Constants {
 
     protected static double  _C;

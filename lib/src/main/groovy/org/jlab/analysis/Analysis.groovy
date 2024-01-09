@@ -1,5 +1,8 @@
 package org.jlab.analysis;
 
+// Groovy Imports
+import groovy.transform.CompileStatic;
+
 // Java Imports
 import java.io.*;
 import java.util.*;
@@ -26,24 +29,28 @@ import clasqa.QADB;
 * @author  Matthew McEneaney
 */
 
+@CompileStatic
 public class Analysis {
 
-    protected Constants          _constants;
-    protected ArrayList<Integer> _decay;       // If you pass this to a Decays object make sure the parent pid is first.
-    protected ArrayList<Integer> _mcdecay;       // If you pass this to a Decays object make sure the parent pid is first.
-    protected ArrayList<Integer> _parents;       // Only contains pids for the parents of the parent in _decay.  DO NOT double enter parent pid.
-    protected Kinematics         _kinematics;
-    protected QADB               _qa;
-    protected String              _qaMethod;
-    protected FiducialCuts       _fiducialCuts;
-    protected String             _inPath;
-    protected String             _outPath;
-    protected ROOTFile           _outFile;
-    protected TNtuple            _tuple;
-    protected String             _treeName;
-    protected String             _tupleNames;
-    protected int                _event_counter;
-    protected int                _data_counter;
+    protected Constants                      _constants;
+    protected ArrayList<Integer>             _decay;         //OLD: If you pass this to a Decays object make sure the parent pid is first.
+    protected ArrayList<Integer>             _mcdecay;       //OLD: If you pass this to a Decays object make sure the parent pid is first.
+    protected ArrayList<Integer>             _parents;       //OLD: Only contains pids for the parents of the parent in _decay.  DO NOT double enter parent pid.
+    protected ArrayList<ArrayList<Integer>>  _groups;        //NOTE: Make sure the index ordering matches that for this._decay since this._decay must be sorted.
+    protected LinkedHashMap<Integer,Integer> _decaymap;      //NOTE: Maps indices from unsorted decay to sorted decay for matching with this._groups and this._parents
+    protected ArrayList<Integer>             _dpMap;         //NOTE: List of parent indices of current daughter index in this._decay for MC parent/daughter matching.
+    protected Kinematics                     _kinematics;
+    protected QADB                           _qa;
+    protected String                         _qaMethod;
+    protected FiducialCuts                   _fiducialCuts;
+    protected String                         _inPath;
+    protected String                         _outPath;
+    protected ROOTFile                       _outFile;
+    protected TNtuple                        _tuple;
+    protected String                         _treeName;
+    protected String                         _tupleNames;
+    protected int                            _event_counter;
+    protected int                            _data_counter;
 
 	// Options
 	protected static int     _n_files      = 10; 					// max number of files to analyze
@@ -56,7 +63,10 @@ public class Analysis {
     protected static boolean _strict       = false;					// strict mass from pid assignment for kinematics calculations
     protected static boolean _addRunNum    = false;					// include event number in TNTuple (always added as zeroeth entry)
     protected static boolean _addEvNum     = false;					// include event number in TNTuple (always added as zeroeth entry or just after run #)
-    protected static boolean _lambdaKin    = false;					// include special two particle decay kinematics from \Lambda^0 analysis
+    protected static boolean _addML        = false;					// include ML predictions and labels in TNTuple (NOTE: NOT SURE WHERE THIS WILL BE ADDED... TODO...)
+    protected static boolean _lambdaKin    = false;					// include special two particle decay kinematics for Lambda baryons
+    protected static boolean _indivKin     = false;					// include extra individual particle kinematics
+    protected static boolean _groupKin     = false;					// include extra grouped particles' kinematics
     protected static boolean _requireQA    = false;                 // require clasqaDB check for run and event #'s
     protected static boolean _requireFC    = false;                 // require Fiducial cuts using event #'s and pid
     protected static boolean _match        = false;                 // require matching decay in MC (with same parent, specify this._parent if you want a specific parent)
@@ -77,12 +87,14 @@ public class Analysis {
     public Analysis() {
 
         this._constants        = new ExtendedConstants(); // If you know you don't need to look at decays just the particles in the recon banks you can just use the base Constants Class.
-        this._decay            = new ArrayList<Integer>(); this._decay.add(2212); this._decay.add(-211);
+        this._decay            = new ArrayList<Integer>(); this._decay.add(-211); this._decay.add(2212);
         this._mcdecay          = new ArrayList<Integer>(this._decay);
         this._parents          = new ArrayList<Integer>();
-        this._kinematics       = new Kinematics(this._constants, this._decay);
+        this._groups           = new ArrayList<ArrayList<Integer>>();
+        this._dpMap            = new ArrayList<Integer>();
+        this._kinematics       = new Kinematics(this._constants, this._decay, this._groups);
         this._qaMethod         = new String("OkForAsymmetry");
-        this._fiducialCuts     = new FiducialCuts();
+        this._fiducialCuts     = new FiducialCuts(this._constants);
         this._inPath           = new String("");
         this._outPath          = new String("Analysis.root");
         this._tupleNames       = new String("");
@@ -104,9 +116,11 @@ public class Analysis {
         this._decay            = decay;
         this._mcdecay          = new ArrayList<Integer>(this._decay);
         this._parents          = new ArrayList<Integer>();
-        this._kinematics       = new Kinematics(this._constants, this._decay);
+        this._groups           = new ArrayList<ArrayList<Integer>>();
+        this._dpMap            = new ArrayList<Integer>();
+        this._kinematics       = new Kinematics(this._constants, this._decay, this._groups);
         this._qaMethod         = new String("OkForAsymmetry");
-        this._fiducialCuts     = new FiducialCuts();
+        this._fiducialCuts     = new FiducialCuts(this._constants);
         this._inPath           = inPath;
         this._outPath          = outPath;
         this._tupleNames       = new String("");
@@ -132,9 +146,11 @@ public class Analysis {
         this._decay            = decay;
         this._mcdecay          = mcdecay;
         this._parents          = parents;
-        this._kinematics       = new Kinematics(this._constants, this._mcdecay);
+        this._groups           = new ArrayList<ArrayList<Integer>>();
+        this._dpMap            = new ArrayList<Integer>();
+        this._kinematics       = new Kinematics(this._constants, this._mcdecay, this._groups);
         this._qaMethod         = new String("OkForAsymmetry");
-        this._fiducialCuts     = new FiducialCuts();
+        this._fiducialCuts     = new FiducialCuts(this._constants);
         this._inPath           = inPath;
         this._outPath          = outPath;
         this._tupleNames       = new String("");
@@ -198,9 +214,19 @@ public class Analysis {
     */
     protected void setDecay(ArrayList<Integer> decay) {
 
+        // Create map for matching to the sorted this._decays
+        LinkedHashMap<Integer, Integer> map = new LinkedHashMap<Integer, Integer>(); //NOTE: Maps pid to original index in decay.
+        int i = 0; for (int pid : decay) { map.put(pid,i); i++; }
+        map = (LinkedHashMap<Integer,Integer>)map.sort(); //NOTE: Now same sorting as this._decays will have.  Reassignment is important!
+        LinkedHashMap<Integer, Integer> map2 = new LinkedHashMap<Integer, Integer>(); //NOTE: Maps old indices to new.
+        int k = 0; for (Integer index : map.values()) { map2.put(index,k); k++; }
+        this._decaymap = map2;
+
         this._decay = decay;
         Collections.sort(this._decay); //IMPORTANT: Combinations algorithm relies on this in Decays.groovy.
-        this._kinematics.setDecay(decay);
+        this._kinematics.setDecay(decay); //NOTE: Using unsorted decay here though.
+        if (this._match) this.setMatch(this._match); //NOTE: Reset after setting decay
+        if (this._indivKin) { this.setIndivKin(this._indivKin); } //NOTE: Reset after setting decay just in case.
     }
 
     /**
@@ -210,6 +236,132 @@ public class Analysis {
     protected ArrayList<Integer> getDecay() {
 
         return this._decay;
+    }
+
+    /**
+    * Set list of lists of indices in this._decay to group for kinematics.
+    * @param ArrayList<ArrayList<Integer>> groups
+    */
+    protected void setGroups(ArrayList<ArrayList<Integer>> groups) {
+        
+        this._groups = groups;
+        if (this._groups.size()>0) {
+            this._kinematics.setGroups(groups);
+            this._kinematics.setAddGroupKin(true);
+        }
+    }
+
+    /**
+    * Get list of lists of indices in this._decay to group for kinematics.
+    * @return ArrayList<ArrayList<Integer>> _groups
+    */
+    protected ArrayList<ArrayList<Integer>> getGroups() {
+
+        return this._groups;
+    }
+
+    /**
+    * Set list of Lund pids for decay.  Parent particle is always first.
+    * @param ArrayList<Integer> decay
+    */
+    protected void setDecayAndGroups(ArrayList<Integer> decay, ArrayList<ArrayList<Integer>> groups) {
+        
+        // Sort groups so to match this._decays //NOTE: FIXED DUPLICATE KEYS ISSUE WITH GROUPS
+        LinkedHashMap<Integer, ArrayList<Integer>> map = new LinkedHashMap<Integer, ArrayList<Integer>>(); //NOTE: Maps pid to original index in decay.
+        int i = 0; for (int pid : decay) { 
+            if (map.containsKey(pid)) { ArrayList<Integer> l = new ArrayList<Integer>(map.get(pid)); l.add(i); map.put(pid,l); i++; } //NOTE: Not sure if this will modify in place the list at key==pid
+            else { ArrayList<Integer> l = new ArrayList<Integer>(); l.add(i); map.put(pid,l); i++; }
+        }
+        map = (LinkedHashMap<Integer, ArrayList<Integer>>)map.sort(); //NOTE: Now same sorting as this._decays will have.  Reassignment is important!
+        LinkedHashMap<Integer, Integer> map2 = new LinkedHashMap<Integer, Integer>(); //NOTE: Maps old indices to new.
+        int k = 0; for (ArrayList<Integer> list : map.values()) { for (Integer index : list) { map2.put(index,k); k++; } }
+        this._decaymap = map2;
+
+        // Replace old indices with new in groups
+        ArrayList<ArrayList<Integer>> sortedGroups = new ArrayList<ArrayList<Integer>>();
+        for (ArrayList<Integer> group : groups) {
+            ArrayList<Integer> sortedGroup = new ArrayList<Integer>();
+            for (Integer m : group) { sortedGroup.add(this._decaymap.get(m)); }
+            sortedGroups.add(sortedGroup);
+        }
+
+        // Order this._parents if already set //TODO: Fix this: -> //NOTE: This needs to be set after already setting this._parent.
+        ArrayList<Integer> reducedSortedParents = new ArrayList<Integer>();
+        if (this._parents.size()==decay.size() && decay.size()>0) { //NOTE: FIXED this._decay to decay since this._decay not yet reset.
+
+            // Sort parents
+            ArrayList<Integer> sortedParents = new ArrayList<Integer>();
+            LinkedHashMap<Integer, Integer> inverseDecaymap = new LinkedHashMap<Integer, Integer>(); //NOTE: FIXED mapping here
+            for (Integer key : this._decaymap.keySet()) { inverseDecaymap.put(this._decaymap.get(key),key); }
+            for (Integer m : inverseDecaymap.keySet()) { sortedParents.add(this._parents.get(inverseDecaymap.get(m))); }
+            this._parents = sortedParents; //NOTE: Copied these 2 lines from this.setParents();
+
+            // Now reduce parents according to groups: i.e. if you have same repeated parent pids not zero assume they all refer to the same parent
+            reducedSortedParents = new ArrayList<Integer>(sortedParents);
+            ArrayList<Integer> indicesToRemove = new ArrayList<Integer>();
+            for (ArrayList<Integer> group : sortedGroups) {
+                Integer pid0 = 0;
+                boolean flag = true;
+                for (int j=0; j<group.size(); j++) {
+                    Integer index = group.sort().get(j);
+                    Integer pid = sortedParents.get(index);
+                    if (j==0) { pid0=pid; }
+                    else if (pid==pid0) { indicesToRemove.add(index); }
+                }
+            }
+            for (Integer m : indicesToRemove.sort().reverse()) { reducedSortedParents.remove(m); } //NOTE: Remove after in descending order so you don't mess up later indices to remove.
+            sortedParents = new ArrayList<Integer>(reducedSortedParents); //NOTE: Reassign!
+            this._parents = new ArrayList<Integer>(reducedSortedParents); //NOTE: Reassign!
+
+            // Add parents to kinematics object
+            this._kinematics.setParents(sortedParents);
+        }   
+
+        // Reset groups and decays everywhere
+        this._groups = sortedGroups;
+        this._decay = decay
+        Collections.sort(this._decay);      //IMPORTANT: Combinations algorithm relies on this in Decays.groovy.
+        this._kinematics.setDecay(this._decay);   //NOTE: Using unsorted decay here though.
+        if (this._groups.size()>0) {
+            this._kinematics.setGroups(this._groups);
+            this._kinematics.setAddGroupKin(true);//NOTE: This must occur after calling setGroups() above!
+        }
+        if (this._match) this.setMatch(this._match); //NOTE: Reset after setting decay
+        if (this._indivKin) { this.setIndivKin(this._indivKin); } //NOTE: Reset after setting decay just in case.
+        if ((this._useMC && !this._combo && !this._match) || this._combo || this._match ) { this.setDPMap(); } //NOTE: Set daughter parent map from decays and groups.
+    }
+
+    /**
+    * Set daughter to parent map (just a list with parent indices at each daughter index) 
+    * for MC parent daughter matching.
+    */
+    protected void setDPMap() {
+
+        // Replace daughter indices with first particle index for daughter particle's group
+        ArrayList<Integer> dpMap = new ArrayList<Integer>();
+        for (int idx=0; idx<this._decay.size(); idx++) { dpMap.add(idx); }
+        for (ArrayList<Integer> group : this._groups) {
+            int idx0 = -1;
+            for (int i=0; i<group.size(); i++) {
+                if (i==0) { idx0 = group.get(i); }
+                else { dpMap.set(group.get(i),idx0); }
+            }
+        }
+
+        // Subtract minimum to ensure lowest entry is zero
+        for (int i=0; i<dpMap.size(); i++) { dpMap.set(i,dpMap.get(i)-dpMap.min()); }
+
+        // Pull all indices down so they are consecutive and < length of this._parents
+        for (int k=-1; k<this._parents.size()-1; k++) {
+            for (int j=0; j<this._decay.size(); j++) {
+                boolean flag = true;
+                for (int i=0; i<dpMap.size(); i++) {
+                    if (flag && dpMap.get(i)==j) { flag = false; k++; dpMap.set(i,k); }
+                    if (!flag && dpMap.get(i)==j) { dpMap.set(i,k); }
+                }
+            }
+        }
+        this._dpMap = dpMap;
     }
 
     /**
@@ -238,8 +390,8 @@ public class Analysis {
     */
     protected void setParents(ArrayList<Integer> parents) {
 
-        this._parents = parents;
-        this._kinematics.setParents(parents);
+            this._parents = parents;
+            this._kinematics.setParents(parents);
     }
 
     /**
@@ -355,12 +507,30 @@ public class Analysis {
     }
 
     /**
-    * Access string array for names of default kinematic variables: Q2, nu, W, Walt x, xF, y, z, pT, phperp, mass.
+    * Access string array for names of default kinematic variables: eg. Q2, nu, W, y, x.
     * @return String[] _defaults
     */
     protected String[] getDefaults() {
 
         return this._kinematics.getDefaults();
+    }
+
+    /**
+    * Access string array for names of default individual particles' kinematics.
+    * @return String[] _ikin
+    */
+    protected String[] getIndivKin() {
+
+        return this._kinematics.getIndivKin();
+    }
+
+    /**
+    * Access string array for names of default grouped particles' kinematics.
+    * @return String[] _gkin
+    */
+    protected String[] getGroupKin() {
+
+        return this._kinematics.getGroupKin();
     }
 
     /**
@@ -528,6 +698,17 @@ public class Analysis {
     protected void setTag(int... tag_pids) {
 
         this._require_tag = true;
+        this._tag_pids    = new ArrayList<Integer>();
+        for (int i : tag_pids) { this._tag_pids.add(i); }
+    }
+
+    /**
+    * Set boolean for requiring pid tag(s) in event and lund pid(s) to tag.
+    * @param ArrayList<Integer> tag_pid
+    */
+    protected void setTag(ArrayList<Integer> tag_pids) {
+
+        this._require_tag = true;
         this._tag_pids    = tag_pids;
     }
 
@@ -538,6 +719,7 @@ public class Analysis {
     protected void setExclusive(boolean require_ex) {
 
         this._require_ex = require_ex;
+        this._kinematics.setAddMxMomenta(require_ex); //NOTE: Adds px,py,pz for missing mass lorentz vector to output tree.
     }
 
     /**
@@ -557,11 +739,7 @@ public class Analysis {
     * @return boolean filter
     */
     protected boolean filter(ArrayList<DecayProduct> list) {
-        if (this._require_ex) {
-            for (DecayProduct p : list) {
-                if (!this._pid_filter.containsKey(p.pid())) { return false; }
-            }
-        }
+
         if (this._pid_filter.size()==0) { return true; }
         for (Integer key : this._pid_filter.keySet()){
             int count = 0; for (DecayProduct p : list) { if (p.pid()==key) { count += 1; } }
@@ -622,15 +800,36 @@ public class Analysis {
     }
 
     /**
+    * Set boolean for adding ML predictions and labels to TNTuple and propagate changes to kinematics.
+    * @param boolean addEvNum
+    */
+    protected void setAddML(boolean addML) {
+
+        this._addML = addML;
+        this._kinematics.setAddMLPred(addML);
+        this._kinematics.setAddMLLabel(addML);
+    }
+
+    /**
     * Set boolean for including lambda analysis kinematics and propagate changes to kinematics.
     * Only applies for 2 particle decays.
     * @param boolean LK
     */
     protected void setLambdaKin(boolean LK) {
 
-        if (!this._decay.size()==2) { return; }
         this._lambdaKin = LK;
         this._kinematics.setAddLambdaKin(LK);
+    }
+
+    /**
+    * Set boolean for including more individual particle kinematics (relevant for dihadron analysis) 
+    * and propagate changes to kinematics.
+    * @param boolean IK
+    */
+    protected void setIndivKin(boolean IK) {
+
+        this._indivKin = IK;
+        this._kinematics.setAddIndivKin(IK);
     }
 
     /**
@@ -674,6 +873,8 @@ public class Analysis {
 
         this._match   = match;
         this._mcdecay = new ArrayList<Integer>(this._decay);
+        Collections.sort(this._mcdecay); //NOTE: This is important!  Also, this._decay should be sorted later if not already.
+        if (match && this._groups.size()>0) this.setDPMap();
     }
 
     /**
@@ -685,6 +886,7 @@ public class Analysis {
         this._combo   = combo;
         ArrayList<Integer> comboDecay = new ArrayList<Integer>(this._decay); comboDecay.addAll(this._mcdecay);
         this._kinematics.setDecay(comboDecay);//NOTE: Has to be called after setting this._mcdecay
+        if (combo && this._groups.size()>0) this.setDPMap();
     }
 
     /**
@@ -737,6 +939,9 @@ public class Analysis {
         while(reader.hasNext()) {
             reader.nextEvent(event);
 
+            // Print notification if requested
+            if (this._notify>0 && (this._event_counter % this._notify)==0 && this._event_counter!=0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
+
             // QADB Cuts
             Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
             Bank bank     = new Bank(schema);
@@ -755,7 +960,7 @@ public class Analysis {
             this._event_counter += 1;
 
             // Read needed banks only once!
-            if (this._requireFC) { this._FC.setArrays(reader,event); }
+            if (this._requireFC) { this._fiducialCuts.setArrays(reader,event); }
             Decays decays = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC); // Fiducial cuts implemented in Decays object
 
             // Check for event pid tag and filters if requested
@@ -787,6 +992,7 @@ public class Analysis {
                     data.add(beam.px());
                     data.add(beam.py());
                     data.add(beam.pz());
+                    data.add(beam.beta());
                     if (this._addVertices) {
                         data.add(beam.vx());
                         data.add(beam.vy());
@@ -798,12 +1004,13 @@ public class Analysis {
                         data.add(beam.phi());
                     }
                     data.add(beam.chi2pid());
-                    data.add(beam.status());
+                    data.add((double)beam.status());
                 }
                 for (DecayProduct p : l) {
                     data.add(p.px());
                     data.add(p.py());
                     data.add(p.pz());
+                    data.add(p.beta());
                     if (this._addVertices) {
                         data.add(p.vx());
                         data.add(p.vy());
@@ -815,9 +1022,9 @@ public class Analysis {
                         data.add(p.phi());
                     }
                     data.add(p.chi2pid());
-                    data.add(p.status());
+                    data.add((double)p.status());
                     if (!this._require_pid) {
-                        data.add(p.pid());
+                        data.add((double)p.pid());
                     }
                 }
 		
@@ -836,7 +1043,6 @@ public class Analysis {
                 }
             } // counts events selected not # of actual data entries added
             decays.clean(); // Careful! Wipes all lists!
-            if (this._notify>0 && (this._event_counter % this._notify)==0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
         }
         // this._tuple.write(); //TODO: Think this might just overwrite successive tuples if looking at multiple files...
     }  // processEvents
@@ -853,10 +1059,15 @@ public class Analysis {
         Event event = new Event();
         while(reader.hasNext()) {
             reader.nextEvent(event);
+
+            // Print notification if requested
+            if (this._notify>0 && (this._event_counter % this._notify)==0 && this._event_counter!=0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
+
+            // Update counter
             this._event_counter += 1;
 
             // Read needed banks only once!
-            MCDecays decays = new MCDecays(this._decay,this._parents,reader,event,this._constants);
+            MCDecays decays = new MCDecays(this._decay,this._parents,this._dpMap,reader,event,this._constants);
 
             // Check for event pid tag if requested
             if (this._require_tag) {
@@ -887,6 +1098,7 @@ public class Analysis {
                     data.add(beam.px());
                     data.add(beam.py());
                     data.add(beam.pz());
+                    data.add(beam.beta());
                     if (this._addVertices) {
                         data.add(beam.vx());
                         data.add(beam.vy());
@@ -901,6 +1113,7 @@ public class Analysis {
                     data.add(p.px());
                     data.add(p.py());
                     data.add(p.pz());
+                    data.add(p.beta());
                     if (this._addVertices) {
                         data.add(p.vx());
                         data.add(p.vy());
@@ -911,8 +1124,10 @@ public class Analysis {
                         data.add(p.phi());
                     }
                     if (!this._require_pid) {
-                        data.add(p.pid());
+                        data.add((double)p.pid());
                     }
+                    data.add((double)p.parent()); //TODO:DEBUGGING parent index (for matching)
+                    data.add((double)p.ppid()); //TODO:DEBUGGING parent pid
                 }
 		
                 // Fill TNTuple
@@ -929,8 +1144,7 @@ public class Analysis {
                     this.splitOutFile(this._data_counter);
                 }
             } // counts events selected not # of actual data entries added
-        decays.clean(); // Careful! Wipes all lists!
-        if (this._notify>0 && (this._event_counter % this._notify)==0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
+            decays.clean(); // Careful! Wipes all lists!
         }
         // this._tuple.write(); //TODO: Think this might just overwrite successive tuples if looking at multiple files...
     }  // processEventsMC
@@ -947,6 +1161,11 @@ public class Analysis {
         Event event = new Event();
         while(reader.hasNext()) {
             reader.nextEvent(event);
+
+            // Print notification if requested
+            if (this._notify>0 && (this._event_counter % this._notify)==0 && this._event_counter!=0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
+
+            // Update counter
             this._event_counter += 1;
 
             // Get Event # and Run #
@@ -957,9 +1176,9 @@ public class Analysis {
             int evnum  = bank.getInt('event',0);
 
             // Read needed banks only once!
-            if (this._requireFC) { this._FC.setArrays(reader,event); }
+            if (this._requireFC) { this._fiducialCuts.setArrays(reader,event); }
             Decays decays     = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC); // Fiducial cuts implemented in Decays object
-            MCDecays mcdecays = new MCDecays(this._mcdecay,this._parents,reader,event,this._constants);
+            MCDecays mcdecays = new MCDecays(this._mcdecay,this._parents,this._dpMap,reader,event,this._constants);
 
             // Check for event pid tag and filters if requested
             if (this._require_tag) {
@@ -994,6 +1213,7 @@ public class Analysis {
                     data.add(beam.px());
                     data.add(beam.py());
                     data.add(beam.pz());
+                    data.add(beam.beta());
                     if (this._addVertices) {
                         data.add(beam.vx());
                         data.add(beam.vy());
@@ -1005,12 +1225,13 @@ public class Analysis {
                         data.add(beam.phi());
                     }
                     data.add(beam.chi2pid());
-                    data.add(beam.status());
+                    data.add((double)beam.status());
                 }
                 for (DecayProduct p : l) {
                     data.add(p.px());
                     data.add(p.py());
                     data.add(p.pz());
+                    data.add(p.beta());
                     if (this._addVertices) {
                         data.add(p.vx());
                         data.add(p.vy());
@@ -1022,9 +1243,9 @@ public class Analysis {
                         data.add(p.phi());
                     }
                     data.add(p.chi2pid());
-                    data.add(p.status());
+                    data.add((double)p.status());
                     if (!this._require_pid) {
-                        data.add(p.pid());
+                        data.add((double)p.pid());
                     }
                 }
 		
@@ -1045,7 +1266,6 @@ public class Analysis {
                 }
             } // if (addedEvent)
             decays.clean(); // Careful! Wipes all lists!
-            if (this._notify>0 && (this._event_counter % this._notify)==0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
         }
         // this._tuple.write(); //TODO: Think this might just overwrite successive tuples if looking at multiple files...
     }  // processComboEvents
@@ -1062,6 +1282,11 @@ public class Analysis {
         Event event = new Event();
         while(reader.hasNext()) {
             reader.nextEvent(event);
+
+            // Print notification if requested
+            if (this._notify>0 && (this._event_counter % this._notify)==0 && this._event_counter!=0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
+
+            // Update counter
             this._event_counter += 1;
 
             // Get Event # and Run #
@@ -1072,9 +1297,9 @@ public class Analysis {
             int evnum  = bank.getInt('event',0);
 
             // Read needed banks only once!
-            if (this._requireFC) { this._FC.setArrays(reader,event); }
+            if (this._requireFC) { this._fiducialCuts.setArrays(reader,event); }
             Decays decays     = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC); // Fiducial cuts implemented in Decays object
-            MCDecays mcdecays = new MCDecays(this._mcdecay,this._parents,reader,event,this._constants);
+            MCDecays mcdecays = new MCDecays(this._mcdecay,this._parents,this._dpMap,reader,event,this._constants);
 
             // Check for event pid tag if requested
             if (this._require_tag) {
@@ -1109,6 +1334,7 @@ public class Analysis {
                     data.add(beam.px());
                     data.add(beam.py());
                     data.add(beam.pz());
+                    data.add(beam.beta());
                     if (this._addVertices) {
                         data.add(beam.vx());
                         data.add(beam.vy());
@@ -1120,12 +1346,13 @@ public class Analysis {
                         data.add(beam.phi());
                     }
                     data.add(beam.chi2pid());
-                    data.add(beam.status());
+                    data.add((double)beam.status());
 
                     // Add MC::Lund beam
                     data.add(mcbeam.px());
                     data.add(mcbeam.py());
                     data.add(mcbeam.pz());
+                    data.add(mcbeam.beta());
                     if (this._addVertices) {
                         data.add(mcbeam.vx());
                         data.add(mcbeam.vy());
@@ -1137,7 +1364,7 @@ public class Analysis {
                         data.add(mcbeam.phi());
                     }
                     data.add(mcbeam.chi2pid());
-                    data.add(mcbeam.status());
+                    data.add((double)mcbeam.status());
                 }
 
                 // Add REC::Particle particles
@@ -1145,6 +1372,7 @@ public class Analysis {
                     data.add(p.px());
                     data.add(p.py());
                     data.add(p.pz());
+                    data.add(p.beta());
                     if (this._addVertices) {
                         data.add(p.vx());
                         data.add(p.vy());
@@ -1156,9 +1384,9 @@ public class Analysis {
                         data.add(p.phi());
                     }
                     data.add(p.chi2pid());
-                    data.add(p.status());
+                    data.add((double)p.status());
                     if (!this._require_pid) {
-                        data.add(p.pid());
+                        data.add((double)p.pid());
                     }
                 }
                 
@@ -1167,6 +1395,7 @@ public class Analysis {
                     data.add(p.px());
                     data.add(p.py());
                     data.add(p.pz());
+                    data.add(p.beta());
                     if (this._addVertices) {
                         data.add(p.vx());
                         data.add(p.vy());
@@ -1178,8 +1407,10 @@ public class Analysis {
                         data.add(p.phi());
                     }
                     if (!this._require_pid) {
-                        data.add(p.pid());
+                        data.add((double)p.pid());
                     }
+                    data.add((double)p.parent()); //TODO:DEBUGGING parent index (for matching)
+                    data.add((double)p.ppid()); //TODO:DEBUGGING parent pid
                 }
 		
                 // Fill TNTuple
@@ -1198,7 +1429,6 @@ public class Analysis {
                 }
             } // if (addedEvent)
             decays.clean(); // Careful! Wipes all lists!
-            if (this._notify>0 && (this._event_counter % this._notify)==0) { System.out.println(" Added "+this._data_counter+"/"+this._event_counter+" events total."); }
         }
         // this._tuple.write(); //TODO: Think this might just overwrite successive tuples if looking at multiple files...
     }  // processMatchEvents()
@@ -1224,14 +1454,15 @@ public class Analysis {
         if (this._match) {//NOTE: Double kinematics if matching REC/MC banks
             for (String kin : this._kinematics.keySet()) { this._tupleNames += kin + "_MC" + ":"; }
         }
-        String[] names = ["px_",":py_",":pz_"];
+        String[] names = ["px_",":py_",":pz_",":beta_"];
         if (this._addVertices) { names += ((this._useMC && !this._combo && !this._match) ? [":vx_",":vy_",":vz_"] : [":vx_",":vy_",":vz_",":vt_"]); } //NOTE: Just a groovy capability //TODO: CHECK THIS CONDITION
         if (this._addAngles) { names += [":theta_",":phi_"]; } //NOTE: Just a groovy capability
         if (!this._useMC || this._combo || this._match) { names += [":chi2pid_",":status_"]; }
         if (!this._require_pid) {names += [":pid_"]; } //NOTE: Just a groovy capability // use .addAll() for java
+        if (this._useMC && !this._combo && !this._match) { names += [":pidx_",":ppid_"]; } //NOTE: Add parent index and pid for MC only events
         String pname = this._constants.getName(this._constants.getBeamPID());
         if (this._require_e) {
-            for (String name : names) { this._tupleNames += name + pname; }
+            for (String name : names) { if (name==":pid_" || name==":pidx_" || name==":ppid_") continue; /*NOTE: ADDED 6/15/22*/ this._tupleNames += name + pname; }
             this._tupleNames += ":";
             if (this._match) {//NOTE: Double entries for matching MC/REC banks
                 for (String name : names) { this._tupleNames += name + pname + "_MC"; }
@@ -1240,7 +1471,7 @@ public class Analysis {
         }
 
         HashMap<Integer,Integer> pidCounts = new HashMap<Integer,Integer>();
-        ArrayList<Integer> unique_pids = this._decay.stream().distinct().collect(Collectors.toList());
+        ArrayList<Integer> unique_pids = (ArrayList<Integer>)this._decay.stream().distinct().collect(Collectors.toList());
         for (Integer pid : unique_pids) { pidCounts.put(pid,0); }
         for (int i=0; i<this._decay.size(); i++) {
             Integer pid = this._decay.get(i);
@@ -1254,7 +1485,7 @@ public class Analysis {
         if (this._combo) { //NOTE: MC Part for MC/REC combo //TODO: Note: vt and chi2pid/status entries (all 0) are added for combo MC particles...could make nicer...
             this._tupleNames += ":"; // IMPORTANT! Not added to last entry from above.
             HashMap<Integer,Integer> pidCountsMC = new HashMap<Integer,Integer>();
-            ArrayList<Integer> unique_pidsMC = this._mcdecay.stream().distinct().collect(Collectors.toList());
+            ArrayList<Integer> unique_pidsMC = (ArrayList<Integer>)this._mcdecay.stream().distinct().collect(Collectors.toList());
             for (Integer pid : unique_pidsMC) { pidCountsMC.put(pid,0); }
             for (int i=0; i<this._mcdecay.size(); i++) {
                 Integer pid = this._mcdecay.get(i);
@@ -1267,10 +1498,11 @@ public class Analysis {
         }
 
         // Reset names
-        names = ["px_",":py_",":pz_"];
+        names = ["px_",":py_",":pz_",":beta_"];
         if (this._addVertices) { names += [":vx_",":vy_",":vz_",":vt_"]; } //NOTE: Just a groovy capability, MC::Lund does not have vt entry
         if (this._addAngles) { names += [":theta_",":phi_"]; } //NOTE: Just a groovy capability
         if (!this._require_pid) {names += [":pid_"]; } //NOTE: Just a groovy capability // use .addAll() for java
+        names += [":pidx_",":ppid_"]; //NOTE:  Add parent index and pid //TODO:DEBUGGING
 
         // Double entries if requiring MC::Lund and REC::Particle (matching option)
         if (this._match) {
@@ -1311,7 +1543,8 @@ public class Analysis {
         System.out.println(" Events selected:  "+this._data_counter+"/"+this._event_counter);
 
         // Create ROOT Output file
-        int index = num/this._split-1;
+        float ratio = num/this._split; //NOTE: //TODO: Possible loss of precision here...
+        int index = (int)ratio-1;
         int last; if (num == this._split) { last = 6; } else { last = 6+(index>10 ? 3 : 2); /*TODO: Handle >100 case -> just set some global basename variable.*/}
         this._outPath = this._outPath[0..-last] + "_" + index + ".root"; // just a groovy capability, assumes file name end is .root
         this._outFile = new ROOTFile(this._outPath); //WARNING: This will currently overwrite existing files

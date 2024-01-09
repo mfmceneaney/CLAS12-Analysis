@@ -1,5 +1,8 @@
 package org.jlab.analysis;
 
+// Groovy Imports
+import groovy.transform.CompileStatic;
+
 // Java Imports
 import java.io.*;
 import java.util.*;
@@ -12,6 +15,7 @@ import java.text.*;
 * @author  Matthew McEneaney
 */
 
+@CompileStatic
 public class Parser {
 
     /**
@@ -69,8 +73,9 @@ public class Parser {
         System.out.println("\t-rn            : Include run # in NTuple");
         System.out.println("\t-en            : Include event # in NTuple");
         System.out.println("\t-lk            : Include extra kinematics for Lambda analysis");
+        System.out.println("\t-ik            : Include extra kinematics for individual particles");
         System.out.println("\t-be   [float]  : Beam energy (GeV) for kinematics   (def: 10.6)");
-        System.out.println("\t-tm   [float]  : Target mass (GeV) for kinematics   (def: 0.9389)");
+        System.out.println("\t-tm   [float]  : Target mass (GeV) for kinematics   (def: 0.9383)");
         System.out.println("\t-tpid [int]    : Target Lund pid for kinematics     (def: 2212)");
         System.out.println("\t-qa            : Use clasqaDB check");
         System.out.println("\t-qm   [string] : Specify clasqaDB check method (def: OkForAsymmetry)");
@@ -84,7 +89,9 @@ public class Parser {
         System.out.println("\t                       or >count if filter<0 (delimiter ':')");
         System.out.println("\n * Channel/Bank Options");
         System.out.println("\t-ch   [int...] : Specify Lund pids for a decay in MC or REC");
-        System.out.println("\t                 (delimiter ':', default 2212:-211)");
+        System.out.println("\t                  (delimiter ':', default 2212:-211).");
+        System.out.println("\t                  Denote groups for kinematics by just separating with commas,");
+        System.out.println("\t                  e.g., 22:2212,-211:321 groups 2212 and -211.");
         System.out.println("\t-mch  [int...] : Specify more pids to look for in MC::Lund bank");
         System.out.println("\t-pch  [int...] : Specify parent pids to look for in MC::Lund bank");
         System.out.println("\t-ma            : Require matching decay in MC::Lund bank");
@@ -105,7 +112,7 @@ public class Parser {
         System.out.println("\t-h/--help      : Show this message");
         System.out.println("\t-m/--maps      : Show available pid maps");
         System.out.println("\t-v/--version   : Show version info");
-        System.out.println("\t-k/--kin       : Show availabe kinematics");
+        System.out.println("\t-k/--kin       : Show available kinematics");
 
         System.out.println("------------------------------------------------------------------------------");
         return false;
@@ -171,8 +178,9 @@ public class Parser {
 
         // Check for drive file
         if (args[0].equals("-d")) {
+            String drivePath = args[1];
             try {
-                String drivePath = args[1]; File driveFile = new File(drivePath);
+                File driveFile = new File(drivePath);
                 Scanner reader = new Scanner(driveFile);
                 System.out.println(" Loading options:");
                 String options = "";
@@ -259,10 +267,22 @@ public class Parser {
                 case '-ch':
                     if (args.length<=2) { break; }
                     try {
-                        String[] arr = args[i+1].split(':');
+                        String[] arr = args[i+1].replace(',',':').split(':'); //TODO: Make sure to change later instances!
+
+                        // Get particle groups delimited with just commas
+                        ArrayList<ArrayList<String>> arrnew = (ArrayList<ArrayList<String>>)args[i+1].split(':').collect{ el -> return el.split(',')};
+                        int k = 0;
+                        ArrayList<ArrayList<Integer>> groups = new ArrayList<ArrayList<Integer>>();
+                        for (ArrayList<String> group : arrnew) {
+                            ArrayList<Integer> list = new ArrayList<Integer>();
+                            for (String pid : group) { list.add(k++); }
+                            if (list.size()>1) groups.add(list);
+                        }
+
+                        // Get list of pids
                         ArrayList<Integer> pids = new ArrayList<Integer>();
                         for (String entry : arr) { int pid = Integer.parseInt(entry); pids.add(pid); }
-                        analysis.setDecay(pids);
+                        analysis.setDecayAndGroups(pids,groups); //NOTE: Important to use this method since it sorts groups to match the decay.
                         if (args.contains('-mch'))  { analysis.setCombo(true); } // Use processComboEvents() method if both MC::Lund and REC::Particle channel are specified.
                         valid_opt = true; break;
                     }
@@ -285,12 +305,24 @@ public class Parser {
                 case '-mch':
                     if (args.length<=2) { break; }
                     try {
-                        String[] arr = args[i+1].split(':');
+                        String[] arr = args[i+1].replace(',',':').split(':'); //TODO: Make sure to change later instances!
+
+                        // Get particle groups delimited with just commas
+                        ArrayList<ArrayList<String>> arrnew = (ArrayList<ArrayList<String>>)args[i+1].split(':').collect{ el -> return el.split(',')};
+                        int k = 0;
+                        ArrayList<ArrayList<Integer>> groups = new ArrayList<ArrayList<Integer>>();
+                        for (ArrayList<String> group : arrnew) {
+                            ArrayList<Integer> list = new ArrayList<Integer>();
+                            for (String pid : group) { list.add(k++); }
+                            if (list.size()>1) groups.add(list);
+                        }
+
+                        // Get list of pids
                         ArrayList<Integer> pids = new ArrayList<Integer>();
                         for (String entry : arr) { int pid = Integer.parseInt(entry); pids.add(pid); }
                         if (pids.size()==0) { return this.help(); }
-                        analysis.setMCDecay(pids);
-                        if (!args.contains("-ch")) { analysis.setDecay(pids); } //NOTE: just use analysis._decay object for simplicity if just looking in MC::Lund bank
+                        analysis.setMCDecay(pids);//TODO: May need set groups and decay here too...
+                        if (!args.contains("-ch")) { analysis.setDecayAndGroups(pids,groups); analysis.setUseMC(true); } //NOTE: just use analysis._decay object for simplicity if just looking in MC::Lund bank.  Also, it's important to use this method so that groups is sorted correctly.
                         if (args.contains('-ch'))  { analysis.setCombo(true); } // Use processComboEvents() method if both MC::Lund and REC::Particle channel are specified.
                         valid_opt = true; break;
                     }
@@ -303,7 +335,9 @@ public class Parser {
                 case "-s":   analysis.setStrict(true); valid_opt = true; break;
                 case "-rn":  analysis.setAddRunNum(true); valid_opt = true; break;
                 case "-en":  analysis.setAddEvNum(true); valid_opt = true; break;
+                case "-ml":  analysis.setAddML(true); valid_opt = true; break;
                 case "-lk":  analysis.setLambdaKin(true); valid_opt = true; break;
+                case "-ik":  analysis.setIndivKin(true); valid_opt = true; break;
                 case "-qa":  analysis.setQA(true); valid_opt = true; break;
                 case "-fc":  analysis.setFC(true); valid_opt = true; break;
                 case "-ma":  analysis.setMatch(true); valid_opt = true; break;
@@ -345,7 +379,7 @@ public class Parser {
                     if (args.length>2) { try {
                         ArrayList<Integer> pids    = new ArrayList<Integer>();
                         ArrayList<Integer> filters = new ArrayList<Integer>();
-                        String[] arr = (arg.contains(':') ? args[i+1].split(':') : [args[i+1]] );
+                        String[] arr = (String[])(arg.contains(':') ? args[i+1].split(':') : [args[i+1]]);
                         for (String el : arr) {
                             pids.add(Integer.parseInt(el.split(',')[0]));
                             filters.add(Integer.parseInt(el.split(',')[1]));
