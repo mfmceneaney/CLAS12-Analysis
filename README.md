@@ -6,10 +6,17 @@ Generic analysis for CLAS12 in groovy
 * [CLASQADB](https://github.com/JeffersonLab/clasqaDB)
 * [J2ROOT](https://github.com/drewkenjo/j2root)
 
+## Pre-requisites
+To build the project you will need the following additional tools:
+* groovy
+* gradle
+* scons
+* maven
+
 ## Installation
 Use the following commands in bash (csh scripts also provided) to setup the repository
 ```bash
-git clone https://github.com/mfmceneaney/CLAS12-Analysis.git
+git clone --recurse-submodules https://github.com/mfmceneaney/CLAS12-Analysis.git
 cd CLAS12-Analysis
 source bin/setup.sh
 ```
