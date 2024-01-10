@@ -614,40 +614,40 @@ public class Kinematics {
         kinematics.put("costhetaT2",costhetaT2);
     }
 
-    /**
-    * Compute additional kinematics particular to \Lambda Analysis 
-    * but potentially useful for other two body decays. Set tranverse 
-    * cos(theta) lorentz vectors using dot into n = unit(p_beam X p_Lambda).
-    * @param HashMap<String, Double> kinematics
-    * @param ArrayList<LorentzVector> lvList
-    * @param LorentzVector lv_parent
-    * @param LorentzVector q
-    * @param DecayProduct beam
-    */
-    protected void getTLKVars(HashMap<String, Double> kinematics, ArrayList<LorentzVector> lvList, LorentzVector lv_parent, LorentzVector q, DecayProduct beam) {
+    // /**
+    // * Compute additional kinematics particular to \Lambda Analysis 
+    // * but potentially useful for other two body decays. Set tranverse 
+    // * cos(theta) lorentz vectors using dot into n = unit(p_beam X p_Lambda).
+    // * @param HashMap<String, Double> kinematics
+    // * @param ArrayList<LorentzVector> lvList
+    // * @param LorentzVector lv_parent
+    // * @param LorentzVector q
+    // * @param DecayProduct beam
+    // */
+    // protected void getTLKVars(HashMap<String, Double> kinematics, ArrayList<LorentzVector> lvList, LorentzVector lv_parent, LorentzVector q, DecayProduct beam) {
 
-        if (!this._addLambdaKin) { return; }
+    //     if (!this._addLambdaKin) { return; }
 
-        Vector3 boost = lv_parent.boostVector();
-        boost.negative();
-        LorentzVector boostedBeam = new LorentzVector(beam.lv());
-        boostedBeam.boost(boost);
-        LorentzVector boostedPhoton = new LorentzVector(q);
-        boostedPhoton.boost(boost);
-        Integer posPid = this._decay.get(1); for (Integer pid : this._decay) { if (this._constants.getCharge(pid)>0 && pid!=this._decay.get(0)) { posPid = pid; break; } } // Grab first positive particle in given decay particles for calculating costheta
-        LorentzVector boostedProton = new LorentzVector(lvList.get(this._decay.indexOf(posPid) - 1)); // IMPORTANT make a new one otherwise it modifies the list entry
-        boostedProton.boost(boost);
+    //     Vector3 boost = lv_parent.boostVector();
+    //     boost.negative();
+    //     LorentzVector boostedBeam = new LorentzVector(beam.lv());
+    //     boostedBeam.boost(boost);
+    //     LorentzVector boostedPhoton = new LorentzVector(q);
+    //     boostedPhoton.boost(boost);
+    //     Integer posPid = this._decay.get(1); for (Integer pid : this._decay) { if (this._constants.getCharge(pid)>0 && pid!=this._decay.get(0)) { posPid = pid; break; } } // Grab first positive particle in given decay particles for calculating costheta
+    //     LorentzVector boostedProton = new LorentzVector(lvList.get(this._decay.indexOf(posPid) - 1)); // IMPORTANT make a new one otherwise it modifies the list entry
+    //     boostedProton.boost(boost);
 
-        Vector3 n1 = boostedBeam.vect().cross(lv_parent.vect());
-        Vector3 n2 = boostedPhoton.vect().cross(lv_parent.vect());
+    //     Vector3 n1 = boostedBeam.vect().cross(lv_parent.vect());
+    //     Vector3 n2 = boostedPhoton.vect().cross(lv_parent.vect());
 
-        double costheta1T = boostedProton.vect().dot(n1) / (boostedProton.vect().mag() * boostedBeam.vect().mag() * boostedParent.vect().mag());
-        double costheta2T = boostedProton.vect().dot(n2) / (boostedProton.vect().mag() * boostedPhoton.vect().mag() * boostedParent.vect().mag());
+    //     double costheta1T = boostedProton.vect().dot(n1) / (boostedProton.vect().mag() * boostedBeam.vect().mag() * boostedParent.vect().mag());
+    //     double costheta2T = boostedProton.vect().dot(n2) / (boostedProton.vect().mag() * boostedPhoton.vect().mag() * boostedParent.vect().mag());
 
-        kinematics.put("costhetaT1",costhetaT1);
-        kinematics.put("costhetaT2",costhetaT2);
+    //     kinematics.put("costhetaT1",costhetaT1);
+    //     kinematics.put("costhetaT2",costhetaT2);
 
-    }
+    // }
 
     /**
     * Compute colinearity cos(theta_colinearity) for V^0 2-body decays.
