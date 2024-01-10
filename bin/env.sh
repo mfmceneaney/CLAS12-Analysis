@@ -9,7 +9,7 @@ export JAVA_OPTS="$JAVA_OPTS -Djava.library.path=$J2ROOT/build"
 #NOTE: j2root/setup.sh resets $JYPATH so make sure it is called before the clasqa/env.sh script!
 
 # CLASQA Setup
-cd clasqaDB; source env.sh; cd ..;
+cd clasqaDB; source environ.sh; cd ..;
 
 # Add command line interface to path
 export PATH=$PATH:$C12ANALYSIS/bin

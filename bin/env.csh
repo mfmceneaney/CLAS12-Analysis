@@ -9,7 +9,7 @@ setenv JAVA_OPTS "$JAVA_OPTS -Djava.library.path=$J2ROOT/build"
 #NOTE: j2root/setup.csh resets $JYPATH so make sure it is called before the clasqa/env.csh script!
 
 # CLASQA Setup
-cd clasqaDB; source env.csh; cd ..;
+cd clasqaDB; source environ.csh; cd ..;
 
 # Add command line interface to path
 setenv PATH $PATH\:$C12ANALYSIS/bin
