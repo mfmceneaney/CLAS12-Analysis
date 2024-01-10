@@ -1,3 +1,3 @@
 #!/bin/bash
 
-groovy -cp $CLASSPATH\:$GCPATH $C12ANALYSIS/lib/src/main/groovy/org/jlab/analysis/Main.groovy $@
+groovy -cp $CLASSPATH\:$GCPATH $C12ANALYSIS/app/src/main/groovy/org/jlab/analysis/Main.groovy $@
