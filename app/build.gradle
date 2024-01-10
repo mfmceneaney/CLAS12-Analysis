@@ -29,12 +29,6 @@ repositories {
     flatDir {
         dirs '../j2root/target'
     }
-    // flatDir {
-    //     dirs '../../CLAS12-Analysis/clasqaDB'
-    // }
-    // flatDir {
-    //     dirs '../../CLAS12-Analysis/j2root/target'
-    // }
 }
 
 dependencies {
@@ -52,10 +46,10 @@ dependencies {
 
     // CLAS12 libraries
     implementation 'org.jlab.coat:coat-libs:6c.6.3-SNAPSHOT' // from https://clasweb.jlab.org/clas12maven/
-    implementation 'org.jlab.jnp:jnp-hipo4:4.1-SNAPSHOT' //'org.jlab.jnp:jnp-hipo4:4.1-SNAPSHOT'     // From mavenLocal()
+    implementation 'org.jlab.jnp:jnp-hipo4:4.1-SNAPSHOT'     // From mavenLocal()
     implementation 'org.jlab.jnp:jnp-utils:2.0-SNAPSHOT'     // From mavenLocal()
     implementation 'target:JRoot-1.0'                        // Set manually path to j2root installation since not available online
-    implementation 'org.jlab.jnp:jnp-physics:1.0-SNAPSHOT' //org.jlab.jnp.physics //'org.jlab.jnp:jnp-physics:1.0-SNAPSHOT'   // From https://clasweb.jlab.org/jhep/maven
+    implementation 'org.jlab.jnp:jnp-physics:1.0-SNAPSHOT'   // From https://clasweb.jlab.org/jhep/maven
     implementation 'clasqaDB:clasqa'                         // from https://github.com/JeffersonLab/clasqaDB
 }
 
@@ -68,7 +62,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = 'org.jlab.analysis.App'
+    mainClass = 'org.jlab.analysis.Main'
 }
 
 tasks.named('test') {
@@ -82,10 +76,3 @@ tasks.distZip {
 tasks.distTar {
    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
-// gradle.taskGraph.whenReady {
-//     tasks
-//         .filter { it.hasProperty("duplicatesStrategy") } // Because it's some weird decorated wrapper that I can't cast.
-//         .forEach {
-//             it.setProperty("duplicatesStrategy", "EXCLUDE")
-//         }
-// }
