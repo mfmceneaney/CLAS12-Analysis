@@ -4,7 +4,7 @@ setenv GCPATH $C12ANALYSIS/app/build/libs/app.jar:$C12ANALYSIS/app/classes/main/
 
 # J2ROOT Setup
 setenv J2ROOT $C12ANALYSIS/j2root
-cd $J2ROOT; source setup.csh; cd ..;
+# cd $J2ROOT; source setup.csh; cd ..; #NOTE: This must be called outside this script!
 setenv JAVA_OPTS "$JAVA_OPTS -Djava.library.path=$J2ROOT/build" 
 #NOTE: j2root/setup.csh resets $JYPATH so make sure it is called before the clasqa/env.csh script!
 

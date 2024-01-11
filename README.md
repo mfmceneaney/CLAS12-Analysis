@@ -24,6 +24,7 @@ source bin/setup.sh
 Then add the following to your startup script:
 ```bash
 pushd /path/to/CLAS12-Analysis >> /dev/null
+#Uncomment this line if using csh: cd j2root; source setup.csh; cd ..;
 source env.sh
 popd >> /dev/null
 ``` 
