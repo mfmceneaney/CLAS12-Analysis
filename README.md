@@ -13,6 +13,8 @@ To build the project you will need the following additional tools:
 * scons
 * maven
 
+Note that this project is undere active development and has only been tested for jdk/21.0.1.  On ifarm you may need to module load this java version.
+
 ## Installation
 Use the following commands in bash (csh scripts also provided) to setup the repository
 ```bash
