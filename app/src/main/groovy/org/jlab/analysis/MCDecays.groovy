@@ -101,7 +101,7 @@ public class MCDecays {
             double px = this._bank.getFloat("px", i);
             double py = this._bank.getFloat("py", i);
             double pz = this._bank.getFloat("pz", i);
-            double bt = this._bank.getFloat("beta", i);
+            double bt = 0.0; //this._bank.getFloat("beta", i);
             double vx = this._bank.getFloat("vx", i);
             double vy = this._bank.getFloat("vy", i);
             double vz = this._bank.getFloat("vz", i);
