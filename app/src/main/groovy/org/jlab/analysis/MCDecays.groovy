@@ -6,6 +6,7 @@ import groovy.transform.CompileStatic;
 // Java Imports
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 // CLAS Physics Imports
 import org.jlab.jnp.hipo4.data.*;
@@ -42,6 +43,7 @@ public class MCDecays {
     protected ArrayList<ArrayList<DecayProduct>> _parComboPidList;
     protected ArrayList<DecayProduct>            _parChargeList;     // List of lists for each charge in parent decay
     protected ArrayList<ArrayList<DecayProduct>> _parComboChargeList;
+    protected LinkedHashMap<Integer,Integer>     _recMatchingMap;
 
     /** 
     * Constructor stub
@@ -158,6 +160,50 @@ public class MCDecays {
         if (this._particleList.size()==0) { this.setParticleList(); }
 
         return this._particleList;
+    }
+
+    /**
+    * Get index to index map to match REC::Particle bank entries to MC::Lund (final state) bank entries.
+    * Note that map entries map the actual index in REC::Particle bank (0->nparticles-1) (same as p_rec.index()) to the actual index (0->nparticles-1) in MC::Lund (not the same as p_mc.index())
+    * @param ArrayList<DecayProduct> fullRecParticleList
+    */
+    protected void setMatchingMap(ArrayList<DecayProduct> fullRecParticleList) {
+
+        // NOTE: You must set the full particle list for this to work
+        if (this._particleList.size()==0) { this.setFullParticleList(); }
+        // RUN MC MATCHING //NOTE: ALWAYS MAP REC ELECTRON ABOVE (index=0) to MC electron (index=3)
+        LinkedHashMap<Integer,Integer> mc_matching_map = new LinkedHashMap<Integer,Integer>(); // Map REC index to top MC indices closest in theta and phi to REC track
+        int rowe_mc = 3; //NOTE: THIS SHOULD ALWAYS BE THE CASE
+        for (int row_rec=0; row_rec<fullRecParticleList.size(); row_rec++) { // Row loop 1
+            DecayProduct p_rec = fullRecParticleList.get(row_rec);
+            
+            int row_mc_match = -1;
+            double om2_min   = 1000;
+                        
+            for (int row_mc=rowe_mc+1; row_mc<this._particleList.size(); row_mc++) { // Row loop 1
+                    DecayProduct p_mc = this._particleList.get(row_mc);
+                    double dtheta = p_rec.theta() - p_mc.theta();
+                    double dphi   = Math.abs(p_rec.phi() - p_mc.phi()) > Math.PI ? 2*Math.PI - Math.abs(p_rec.phi()-p_mc.phi()) : Math.abs(p_rec.phi()-p_mc.phi());
+                    double dp     = p_rec.p() - p_mc.p();
+                    double om2 = dtheta*dtheta+dphi*dphi+dp*dp/(p_mc.p()*p_mc.p());
+                    if (om2<om2_min && p_rec.charge()==p_mc.charge() && p_mc.daughter()==0) { //NOTE: MAKE SURE THAT MC MATCHES AT LEAST HAVE SAME CHARGE and final state particle (daughter==0)
+                        om2_min = om2;
+                        row_mc_match = row_mc;
+                    }
+            } // Loop MC bank
+            mc_matching_map.put(row_rec,row_mc_match);
+        } // Loop REC bank
+
+        // Set map as class attribute
+        this._recMatchingMap = mc_matching_map;
+    }
+
+    /**
+    * Access the REC::Particle index to MC::Lund index matching map.
+    * @return LinkedHashMap<Integer,Integer>
+    */
+    protected LinkedHashMap<Integer,Integer> getMatchingMap() {
+        return this._recMatchingMap;
     }
 
     /**
