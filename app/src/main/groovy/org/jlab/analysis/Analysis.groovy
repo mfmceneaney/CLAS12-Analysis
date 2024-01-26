@@ -869,7 +869,7 @@ public class Analysis {
     * Set boolean for requiring matching decay in mc.
     * @param boolean MC
     */
-    protected void setMatch(boolean match) {
+    protected void setMatch(boolean match) {//TODO: Make this parameter setting less fragile
 
         this._match   = match;
         this._mcdecay = new ArrayList<Integer>(this._decay);
@@ -1299,7 +1299,13 @@ public class Analysis {
             // Read needed banks only once!
             if (this._requireFC) { this._fiducialCuts.setArrays(reader,event); }
             Decays decays     = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC); // Fiducial cuts implemented in Decays object
+
+            // Pull full REC::Particle list for MC::Matching
+            ArrayList<DecayProduct> fullParticleList = decays.getFullParticleList();
+
+            // Create MCDecays object with MC Matching map which will force it to only use combos of particles coming from this map and return a default 0.0 particle combo if no matches are found
             MCDecays mcdecays = new MCDecays(this._mcdecay,this._parents,this._dpMap,reader,event,this._constants);
+            mcdecays.setMatchingMap(fullParticleList); //NOTE: THIS METHOD WILL AND NEEDS TO SET FULL PARTICLE LIST!
 
             // Check for event pid tag if requested
             if (this._require_tag) {
@@ -1311,8 +1317,10 @@ public class Analysis {
 
             // Get combined list of particle combinations from REC::Particle and MC::Lund banks
             ArrayList<ArrayList<DecayProduct>> list;
-            if (!this._require_pid) { list = decays.mergeComboChargeList(mcdecays.getComboChargeList()); if (this._parents.size()!=0) { list = decays.mergeComboChargeList(mcdecays.getCheckedComboChargeList()); } }
-            if (this._require_pid)  { list = decays.mergeComboPidList(mcdecays.getComboPidList()); if (this._parents.size()!=0) { list = decays.mergeComboPidList(mcdecays.getCheckedComboPidList()); } }
+            LinkedHashMap<Integer,Integer> recMatchingMap = mcdecays.getMatchingMap();
+            ArrayList<DecayProduct> mcFullParticleList = mcdecays.getFullParticleList();
+            if (!this._require_pid) { list = decays.mergeComboChargeList(recMatchingMap,mcFullParticleList); }
+            if (this._require_pid)  { list = decays.mergeComboPidList(recMatchingMap,mcFullParticleList); } // if (this._parents.size()!=0) { list = decays.mergeComboPidList(mcdecays.getCheckedComboPidList()); }
 
             // Check for scattered electron if requested
             DecayProduct beam   = decays.getScatteredBeam();
