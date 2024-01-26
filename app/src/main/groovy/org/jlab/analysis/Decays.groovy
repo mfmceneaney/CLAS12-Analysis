@@ -6,6 +6,7 @@ import groovy.transform.CompileStatic;
 // Java Imports
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 // CLAS Physics Imports
 import org.jlab.jnp.hipo4.data.*;
@@ -99,6 +100,7 @@ public class Decays {
 
             DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,vt,chi2pid,status);
             p.charge(charge); //TODO: Is this necessary??
+            p.index(i);
             if (!this._requireFC) { this._particleList.add(p); continue; }
             // if (this._sectorCut) //TODO
             if (this._requireFC) { if (!this._FC.applyCuts(this._runnum, i, pid, this._event, this._reader)) continue; }
@@ -144,6 +146,7 @@ public class Decays {
 
             DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,vt,chi2pid,status);
             p.charge(charge); //TODO: Is this necessary?
+            p.index(i);
             if (!this._requireFC) { this._particleList.add(p); continue; }
             // if (this._sectorCut) //TODO
             if (this._requireFC) { if (!this._FC.applyCuts(this._runnum, i, pid, this._event, this._reader)) continue; }
@@ -240,6 +243,31 @@ public class Decays {
                 mergedComboPidList.add(addList)
             }
          }
+
+        return mergedComboPidList;
+    }
+
+    /**
+    * Merge list of all unique decay particle combinations from REC::Particle
+    * using a mc matching map of REC::Particle to MC::Lund bank indices (not Lund indices)
+    * and the full list of MC::Lund particles.  This essentially duplicates each
+    * particle in each combo list with an mc counterpart appended to the end of the combo list.
+    * @param LinkedHashMap<Integer,Integer> recMatchingMap
+    * @param ArrayList<DecayProduct> mcFullParticleList
+    * @return ArrayList<ArrayList<DecayProduct>> mergedComboPidList 
+    */
+    protected ArrayList<ArrayList<DecayProduct>> mergeComboPidList(LinkedHashMap<Integer,Integer> recMatchingMap, ArrayList<DecayProduct> mcFullParticleList) {
+
+        ArrayList<ArrayList<DecayProduct>> mergedComboPidList = new ArrayList<ArrayList<DecayProduct>>();
+        for (ArrayList<DecayProduct> combo : this.getComboPidList()) {
+            ArrayList<DecayProduct> mergeCombo = new ArrayList<DecayProduct>();
+            for (DecayProduct p : combo) {
+                mergeCombo.add(mcFullParticleList.get(recMatchingMap.get(p.index())));
+            }
+            ArrayList<DecayProduct> addList = new ArrayList<DecayProduct>(combo);
+            addList.addAll(mergeCombo);
+            mergedComboPidList.add(addList);
+        }
 
         return mergedComboPidList;
     }
@@ -354,6 +382,31 @@ public class Decays {
                 mergedComboPidList.add(addList)
             }
          }
+
+        return mergedComboPidList;
+    }
+
+    /**
+    * Merge list of all unique decay particle combinations from REC::Particle identified by charge
+    * using a mc matching map of REC::Particle to MC::Lund bank indices (not Lund indices)
+    * and the full list of MC::Lund particles.  This essentially duplicates each
+    * particle in each combo list with an mc counterpart appended to the end of the combo list.
+    * @param LinkedHashMap<Integer,Integer> recMatchingMap
+    * @param ArrayList<DecayProduct> mcFullParticleList
+    * @return ArrayList<ArrayList<DecayProduct>> mergedComboPidList
+    */
+    protected ArrayList<ArrayList<DecayProduct>> mergeComboChargeList(LinkedHashMap<Integer,Integer> recMatchingMap, ArrayList<DecayProduct> mcFullParticleList) {
+
+        ArrayList<ArrayList<DecayProduct>> mergedComboPidList = new ArrayList<ArrayList<DecayProduct>>();
+        for (ArrayList<DecayProduct> combo : this.getComboChargeList()) {
+            ArrayList<DecayProduct> mergeCombo = new ArrayList<DecayProduct>();
+            for (DecayProduct p : combo) {
+                mergeCombo.add(mcFullParticleList.get(recMatchingMap.get(p.index())));
+            }
+            ArrayList<DecayProduct> addList = new ArrayList<DecayProduct>(combo);
+            addList.addAll(mergeCombo);
+            mergedComboPidList.add(addList);
+        }
 
         return mergedComboPidList;
     }
