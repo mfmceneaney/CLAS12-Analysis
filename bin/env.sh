@@ -4,8 +4,7 @@ export GCPATH=$C12ANALYSIS/app/build/libs/app.jar:$C12ANALYSIS/app/classes/main/
 
 # J2ROOT Setup
 export J2ROOT=$C12ANALYSIS/j2root
-cd $J2ROOT; source setup.sh; cd ..;
-export JAVA_OPTS="$JAVA_OPTS -Djava.library.path=$J2ROOT/build" 
+source $J2ROOT/setup.sh
 #NOTE: j2root/setup.sh resets $JYPATH so make sure it is called before the clasqa/env.sh script!
 
 # CLASQA Setup
