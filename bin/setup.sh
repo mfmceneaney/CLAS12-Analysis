@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export C12ANALYSIS=$PWD
-echo "C12ANALYSIS=$PWD" | grep C12ANALYSIS --color=auto
+env | grep C12ANALYSIS --color=auto
 
 # Setup j2root
 cd j2root
