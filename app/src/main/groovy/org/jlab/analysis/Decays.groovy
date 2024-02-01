@@ -265,7 +265,7 @@ public class Decays {
                 int idx_mc = recMatchingMap.get(p.index());
                 DecayProduct p_mc;
                 if (idx_mc>=0) { p_mc = mcFullParticleList.get(idx_mc); }
-                else { p_mc = new DecayProduct(0,0.0,0.0,0.0,0.0); }
+                else { p_mc = new DecayProduct(0,0,0,0,0); }
                 mergeCombo.add(p_mc);
             }
             ArrayList<DecayProduct> addList = new ArrayList<DecayProduct>(combo);
@@ -408,7 +408,7 @@ public class Decays {
                 int idx_mc = recMatchingMap.get(p.index());
                 DecayProduct p_mc;
                 if (idx_mc>=0) { p_mc = mcFullParticleList.get(idx_mc); }
-                else { p_mc = new DecayProduct(0,0.0,0.0,0.0,0.0); }
+                else { p_mc = new DecayProduct(0,0,0,0,0); }
                 mergeCombo.add(p_mc);
             }
             ArrayList<DecayProduct> addList = new ArrayList<DecayProduct>(combo);
