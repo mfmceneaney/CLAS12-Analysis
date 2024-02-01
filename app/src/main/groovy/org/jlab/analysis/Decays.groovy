@@ -262,7 +262,11 @@ public class Decays {
         for (ArrayList<DecayProduct> combo : this.getComboPidList()) {
             ArrayList<DecayProduct> mergeCombo = new ArrayList<DecayProduct>();
             for (DecayProduct p : combo) {
-                mergeCombo.add(mcFullParticleList.get(recMatchingMap.get(p.index())));
+                int idx_mc = recMatchingMap.get(p.index());
+                DecayProduct p_mc;
+                if (idx_mc>=0) { p_mc = mcFullParticleList.get(idx_mc); }
+                else { p_mc = new DecayProduct(0,0.0,0.0,0.0,0.0); }
+                mergeCombo.add(p_mc);
             }
             ArrayList<DecayProduct> addList = new ArrayList<DecayProduct>(combo);
             addList.addAll(mergeCombo);
@@ -401,7 +405,11 @@ public class Decays {
         for (ArrayList<DecayProduct> combo : this.getComboChargeList()) {
             ArrayList<DecayProduct> mergeCombo = new ArrayList<DecayProduct>();
             for (DecayProduct p : combo) {
-                mergeCombo.add(mcFullParticleList.get(recMatchingMap.get(p.index())));
+                int idx_mc = recMatchingMap.get(p.index());
+                DecayProduct p_mc;
+                if (idx_mc>=0) { p_mc = mcFullParticleList.get(idx_mc); }
+                else { p_mc = new DecayProduct(0,0.0,0.0,0.0,0.0); }
+                mergeCombo.add(p_mc);
             }
             ArrayList<DecayProduct> addList = new ArrayList<DecayProduct>(combo);
             addList.addAll(mergeCombo);
