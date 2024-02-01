@@ -14,8 +14,8 @@ cd $C12ANALYSIS
 
 # Setup clasqaDB
 cd clasqaDB/src
-# jar -c -f clasqa.jar clasqa/*.groovy
-jar cf clasqa.jar clasqa/*.groovy # Depending on your jar version you might need this line instead
+jar -c -f clasqa.jar clasqa/*.groovy
+# jar cf clasqa.jar clasqa/*.groovy # Depending on your jar version you might need this line instead
 mv clasqa.jar ..
 cd $C12ANALYSIS
 
