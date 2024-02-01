@@ -13,7 +13,7 @@ To build the project you will need the following additional tools:
 * scons
 * maven
 
-Note that this project is undere active development and has only been tested for jdk/21.0.1.  On ifarm you may need to module load this java version.
+Note that this project is under active development and has only been tested for jdk/17.0.2 and groovy 4.0.3.  On ifarm you may need to module load this java version.  You may also need to update the library versions in `gradle/libs.versions.toml` and the java version in `app/build.gradle`.
 
 ## Installation
 Use the following commands in bash (csh scripts also provided) to setup the repository
