@@ -1460,7 +1460,7 @@ public class Analysis {
         this._tupleNames = new String("");
         for (String kin : this._kinematics.keySet()) { this._tupleNames += kin + ":"; }
         if (this._match) {//NOTE: Double kinematics if matching REC/MC banks
-            for (String kin : this._kinematics.keySet()) { this._tupleNames += kin + "_MC" + ":"; }
+            for (String kin : this._kinematics.keySet()) { this._tupleNames += kin + "_mc" + ":"; }
         }
         String[] names = ["px_",":py_",":pz_",":beta_"];
         if (this._addVertices) { names += ((this._useMC && !this._combo && !this._match) ? [":vx_",":vy_",":vz_"] : [":vx_",":vy_",":vz_",":vt_"]); } //NOTE: Just a groovy capability //TODO: CHECK THIS CONDITION
@@ -1473,7 +1473,7 @@ public class Analysis {
             for (String name : names) { if (name==":pid_" || name==":pidx_" || name==":ppid_") continue; /*NOTE: ADDED 6/15/22*/ this._tupleNames += name + pname; }
             this._tupleNames += ":";
             if (this._match) {//NOTE: Double entries for matching MC/REC banks
-                for (String name : names) { this._tupleNames += name + pname + "_MC"; }
+                for (String name : names) { this._tupleNames += name + pname + "_mc"; }
             this._tupleNames += ":";
             }
         }
@@ -1500,7 +1500,7 @@ public class Analysis {
                 pidCountsMC[pid] += 1;
                 pname = this._constants.getName(pid);
                 if (i!=0) { if (pid==this._mcdecay.get(i-1)) { pname += pidCountsMC.get(pid); } }
-                for (String name : names) { this._tupleNames += name + pname + "_MC"; }
+                for (String name : names) { this._tupleNames += name + pname + "_mc"; }
                 if (i!=this._mcdecay.size()-1) { this._tupleNames += ":"; }
             }
         }
@@ -1520,7 +1520,7 @@ public class Analysis {
                 pidCounts[pid] += 1;
                 pname = this._constants.getName(pid);
                 if (i!=0) { if (pid==this._decay.get(i-1)) { pname += pidCounts.get(pid); } }
-                for (String name : names) { this._tupleNames += name + pname + "_MC"; }
+                for (String name : names) { this._tupleNames += name + pname + "_mc"; }
                 if (i!=this._decay.size()-1) { this._tupleNames += ":"; }
             }
         }
