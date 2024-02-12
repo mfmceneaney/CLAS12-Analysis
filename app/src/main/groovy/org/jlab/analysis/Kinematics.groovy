@@ -283,7 +283,7 @@ public class Kinematics {
     protected void setAddLambdaKin(boolean addLambdaKin) {
         if (!this._addGroupKin) return; //NOTE: Must be getting group kinematics to do this. //TODO: Generalize
         this._addLambdaKin = addLambdaKin;
-        String[] lkin = [ "costheta1" , "costheta2", "costhetaT1", "costhetaT2" ]; String[] arr = new String[this._defaults.length + lkin.length];
+        String[] lkin = [ "costheta1" , "costheta2", "costhetaT" ]; String[] arr = new String[this._defaults.length + lkin.length];
         int i = 0;
 	for (String defaults : this._defaults) { arr[i] = defaults; i++; }
 	for (String kin : lkin) { arr[i] = kin; i++; }
@@ -605,13 +605,11 @@ public class Kinematics {
         kinematics.put("costheta1",costheta1);
         kinematics.put("costheta2",costheta2);
 
-        // Get transverse lambda kinematics
-        Vector3 n1 = boostedBeam.vect().cross(lv_parent.vect());
-        Vector3 n2 = boostedPhoton.vect().cross(lv_parent.vect());
-        double costhetaT1 = boostedProton.vect().dot(n1) / (boostedProton.vect().mag() * boostedBeam.vect().mag() * lv_parent.vect().mag());
-        double costhetaT2 = boostedProton.vect().dot(n2) / (boostedProton.vect().mag() * boostedPhoton.vect().mag() * lv_parent.vect().mag());
-        kinematics.put("costhetaT1",costhetaT1);
-        kinematics.put("costhetaT2",costhetaT2);
+        // Get transverse lambda kinematics for A_LUT
+        Vector3 n1 = boostedPhoton.vect().cross(boostedBeam.vect());
+        Vector3 n2 = n1.cross(boostedPhoton.vect());
+        double costhetaT = boostedProton.vect().dot(n2) / (boostedProton.vect().mag() * n2.mag());
+        kinematics.put("costhetaT",costhetaT);
     }
 
     // /**
