@@ -53,10 +53,11 @@ public class DecayProduct {
         this._beta = beta;
     } //NOTE: ADDED
 
-    public DecayProduct(int pid, double px, double py, double pz, double beta, double vx, double vy, double vz, int index, int parent, int daughter, int ppid) {
+    public DecayProduct(int pid, double px, double py, double pz, double beta, double vx, double vy, double vz, int index, int parent, int daughter, int ppid, int gppid) {
         this.setVector(pid,px,py,pz,vx,vy,vz);
         this.setIndices(index,parent,daughter);
         this.ppid(ppid);
+        this.gppid(gppid);
         this._beta = beta;
     }
 
