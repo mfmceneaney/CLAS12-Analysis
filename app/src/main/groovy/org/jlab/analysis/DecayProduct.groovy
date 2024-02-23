@@ -23,6 +23,7 @@ public class DecayProduct {
     int       _parent;
     int       _daughter;
     int       _ppid; //NOTE: ADDED
+    int       _gppid; //NOTE: ADDED
     int       _charge;
     double    _px;
     double    _py;
@@ -98,7 +99,8 @@ public class DecayProduct {
         this._chi2pid = (double) p.chi2pid();
         this._stat    = (int)    p.status();
         this.setIndices(p.index(),p.parent(),p.daughter());//NOTE: ADDED
-        this.ppid(p.ppid());//NOTE: ADDED    
+        this.ppid(p.ppid());//NOTE: ADDED
+        this.gppid(p.gppid());//NOTE: ADDED
     }
 
     /**
@@ -233,6 +235,24 @@ public class DecayProduct {
     protected int ppid() {
 
         return this._ppid;
+    }
+
+    /**
+    * Set particle's grandparent pid.
+    * @param int gppid
+    */
+    protected void gppid(int gppid) {
+
+        this._gppid = gppid;
+    }
+
+    /**
+    * Access particle's grandparent pid.
+    * @return int _gppid
+    */
+    protected int gppid() {
+
+        return this._gppid;
     }
 
     /**
