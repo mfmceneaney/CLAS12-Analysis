@@ -1374,6 +1374,7 @@ public class Analysis {
                     }
                     data.add(mcbeam.chi2pid());
                     data.add((double)mcbeam.status());
+                    data.add((double)mcbeam.pid());
                 }
 
                 // Add REC::Particle particles
@@ -1394,7 +1395,7 @@ public class Analysis {
                     }
                     data.add(p.chi2pid());
                     data.add((double)p.status());
-                    // data.add((double)p.pid());
+                    data.add((double)p.pid());
                 }
                 
                 // Add MC::Lund Particles
