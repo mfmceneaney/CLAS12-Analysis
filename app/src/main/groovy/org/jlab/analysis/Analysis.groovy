@@ -1394,7 +1394,7 @@ public class Analysis {
                     }
                     data.add(p.chi2pid());
                     data.add((double)p.status());
-                    data.add((double)p.pid());
+                    // data.add((double)p.pid());
                 }
                 
                 // Add MC::Lund Particles
@@ -1468,7 +1468,7 @@ public class Analysis {
         if (this._useMC && !this._combo && !this._match) { names += [":pidx_",":ppid_",":gppid_"]; } //NOTE: Add parent index and pid for MC only events
         String pname = this._constants.getName(this._constants.getBeamPID());
         if (this._require_e) {
-            for (String name : names) { if (name==":pid_" || name==":pidx_" || name==":ppid_" || name==":gppid_") continue; /*NOTE: ADDED 6/15/22*/ this._tupleNames += name + pname; }
+            for (String name : names) { if (name==":pid_" || name==":pidx_" || name==":ppid_" || name==":gppid_") continue; /*NOTE: ADDED 6/15/22*/ this._tupleNames += name + pname; } //NOTE: This skips pid for !this._require_pid events too.  Will have to fix this at some point maybe. 2/27/24.
             this._tupleNames += ":";
             if (this._match) {//NOTE: Double entries for matching MC/REC banks
                 for (String name : names) { this._tupleNames += name + pname + "_mc"; }
