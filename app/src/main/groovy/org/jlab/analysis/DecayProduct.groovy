@@ -37,6 +37,10 @@ public class DecayProduct {
     double    _vt;
     double    _chi2pid;
     int       _stat;
+    int       _detector;
+    int       _sector;
+    int       _detector_status;
+    double    _detector_chi2ndf;
     Constants _constants = new ExtendedConstants(); //TODO: Might slow things down a lot...
 
     public DecayProduct(int pid, double px, double py, double pz, double beta, double vx, double vy, double vz, double vt, double chi2pid, int stat) {
@@ -657,6 +661,78 @@ public class DecayProduct {
     protected int status() {
 
         return this._stat;
+    }
+
+    /**
+    * Set REC::Particle particle's detector from REC::Track.
+    * @param int detector
+    */
+    protected void detector(int detector) {
+
+        this._detector = detector;
+    }
+
+    /**
+    * Access REC::Particle particle's detector from REC::Track.
+    * @return int _detector
+    */
+    protected int detector() {
+
+        return this._detector;
+    }
+
+    /**
+    * Set REC::Particle particle's sector from REC::Track.
+    * @param int sector
+    */
+    protected void sector(int sector) {
+
+        this._sector = sector;
+    }
+
+    /**
+    * Access REC::Particle particle's sector from REC::Track.
+    * @return int _sector
+    */
+    protected int sector() {
+
+        return this._sector;
+    }
+
+    /**
+    * Set REC::Particle particle's detector status from REC::Track.
+    * @param int detector_status
+    */
+    protected void detector_status(int detector_status) {
+
+        this._detector_status = detector_status;
+    }
+
+    /**
+    * Access REC::Particle particle's detector status from REC::Track.
+    * @return int _detector_status
+    */
+    protected int detector_status() {
+
+        return this._detector_status;
+    }
+
+    /**
+    * Set REC::Particle particle's detector chi2/ndf from REC::Track.
+    * @param double detector_chi2ndf
+    */
+    protected void detector_chi2ndf(int detector_chi2ndf) {
+
+        this._detector_chi2ndf = detector_chi2ndf;
+    }
+
+    /**
+    * Access REC::Particle particle's detector chi2/ndf from REC::Track.
+    * @return double _detector_chi2ndf
+    */
+    protected int detector_chi2ndf() {
+
+        return this._detector_chi2ndf;
     }
 
 } // class
