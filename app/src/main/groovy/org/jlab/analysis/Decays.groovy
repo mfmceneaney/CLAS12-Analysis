@@ -57,6 +57,8 @@ public class Decays {
         this._event     = event;
 		this._schema    = this._reader.getSchemaFactory().getSchema("REC::Particle");
         this._bank      = new Bank(this._schema);
+        this._rec_track_schema = this._reader.getSchemaFactory().getSchema("REC::Track");
+        this._rec_track_bank   = new Bank(this._rec_track_schema);
         this._constants = constants;
         this._FC        = FC;
         this._requireFC = requireFC;
@@ -98,9 +100,34 @@ public class Decays {
             double vz = this._bank.getFloat("vz", i);
             double vt = this._bank.getFloat("vt", i);
 
+            // Check REC::Track for matching entries
+            this._event.read(this._rec_track_bank);
+            int detector = -1;
+            int sector = -1;
+            int detector_status = -9999;
+            double detector_chi2ndf = -9999.0;
+            for (int j=0; j<this._rec_track_bank.getRows(); j++) {
+
+                int pindex = this._rec_track_bank.getInt("pindex");
+                if (pindex==i) {
+                    detector = this._rec_track_bank.getInt("detector");
+                    sector   = this._rec_track_bank.getInt("sector");
+                    detector_status = this._rec_track_bank.getInt("status");
+                    double chi2 = this._rec_track_bank.getInt("chi2");
+                    double ndf = (double)this._rec_track_bank.getInt("NDF");
+                    detector_chi2ndf = (double)chi2/ndf;
+                    break; //NOTE: Important: only add first match.  Matches should be unique but need to double check this.
+                }
+            }
+            this._event.read(this._bank);
+
             DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,vt,chi2pid,status);
             p.charge(charge); //TODO: Is this necessary??
             p.index(i);
+            p.detector(detector);
+            p.sector(sector);
+            p.detector_status(detector_status);
+            p.detector_chi2ndf(detector_chi2ndf); //TODO: Figure out best way to map to this......
             if (!this._requireFC) { this._particleList.add(p); continue; }
             // if (this._sectorCut) //TODO
             if (this._requireFC) { if (!this._FC.applyCuts(this._runnum, i, pid, this._event, this._reader)) continue; }
@@ -144,9 +171,34 @@ public class Decays {
             double vz = this._bank.getFloat("vz", i);
             double vt = this._bank.getFloat("vt", i);
 
+            // Check REC::Track for matching entries
+            this._event.read(this._rec_track_bank);
+            int detector = -1;
+            int sector = -1;
+            int detector_status = -9999;
+            double detector_chi2ndf = -9999.0;
+            for (int j=0; j<this._rec_track_bank.getRows(); j++) {
+
+                int pindex = this._rec_track_bank.getInt("pindex");
+                if (pindex==i) {
+                    detector = this._rec_track_bank.getInt("detector");
+                    sector   = this._rec_track_bank.getInt("sector");
+                    detector_status = this._rec_track_bank.getInt("status");
+                    double chi2 = this._rec_track_bank.getInt("chi2");
+                    double ndf = (double)this._rec_track_bank.getInt("NDF");
+                    detector_chi2ndf = (double)chi2/ndf;
+                    break; //NOTE: Important: only add first match.  Matches should be unique but need to double check this.
+                }
+            }
+            this._event.read(this._bank);
+
             DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,vt,chi2pid,status);
             p.charge(charge); //TODO: Is this necessary?
             p.index(i);
+            p.detector(detector);
+            p.sector(sector);
+            p.detector_status(detector_status);
+            p.detector_chi2ndf(detector_chi2ndf); //TODO: Figure out best way to map to this......
             if (!this._requireFC) { this._particleList.add(p); continue; }
             // if (this._sectorCut) //TODO
             if (this._requireFC) { if (!this._FC.applyCuts(this._runnum, i, pid, this._event, this._reader)) continue; }
@@ -301,9 +353,34 @@ public class Decays {
             double vz = this._bank.getFloat("vz", i);
             double vt = this._bank.getFloat("vt", i);
 
+            // Check REC::Track for matching entries
+            this._event.read(this._rec_track_bank);
+            int detector = -1;
+            int sector = -1;
+            int detector_status = -9999;
+            double detector_chi2ndf = -9999.0;
+            for (int j=0; j<this._rec_track_bank.getRows(); j++) {
+
+                int pindex = this._rec_track_bank.getInt("pindex");
+                if (pindex==i) {
+                    detector = this._rec_track_bank.getInt("detector");
+                    sector   = this._rec_track_bank.getInt("sector");
+                    detector_status = this._rec_track_bank.getInt("status");
+                    double chi2 = this._rec_track_bank.getInt("chi2");
+                    double ndf = (double)this._rec_track_bank.getInt("NDF");
+                    detector_chi2ndf = (double)chi2/ndf;
+                    break; //NOTE: Important: only add first match.  Matches should be unique but need to double check this.
+                }
+            }
+            this._event.read(this._bank);
+
             DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,vt,chi2pid,status);
             p.pid(pid); //NOTE: Not really sure why this is a problem and needs to be added...
             p.charge(charge);
+            p.detector(detector);
+            p.sector(sector);
+            p.detector_status(detector_status);
+            p.detector_chi2ndf(detector_chi2ndf); //TODO: Figure out best way to map to this......
             if (!this._requireFC) { this._particleList.add(p); continue; }
             // if (this._sectorCut) //TODO
             if (this._requireFC) { if (!this._FC.applyCuts(this._runnum, i, pid, this._event, this._reader)) continue; }
