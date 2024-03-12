@@ -295,7 +295,7 @@ public class Kinematics {
 
         // Set string arrays for TNTuple entry names
         this._addIndivKin = addIndivKin;
-        String[] ikin_init = ["z_", "xF_", "y_", "zeta_", "mx_", "phperp_","phi_h_"];
+        String[] ikin_init = ["z_", "xF_", "y_", "zeta_", "mx_", "phperp_","phi_h_","theta_h_"];
         String[] ikin = new String[ikin_init.size() * this._decay.size()];
 
         // Loop this._decay pids and individual kinematics names and add to keyset
@@ -325,7 +325,7 @@ public class Kinematics {
 
         // Set string arrays for TNTuple entry names
         this._addGroupKin = addGroupKin;
-        String[] gkin_init = ["z_", "xF_", "y_", "zeta_", "mx_", "phperp_","phi_h_","mass_","alpha_","pT_"];
+        String[] gkin_init = ["z_", "xF_", "y_", "zeta_", "mx_", "phperp_","phi_h_","theta_h_","mass_","alpha_","pT_"];
         String[] gkin = new String[gkin_init.size() * this._groups.size()];
         String[] ends = new String[this._decay.size()];
 
@@ -750,6 +750,9 @@ public class Kinematics {
             double phi_h_  = sign__ * Math.acos(nhat.dot(phihat)/(nhat.mag()*phihat.mag()));
             if (phi_h_<0) phi_h_ = 2*Math.PI + phi_h_;
 
+            // Get theta_h_ in gN frame of momentum about q ( just angle between boosted lv and boosted q)
+            double theta_h_ = lv__.vect().dot(q__.vect()) / (lv__.vect().mag()*q__.vect().mag());
+
             // // Get new phi_h
             // double phi_h_ = boostedLv.phi();
 
@@ -761,6 +764,7 @@ public class Kinematics {
             kinematics.put(this._ikin[k++],mx_);     //NOTE: Missing mass
             kinematics.put(this._ikin[k++],phperp_); //NOTE: momentum of hadron perp to electron scattering plane
             kinematics.put(this._ikin[k++],phi_h_);  //NOTE: Azimuthal angle of momentum perp to q relative to e eprime scattering plane.
+            kinematics.put(this._ikin[k++],theta_h_);//NOTE: Polar angle of momentum about q in g*N CoM frame.
         }
     }
 
@@ -827,6 +831,9 @@ public class Kinematics {
             double phi_h_  = sign__ * Math.acos(nhat.dot(phihat)/(nhat.mag()*phihat.mag()));
             if (phi_h_<0) phi_h_ = 2*Math.PI + phi_h_;
 
+            // Get theta_h_ in gN frame of momentum about q ( just angle between boosted lv and boosted q)
+            double theta_h_ = lv__.vect().dot(q__.vect()) / (lv__.vect().mag()*q__.vect().mag());
+
             // Get final state mass for parent
             double mass_   = lv_parent.mass();
 
@@ -856,6 +863,7 @@ public class Kinematics {
             kinematics.put(this._gkin[k++],mx_);     //NOTE: Missing mass
             kinematics.put(this._gkin[k++],phperp_); //NOTE: momentum of hadron perp to electron scattering plane
             kinematics.put(this._gkin[k++],phi_h_);  //NOTE: Azimuthal angle of momentum perp to q relative to e eprime scattering plane.
+            kinematics.put(this._ikin[k++],theta_h_);//NOTE: Polar angle of momentum about q in g*N CoM frame.
             kinematics.put(this._gkin[k++],mass_);   //NOTE: Invariant mass of grouped particles system
             kinematics.put(this._gkin[k++],alpha_);  //NOTE: Longitudinal momentum asymmetry in CM frame (obviously not of parent)
             kinematics.put(this._gkin[k++],pT_);     //NOTE: Average transverse momentum of decay products in CM frame (obviously not of parent)
