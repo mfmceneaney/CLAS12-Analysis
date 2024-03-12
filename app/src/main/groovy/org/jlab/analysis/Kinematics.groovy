@@ -867,7 +867,7 @@ public class Kinematics {
             kinematics.put(this._gkin[k++],mx_);     //NOTE: Missing mass
             kinematics.put(this._gkin[k++],phperp_); //NOTE: momentum of hadron perp to electron scattering plane
             kinematics.put(this._gkin[k++],phi_h_);  //NOTE: Azimuthal angle of momentum perp to q relative to e eprime scattering plane.
-            kinematics.put(this._ikin[k++],theta_h_);//NOTE: Polar angle of momentum about q in g*N CoM frame.
+            kinematics.put(this._gkin[k++],theta_h_);//NOTE: Polar angle of momentum about q in g*N CoM frame.
             kinematics.put(this._gkin[k++],mass_);   //NOTE: Invariant mass of grouped particles system
             kinematics.put(this._gkin[k++],alpha_);  //NOTE: Longitudinal momentum asymmetry in CM frame (obviously not of parent)
             kinematics.put(this._gkin[k++],pT_);     //NOTE: Average transverse momentum of decay products in CM frame (obviously not of parent)
