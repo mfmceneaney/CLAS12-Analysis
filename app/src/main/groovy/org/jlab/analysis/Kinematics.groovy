@@ -735,7 +735,6 @@ public class Kinematics {
             double y_      = 1/2*Math.log((lv.e()+lv.pz())/(lv.e()-lv.pz()));
             double zeta_   = boostedLv.e() / boostedTarget.e();
             double mx_     = lv_miss.mass();
-            double phperp_ = lv.vect().mag()*(q.vect().cross(lv.vect()).mag()/(q.vect().mag()*lv.vect().mag()));
 
             // Get phi_h_ in gN frame of momentum perpendicular to q relative to electron scattering plane ( just angle between q x l and q x p_hadron planes)
             LorentzVector q__ = new LorentzVector(q);
@@ -752,6 +751,9 @@ public class Kinematics {
 
             // Get theta_h_ in gN frame of momentum about q ( just angle between boosted lv and boosted q)
             double theta_h_ = lv__.vect().dot(q__.vect()) / (lv__.vect().mag()*q__.vect().mag());
+
+            // Compute perpendicular momentum component in g*N CoM frame
+            double phperp_ = lv__.vect().mag()*(q__.vect().cross(lv__.vect()).mag()/(q__.vect().mag()*lv__.vect().mag()));
 
             // // Get new phi_h
             // double phi_h_ = boostedLv.phi();
@@ -816,7 +818,6 @@ public class Kinematics {
             double y_      = 1/2*Math.log((lv.e()+lv.pz())/(lv.e()-lv.pz()));
             double zeta_   = boostedLv.e() / boostedTarget.e();
             double mx_     = lv_miss.mass();
-            double phperp_ = lv.vect().mag()*(q.vect().cross(lv.vect()).mag()/(q.vect().mag()*lv.vect().mag()));
 
             // Get phi_h_ in gN frame of momentum perpendicular to q relative to electron scattering plane ( just angle between q x l and q x p_hadron planes)
             LorentzVector q__ = new LorentzVector(q);
@@ -833,6 +834,9 @@ public class Kinematics {
 
             // Get theta_h_ in gN frame of momentum about q ( just angle between boosted lv and boosted q)
             double theta_h_ = lv__.vect().dot(q__.vect()) / (lv__.vect().mag()*q__.vect().mag());
+
+            // Compute perpendicular momentum component in g*N CoM frame
+            double phperp_ = lv__.vect().mag()*(q__.vect().cross(lv__.vect()).mag()/(q__.vect().mag()*lv__.vect().mag()));
 
             // Get final state mass for parent
             double mass_   = lv_parent.mass();
