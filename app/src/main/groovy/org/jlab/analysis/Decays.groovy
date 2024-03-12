@@ -30,6 +30,8 @@ public class Decays {
     protected Event                              _event;
     protected Schema                             _schema;
     protected Bank                               _bank;
+    protected Schema                             _rec_track_schema;
+    protected Bank                               _rec_track_bank;
     protected ArrayList<DecayProduct>            _particleList;
     protected Constants                          _constants;
     protected FiducialCuts                       _FC;
@@ -108,13 +110,13 @@ public class Decays {
             double detector_chi2ndf = -9999.0;
             for (int j=0; j<this._rec_track_bank.getRows(); j++) {
 
-                int pindex = this._rec_track_bank.getInt("pindex");
+                int pindex = this._rec_track_bank.getInt("pindex", j);
                 if (pindex==i) {
-                    detector = this._rec_track_bank.getInt("detector");
-                    sector   = this._rec_track_bank.getInt("sector");
-                    detector_status = this._rec_track_bank.getInt("status");
-                    double chi2 = this._rec_track_bank.getInt("chi2");
-                    double ndf = (double)this._rec_track_bank.getInt("NDF");
+                    detector = this._rec_track_bank.getInt("detector", j);
+                    sector   = this._rec_track_bank.getInt("sector", j);
+                    detector_status = this._rec_track_bank.getInt("status", j);
+                    double chi2 = this._rec_track_bank.getFloat("chi2", j);
+                    double ndf = (double)this._rec_track_bank.getInt("NDF", j);
                     detector_chi2ndf = (double)chi2/ndf;
                     break; //NOTE: Important: only add first match.  Matches should be unique but need to double check this.
                 }
@@ -179,13 +181,13 @@ public class Decays {
             double detector_chi2ndf = -9999.0;
             for (int j=0; j<this._rec_track_bank.getRows(); j++) {
 
-                int pindex = this._rec_track_bank.getInt("pindex");
+                int pindex = this._rec_track_bank.getInt("pindex", j);
                 if (pindex==i) {
-                    detector = this._rec_track_bank.getInt("detector");
-                    sector   = this._rec_track_bank.getInt("sector");
-                    detector_status = this._rec_track_bank.getInt("status");
-                    double chi2 = this._rec_track_bank.getInt("chi2");
-                    double ndf = (double)this._rec_track_bank.getInt("NDF");
+                    detector = this._rec_track_bank.getInt("detector", j);
+                    sector   = this._rec_track_bank.getInt("sector", j);
+                    detector_status = this._rec_track_bank.getInt("status", j);
+                    double chi2 = this._rec_track_bank.getFloat("chi2", j);
+                    double ndf = (double)this._rec_track_bank.getInt("NDF", j);
                     detector_chi2ndf = (double)chi2/ndf;
                     break; //NOTE: Important: only add first match.  Matches should be unique but need to double check this.
                 }
@@ -361,13 +363,13 @@ public class Decays {
             double detector_chi2ndf = -9999.0;
             for (int j=0; j<this._rec_track_bank.getRows(); j++) {
 
-                int pindex = this._rec_track_bank.getInt("pindex");
+                int pindex = this._rec_track_bank.getInt("pindex", j);
                 if (pindex==i) {
-                    detector = this._rec_track_bank.getInt("detector");
-                    sector   = this._rec_track_bank.getInt("sector");
-                    detector_status = this._rec_track_bank.getInt("status");
-                    double chi2 = this._rec_track_bank.getInt("chi2");
-                    double ndf = (double)this._rec_track_bank.getInt("NDF");
+                    detector = this._rec_track_bank.getInt("detector", j);
+                    sector   = this._rec_track_bank.getInt("sector", j);
+                    detector_status = this._rec_track_bank.getInt("status", j);
+                    double chi2 = this._rec_track_bank.getFloat("chi2", j);
+                    double ndf = (double)this._rec_track_bank.getInt("NDF", j);
                     detector_chi2ndf = (double)chi2/ndf;
                     break; //NOTE: Important: only add first match.  Matches should be unique but need to double check this.
                 }
