@@ -721,7 +721,7 @@ public class DecayProduct {
     * Set REC::Particle particle's detector chi2/ndf from REC::Track.
     * @param double detector_chi2ndf
     */
-    protected void detector_chi2ndf(int detector_chi2ndf) {
+    protected void detector_chi2ndf(double detector_chi2ndf) {
 
         this._detector_chi2ndf = detector_chi2ndf;
     }
@@ -730,7 +730,7 @@ public class DecayProduct {
     * Access REC::Particle particle's detector chi2/ndf from REC::Track.
     * @return double _detector_chi2ndf
     */
-    protected int detector_chi2ndf() {
+    protected double detector_chi2ndf() {
 
         return this._detector_chi2ndf;
     }
