@@ -1498,7 +1498,11 @@ public class Analysis {
             for (String name : names) { if (name==":pid_" || name==":pidx_" || name==":ppid_" || name==":gppid_") continue; /*NOTE: ADDED 6/15/22*/ this._tupleNames += name + pname; } //NOTE: This skips pid for !this._require_pid events too.  Will have to fix this at some point maybe. 2/27/24.
             this._tupleNames += ":";
             if (this._match) {//NOTE: Double entries for matching MC/REC banks
-                for (String name : names) { this._tupleNames += name + pname + "_mc"; }
+                for (String name : newnames) {
+                        //NOTE: This is just a bug fix for now.  Figure out a more elegant way to do this.
+                        if (name.contains("ector")) continue;
+                        this._tupleNames += name + pname + "_mc";
+                    }
             this._tupleNames += ":";
             }
         }
