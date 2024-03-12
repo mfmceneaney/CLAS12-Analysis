@@ -1010,7 +1010,7 @@ public class Analysis {
                         data.add((double)beam.detector());
                         data.add((double)beam.sector());
                         data.add((double)beam.detector_status());
-                        data.add((double)beam.detector_chi2ndf());
+                        data.add(beam.detector_chi2ndf());
                     }
                 }
                 for (DecayProduct p : l) {
@@ -1037,7 +1037,7 @@ public class Analysis {
                         data.add((double)p.detector());
                         data.add((double)p.sector());
                         data.add((double)p.detector_status());
-                        data.add((double)p.detector_chi2ndf());
+                        data.add(p.detector_chi2ndf());
                     }
                 }
 		
@@ -1373,7 +1373,7 @@ public class Analysis {
                         data.add((double)beam.detector());
                         data.add((double)beam.sector());
                         data.add((double)beam.detector_status());
-                        data.add((double)beam.detector_chi2ndf());
+                        data.add(beam.detector_chi2ndf());
                     }
 
                     // Add MC::Lund beam
@@ -1419,7 +1419,7 @@ public class Analysis {
                         data.add((double)p.detector());
                         data.add((double)p.sector());
                         data.add((double)p.detector_status());
-                        data.add((double)p.detector_chi2ndf());
+                        data.add(p.detector_chi2ndf());
                     }
                 }
                 
