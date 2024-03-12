@@ -59,6 +59,7 @@ public class Analysis {
 	protected static boolean _require_tag  = false;					// pid tag requirement
     protected static boolean _require_ex   = false;					// exclusive tag requirement
 	protected static boolean _require_pid  = true;					// decay particles pid requirement
+    protected static boolean _use_rectrack = true;					// include REC::Track info if any corresponds to a given particle
     protected static boolean _require_e    = true;					// electron tag in FT requirement
     protected static boolean _strict       = false;					// strict mass from pid assignment for kinematics calculations
     protected static boolean _addRunNum    = false;					// include event number in TNTuple (always added as zeroeth entry)
@@ -1005,6 +1006,12 @@ public class Analysis {
                     }
                     data.add(beam.chi2pid());
                     data.add((double)beam.status());
+                    if (this._use_rectrack) {
+                        data.add((double)beam.detector());
+                        data.add((double)beam.sector());
+                        data.add((double)beam.detector_status());
+                        data.add((double)beam.detector_chi2ndf());
+                    }
                 }
                 for (DecayProduct p : l) {
                     data.add(p.px());
@@ -1025,6 +1032,12 @@ public class Analysis {
                     data.add((double)p.status());
                     if (!this._require_pid) {
                         data.add((double)p.pid());
+                    }
+                    if (this._use_rectrack) {
+                        data.add((double)p.detector());
+                        data.add((double)p.sector());
+                        data.add((double)p.detector_status());
+                        data.add((double)p.detector_chi2ndf());
                     }
                 }
 		
@@ -1356,6 +1369,12 @@ public class Analysis {
                     }
                     data.add(beam.chi2pid());
                     data.add((double)beam.status());
+                    if (this._use_rectrack) {
+                        data.add((double)beam.detector());
+                        data.add((double)beam.sector());
+                        data.add((double)beam.detector_status());
+                        data.add((double)beam.detector_chi2ndf());
+                    }
 
                     // Add MC::Lund beam
                     data.add(mcbeam.px());
@@ -1396,6 +1415,12 @@ public class Analysis {
                     data.add(p.chi2pid());
                     data.add((double)p.status());
                     data.add((double)p.pid());
+                    if (this._use_rectrack) {
+                        data.add((double)p.detector());
+                        data.add((double)p.sector());
+                        data.add((double)p.detector_status());
+                        data.add((double)p.detector_chi2ndf());
+                    }
                 }
                 
                 // Add MC::Lund Particles
@@ -1466,6 +1491,7 @@ public class Analysis {
         if (this._addAngles) { names += [":theta_",":phi_"]; } //NOTE: Just a groovy capability
         if (!this._useMC || this._combo || this._match) { names += [":chi2pid_",":status_"]; }
         if (!this._require_pid || this._match) {names += [":pid_"]; } //NOTE: Just a groovy capability // use .addAll() for java
+        if (this._use_rectrack) { names += [":detector_",":sector_",":detector_status_",":detector_chi2ndf_"]; }
         if (this._useMC && !this._combo && !this._match) { names += [":pidx_",":ppid_",":gppid_"]; } //NOTE: Add parent index and pid for MC only events
         String pname = this._constants.getName(this._constants.getBeamPID());
         if (this._require_e) {
