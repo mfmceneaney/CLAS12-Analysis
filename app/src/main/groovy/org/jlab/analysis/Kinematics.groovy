@@ -822,7 +822,7 @@ public class Kinematics {
             // Get phi_h_ in gN frame of momentum perpendicular to q relative to electron scattering plane ( just angle between q x l and q x p_hadron planes)
             LorentzVector q__ = new LorentzVector(q);
             q__.boost(gNBoost);
-            LorentzVector lv__ = new LorentzVector(boostedLv);
+            LorentzVector lv__ = new LorentzVector(lv);
             lv__.boost(gNBoost);
             LorentzVector lv_max__ = new LorentzVector(lv_max);
             lv_max__.boost(gNBoost);
