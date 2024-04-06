@@ -745,7 +745,7 @@ public class Kinematics {
             lv_max__.boost(gNBoost);
             Vector3 nhat   = q__.vect().cross(lv_max__.vect()); // vA x vB
             Vector3 phihat = q__.vect().cross(lv__.vect());     // vC x vD
-            double sign__  = nhat.dot(lv.vect())>=0 ? 1 : -1; // sign of (vA x vB) . vD
+            double sign__  = nhat.dot(lv__.vect())>=0 ? 1 : -1; // sign of (vA x vB) . vD
             double phi_h_  = sign__ * Math.acos(nhat.dot(phihat)/(nhat.mag()*phihat.mag()));
             if (phi_h_<0) phi_h_ = 2*Math.PI + phi_h_;
 
@@ -828,7 +828,7 @@ public class Kinematics {
             lv_max__.boost(gNBoost);
             Vector3 nhat   = q__.vect().cross(lv_max__.vect()); // vA x vB
             Vector3 phihat = q__.vect().cross(lv__.vect());     // vC x vD
-            double sign__  = nhat.dot(lv.vect())>=0 ? 1 : -1; // sign of (vA x vB) . vD
+            double sign__  = nhat.dot(lv__.vect())>=0 ? 1 : -1; // sign of (vA x vB) . vD
             double phi_h_  = sign__ * Math.acos(nhat.dot(phihat)/(nhat.mag()*phihat.mag()));
             if (phi_h_<0) phi_h_ = 2*Math.PI + phi_h_;
 
