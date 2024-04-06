@@ -325,7 +325,7 @@ public class Kinematics {
 
         // Set string arrays for TNTuple entry names
         this._addGroupKin = addGroupKin;
-        String[] gkin_init = ["z_", "xF_", "y_", "zeta_", "mx_", "phperp_","phi_h_","theta_h_","mass_","alpha_","pT_"];
+        String[] gkin_init = ["z_", "xF_", "y_", "zeta_", "mx_", "phperp_","phi_h_","phi_rt_","theta_h_","mass_","alpha_","pT_"];
         String[] gkin = new String[gkin_init.size() * this._groups.size()];
         String[] ends = new String[this._decay.size()];
 
@@ -832,6 +832,28 @@ public class Kinematics {
             double phi_h_  = sign__ * Math.acos(nhat.dot(phihat)/(nhat.mag()*phihat.mag()));
             if (phi_h_<0) phi_h_ = 2*Math.PI + phi_h_;
 
+            // Get phi_r_perp for dihadron analyses
+            LorentzVector rt = new LorentzVector(); // Compute difference vector in CoM frame.
+            int idx = 0;
+            for (LorentzVector _rt_ : lvList) {
+                if (idx<=0) {
+                    rt = new LorentzVector(_rt_);
+                    rt.boost(gNBoost);
+                }
+                if (idx>0) {
+                    LorentzVector _rt___ = new LorentzVector(_rt_);
+                    _rt___.boost(gNBoost);
+                    rt.sub(_rt___);
+                }
+                idx++;
+            }
+            Vector3 rt__ = rt.vect().cross(lv__.vect()); ///NOTE: Get component perpendicular to Ph in CoM frame.
+            // Vector3 nhat           = q__.vect().cross(lv_max__.vect()); // vA x vB
+            Vector3 phi_rt_hat     = q__.vect().cross(rt__);     // vC x vD
+            double phi_rt_sign__   = nhat.dot(rt__)>=0 ? 1 : -1; // sign of (vA x vB) . vD
+            double phi_rt_         = phi_rt_sign__ * Math.acos(nhat.dot(phi_rt_hat)/(nhat.mag()*phi_rt_hat.mag()));
+            if (phi_rt_<0) phi_rt_ = 2*Math.PI + phi_rt_;
+
             // Get theta_h_ in gN frame of momentum about q ( just angle between boosted lv and boosted q)
             double theta_h_ = lv__.vect().dot(q__.vect()) / (lv__.vect().mag()*q__.vect().mag());
 
@@ -867,6 +889,7 @@ public class Kinematics {
             kinematics.put(this._gkin[k++],mx_);     //NOTE: Missing mass
             kinematics.put(this._gkin[k++],phperp_); //NOTE: momentum of hadron perp to electron scattering plane
             kinematics.put(this._gkin[k++],phi_h_);  //NOTE: Azimuthal angle of momentum perp to q relative to e eprime scattering plane.
+            kinematics.put(this._gkin[k++],phi_rt_);  //NOTE: Azimuthal angle of momentum difference perp to momentum sum perp to q relative to e eprime scattering plane.
             kinematics.put(this._gkin[k++],theta_h_);//NOTE: Polar angle of momentum about q in g*N CoM frame.
             kinematics.put(this._gkin[k++],mass_);   //NOTE: Invariant mass of grouped particles system
             kinematics.put(this._gkin[k++],alpha_);  //NOTE: Longitudinal momentum asymmetry in CM frame (obviously not of parent)
