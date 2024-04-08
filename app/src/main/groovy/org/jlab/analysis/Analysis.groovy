@@ -1482,9 +1482,11 @@ public class Analysis {
 
         // Add NTuple: "this._treeName" : Kinematics/Custom Variables, Scattered Beam, Decay products
         this._tupleNames = new String("");
-        for (String kin : this._kinematics.keySet()) { this._tupleNames += kin + ":"; }
-        if (this._match) {//NOTE: Double kinematics if matching REC/MC banks
-            for (String kin : this._kinematics.keySet()) { this._tupleNames += kin + "_mc" + ":"; }
+        if (this._require_e) {
+            for (String kin : this._kinematics.keySet()) { this._tupleNames += kin + ":"; }
+            if (this._match) {//NOTE: Double kinematics if matching REC/MC banks
+                for (String kin : this._kinematics.keySet()) { this._tupleNames += kin + "_mc" + ":"; }
+            }
         }
         String[] names = ["px_",":py_",":pz_",":beta_"];
         if (this._addVertices) { names += ((this._useMC && !this._combo && !this._match) ? [":vx_",":vy_",":vz_"] : [":vx_",":vy_",":vz_",":vt_"]); } //NOTE: Just a groovy capability //TODO: CHECK THIS CONDITION
