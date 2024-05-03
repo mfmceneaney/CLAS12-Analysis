@@ -325,7 +325,7 @@ public class Kinematics {
 
         // Set string arrays for TNTuple entry names
         this._addGroupKin = addGroupKin;
-        String[] gkin_init = ["z_", "xF_", "y_", "zeta_", "mx_", "phperp_","phi_h_","phi_rt_","costheta_h_","mass_","alpha_","pT_"];
+        String[] gkin_init = ["z_", "xF_", "y_", "zeta_", "mx_", "phperp_","phi_h_","phi_rt_","costheta_h_","sintheta_p1_","mass_","alpha_","pT_"];
         String[] gkin = new String[gkin_init.size() * this._groups.size()];
         String[] ends = new String[this._decay.size()];
 
@@ -857,6 +857,11 @@ public class Kinematics {
             // Get costheta_h_ in gN frame of momentum about q ( just angle between boosted lv and boosted q)
             double costheta_h_ = lv__.vect().dot(q__.vect()) / (lv__.vect().mag()*q__.vect().mag());
 
+            // Get sintheta_p1_ in gN CoM frame relative to P_h
+            LorentzVector lv_p1__ = new LorentzVector(lvList.get(0));
+            lv_p1__.boost(gNBoost);
+            double sintheta_p1_ = lv_p1__.vect().cross(lv__.vect()).mag() / (lv_p1__.vect().mag()*lv__.vect().mag());
+
             // Compute perpendicular momentum component in g*N CoM frame
             double phperp_ = lv__.vect().mag()*(q__.vect().cross(lv__.vect()).mag()/(q__.vect().mag()*lv__.vect().mag()));
 
@@ -890,7 +895,8 @@ public class Kinematics {
             kinematics.put(this._gkin[k++],phperp_);      //NOTE: momentum of hadron perp to electron scattering plane
             kinematics.put(this._gkin[k++],phi_h_);       //NOTE: Azimuthal angle of momentum perp to q relative to e eprime scattering plane.
             kinematics.put(this._gkin[k++],phi_rt_);      //NOTE: Azimuthal angle of momentum difference perp to momentum sum perp to q relative to e eprime scattering plane.
-            kinematics.put(this._gkin[k++],costheta_h_); //NOTE: Polar angle of momentum about q in g*N CoM frame.
+            kinematics.put(this._gkin[k++],costheta_h_);  //NOTE: Cosine of polar angle of momentum about q in g*N CoM frame.
+            kinematics.put(this._gkin[k++],sintheta_p1_); //NOTE: Sine of polar angle between first particle momentum in group and P_h in g*N frame.
             kinematics.put(this._gkin[k++],mass_);        //NOTE: Invariant mass of grouped particles system
             kinematics.put(this._gkin[k++],alpha_);       //NOTE: Longitudinal momentum asymmetry in CM frame (obviously not of parent)
             kinematics.put(this._gkin[k++],pT_);          //NOTE: Average transverse momentum of decay products in CM frame (obviously not of parent)
