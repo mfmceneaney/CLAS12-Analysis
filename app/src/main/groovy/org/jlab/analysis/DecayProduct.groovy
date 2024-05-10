@@ -99,10 +99,14 @@ public class DecayProduct {
 
     public DecayProduct(DecayProduct p) {
         this.setVector(p.pid(),p.px(),p.py(),p.pz(),p.vx(),p.vy(),p.vz());
-        this._beta    = (double) p.beta();
-        this._vt      = (double) p.vt();
-        this._chi2pid = (double) p.chi2pid();
-        this._stat    = (int)    p.status();
+        this._beta             = (double) p.beta();
+        this._vt               = (double) p.vt();
+        this._chi2pid          = (double) p.chi2pid();
+        this._stat             = (int)    p.status();
+        this._detector         = (int)    p.detector();
+        this._sector           = (int)    p.sector();
+        this._detector_status  = (int)    p.detector_status();
+        this._detector_chi2ndf = (double) p.detector_chi2ndf();
         this.setIndices(p.index(),p.parent(),p.daughter());//NOTE: ADDED
         this.ppid(p.ppid());//NOTE: ADDED
         this.gppid(p.gppid());//NOTE: ADDED
@@ -115,10 +119,17 @@ public class DecayProduct {
     protected void clone(DecayProduct p) {
 
         this.setVector(p.pid(),p.px(),p.py(),p.pz(),p.vx(),p.vy(),p.vz());
-        this._beta    = (double) p.beta();
-        this._vt      = (double) p.vt();
-        this._chi2pid = (double) p.chi2pid();
-        this._stat    = (int)    p.status();
+        this._beta             = (double) p.beta();
+        this._vt               = (double) p.vt();
+        this._chi2pid          = (double) p.chi2pid();
+        this._stat             = (int)    p.status();
+        this._detector         = (int)    p.detector();
+        this._sector           = (int)    p.sector();
+        this._detector_status  = (int)    p.detector_status();
+        this._detector_chi2ndf = (double) p.detector_chi2ndf();
+        this.setIndices(p.index(),p.parent(),p.daughter());//NOTE: ADDED
+        this.ppid(p.ppid());//NOTE: ADDED
+        this.gppid(p.gppid());//NOTE: ADDED
     }
 
     /**
