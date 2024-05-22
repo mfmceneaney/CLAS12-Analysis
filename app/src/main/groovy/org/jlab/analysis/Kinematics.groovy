@@ -857,10 +857,12 @@ public class Kinematics {
             // Get costheta_h_ in gN frame of momentum about q ( just angle between boosted lv and boosted q)
             double costheta_h_ = lv__.vect().dot(q__.vect()) / (lv__.vect().mag()*q__.vect().mag());
 
-            // Get sintheta_p1_ in gN CoM frame relative to P_h
+            // Get sintheta_p1_ in parent CoM frame relative to P_h
             LorentzVector lv_p1__ = new LorentzVector(lvList.get(0));
-            lv_p1__.boost(gNBoost);
-            double sintheta_p1_ = lv_p1__.vect().cross(lv__.vect()).mag() / (lv_p1__.vect().mag()*lv__.vect().mag());
+            Vector3 groupBoost = lv_parent.boostVector();
+            groupBoost.negative();
+            lv_p1__.boost(groupBoost);
+            double sintheta_p1_ = lv_p1__.vect().cross(lv.vect()).mag() / (lv_p1__.vect().mag()*lv.vect().mag());
 
             // Compute perpendicular momentum component in g*N CoM frame
             double phperp_ = lv__.vect().mag()*(q__.vect().cross(lv__.vect()).mag()/(q__.vect().mag()*lv__.vect().mag()));
