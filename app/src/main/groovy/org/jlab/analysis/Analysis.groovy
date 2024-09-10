@@ -1493,7 +1493,7 @@ public class Analysis {
         if (this._addAngles) { names += [":theta_",":phi_"]; } //NOTE: Just a groovy capability
         if (!this._useMC || this._combo || this._match) { names += [":chi2pid_",":status_"]; }
         if (!this._require_pid || this._match) {names += [":pid_"]; } //NOTE: Just a groovy capability // use .addAll() for java
-        if (this._use_rectrack) { names += [":detector_",":sector_",":detector_status_",":detector_chi2ndf_"]; }
+        if (this._use_rectrack && !this._useMC) { names += [":detector_",":sector_",":detector_status_",":detector_chi2ndf_"]; }
         if (this._useMC && !this._combo && !this._match) { names += [":pidx_",":ppid_",":gppid_"]; } //NOTE: Add parent index and pid for MC only events
         String pname = this._constants.getName(this._constants.getBeamPID());
         if (this._require_e) {
