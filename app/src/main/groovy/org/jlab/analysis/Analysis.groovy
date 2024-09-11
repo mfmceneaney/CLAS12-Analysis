@@ -20,6 +20,13 @@ import org.jlab.jroot.TNtuple;
 // CLAS QADB Import
 import clasqa.QADB;
 
+// Pytorch geometric imports //NOTE: THESE WILL BE REMOVED FROM MAIN
+import org.pytorch.IValue;
+import org.pytorch.Module;
+import org.pytorch.Tensor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+
 /**
 * Encapsulates some common analysis procedures.
 * If you are doing a more customized/less general analysis
@@ -102,6 +109,136 @@ public class Analysis {
         this._treeName         = new String("t");
         this._event_counter    = 0;
         this._data_counter     = 0;
+
+       if (true) {
+
+          System.out.println("System.getenv(\"JAVA_HOME\") = "+System.getenv("JAVA_HOME"));
+           System.out.println("System.getenv(\"DEPLOY_JAVA_HOME\") = "+System.getenv("DEPLOY_JAVA_HOME"));
+           System.out.println("System.getenv(\"PWD\") = "+System.getenv("PWD"));
+          System.out.println("System.getenv(\"JAVA_OPTS\") = "+System.getenv("JAVA_OPTS"));
+          System.out.println("System.getenv(\"GCPATH\") = "+System.getenv("GCPATH"));
+          System.out.println("System.getenv(\"CLASSPATH\") = "+System.getenv("CLASSPATH"));
+           System.out.println("Working Directory = " + System.getProperty("user.dir"));
+
+          String path = System.getenv("PWD")+"/demo-model.pt1"; //args[0];
+           System.out.println("LOADING PYTORCH MODEL FROM PATH: "+path);
+          Module mod = Module.load(path);
+          System.out.println("SUCCESS LOADED MODEL"); 
+          Tensor data =
+           Tensor.fromBlob(
+               new int[] {1, 2, 3, 4, 5, 6}, // data
+               new long[] {2, 3} // shape
+           );
+          System.out.println("DEBUGGING: data.getClass().getName() = "+data.getClass().getName())//DEBUGGING
+          for (Method method : mod.getClass().getMethods()) {
+            System.out.println(method.getName());
+
+           //NOTE: ADDED BEGIN
+           Parameter[] parameters = method.getParameters();
+           List<String> parameterNames = new ArrayList<>();
+
+           for (Parameter parameter : parameters) {
+               //if(!parameter.isNamePresent()) {
+               //    //throw new IllegalArgumentException("Parameter names are not present!");
+               //    continue;
+                //}
+
+               //String parameterName = parameter.getName();
+               //System.out.println("\t "+parameterName);
+               //System.out.println("\t "+parameter.getType());
+               System.out.println("\t * "+parameter.toString());
+               //parameterNames.add(parameterName);
+            }
+           //NOTE: ADDED END
+           
+           }//DEBUGGING: // for (Method method : mod.getClass().getMethods()) {
+          
+          //IValue result = mod.forward(IValue.from(data), IValue.from({{0},{1}}));
+          Tensor x =
+                Tensor.fromBlob(
+                    new float[] {1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7}, // data //NOTE: x must have type float
+                    new long[] {3, 7} // shape
+                    );
+            Tensor edge_index =
+                Tensor.fromBlob(
+                    new long[] {0, 1, 2, 1, 2, 0}, // data //NOTE: edge_index must have type long
+                    new long[] {2, 3} // shape
+                    );
+            IValue result = mod.forward(IValue.from(x), IValue.from(edge_index));
+            Tensor output = result.toTensor();
+            System.out.println("shape: " + Arrays.toString(output.shape()));
+            System.out.println("data: " + Arrays.toString(output.getDataAsFloatArray()));
+          //Tensor output = result.toTensor();
+          //System.out.println("shape: " + Arrays.toString(output.shape()));
+          //System.out.println("data: " + Arrays.toString(output.getDataAsFloatArray()));
+       }
+
+       if (false) {
+            // Load PyTorch Geometric Dependencies
+            /*System.loadLibrary("torchsparse"); //NOTE: This must be done in a static context, e.g., in main.
+            System.loadLibrary("torchscatter");
+            System.loadLibrary("torchcluster");
+            System.loadLibrary("torchsplineconv");*/
+
+           System.out.println("System.getenv(\"JAVA_HOME\") = "+System.getenv("JAVA_HOME"));
+
+           System.out.println("System.getenv(\"DEPLOY_JAVA_HOME\") = "+System.getenv("DEPLOY_JAVA_HOME"));
+           System.out.println("System.getenv(\"PWD\") = "+System.getenv("PWD"));
+           System.out.println("Working Directory = " + System.getProperty("user.dir"));
+
+            //TEST HERE:
+            // Check PyTorch Dependency
+            Tensor data =
+                Tensor.fromBlob(
+                    new int[] {1, 2, 3, 4, 5, 6}, // data
+                    new long[] {2, 3} // shape
+                    );
+            System.out.println("DEBUGGING: data pytorch tensor = "+Arrays.toString(data.getDataAsIntArray()));
+
+            // Check args
+            //if (args.length<=0) {System.out.println("Usage: Library </path/to/pytorch/model.pt>"); System.exit(0); }
+            String path = System.getenv("PWD")+"/demo-model.pt1"; //args[0];
+           System.out.println("LOADING PYTORCH MODEL FROM PATH: "+path);//DEBUGGING
+            
+            // Load and apply model
+            Module mod = Module.load(path);
+
+           System.out.println("data.shape: " + Arrays.toString(data.shape()));
+            System.out.println("data.data: " + Arrays.toString(data.getDataAsIntArray()));
+
+           /*Tensor data =
+            Tensor.fromBlob(
+               new int[] { 1, 2, 3, 4, 5, 6}, // data
+               new long[] {2, 3} // shape
+            );*/
+           /*IValue result = mod.forward(IValue.from(data), IValue.from(3.0));
+           Tensor output = result.toTensor();
+           System.out.println("output.shape: " + Arrays.toString(output.shape()));
+           System.out.println("output.data: " + Arrays.toString(output.getDataAsFloatArray()));
+           */
+           
+            /*Tensor x =
+                Tensor.fromBlob(
+                    new float[] {1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7}, // data //NOTE: x must have type float
+                    new long[] {3, 7} // shape
+                    );
+            Tensor edge_index =
+                Tensor.fromBlob(
+                    new long[] {0, 1, 2, 1, 2, 0}, // data //NOTE: edge_index must have type long
+                    new long[] {2, 3} // shape
+                    );
+            IValue result = mod.forward(IValue.from(x), IValue.from(edge_index));
+            Tensor output = result.toTensor();
+            System.out.println("shape: " + Arrays.toString(output.shape()));
+            System.out.println("data: " + Arrays.toString(output.getDataAsFloatArray()));*/
+
+            // Workaround for https://github.com/facebookincubator/fbjni/issues/25
+            System.exit(0);
+
+            //NOTE: Need to write class to load model and read in events
+            //TODO: Write instructions for installation of pytorch libraries on readme.md
+            //TODO: Check this works to compile without having the pytorch libraries installed?  -> Can just leave on different branches but that is not a great solution.
+        }
     }
 
     /**
