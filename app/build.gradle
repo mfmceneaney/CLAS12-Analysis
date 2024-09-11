@@ -52,6 +52,9 @@ dependencies {
     implementation 'target:JRoot-1.0'                        // Set manually path to j2root installation since not available online
     implementation 'org.jlab.jnp:jnp-physics:1.0-SNAPSHOT'   // From https://clasweb.jlab.org/jhep/maven
     implementation 'clasqaDB:clasqa'                         // from https://github.com/JeffersonLab/clasqaDB
+
+    // https://mvnrepository.com/artifact/org.pytorch/pytorch_java_only
+    implementation 'org.pytorch:pytorch_java_only:2.1.0'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -61,9 +64,15 @@ java {
     }
 }
 
+def JAVA_OPTS = System.getenv('JAVA_OPTS') //NOTE: Should be set in env.?sh
+if (!JAVA_OPTS) {
+  throw new RuntimeException('JAVA_OPTS not present in environment.')
+}
+
 application {
     // Define the main class for the application.
     mainClass = 'org.jlab.analysis.Main'
+    applicationDefaultJvmArgs = [JAVA_OPTS]
 }
 
 tasks.named('test') {
