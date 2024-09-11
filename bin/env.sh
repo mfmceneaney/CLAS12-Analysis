@@ -11,6 +11,7 @@ source $J2ROOT/setup.sh
 cd clasqaDB; source environ.sh; cd ..;
 
 # Add command line interface to path
+source $C12ANALYSIS/bin/torch_env.sh
 export PATH=$PATH:$C12ANALYSIS/bin
 
 # Show new environment variables
