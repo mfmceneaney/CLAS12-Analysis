@@ -44,6 +44,9 @@ public class MCDecays {
     protected ArrayList<DecayProduct>            _parChargeList;     // List of lists for each charge in parent decay
     protected ArrayList<ArrayList<DecayProduct>> _parComboChargeList;
     protected LinkedHashMap<Integer,Integer>     _recMatchingMap;
+    protected boolean                            _use_coatjava_matching;
+    protected Schema                             _mc_recmatch_schema;
+    protected Bank                               _mc_recmatch_bank;
 
     /** 
     * Constructor stub
@@ -53,7 +56,7 @@ public class MCDecays {
     * @param Event event
     * @param Constants constants
     */
-    public MCDecays(ArrayList<Integer> decay, ArrayList<Integer> parents, ArrayList<Integer> dpMap, HipoReader reader, Event event, Constants constants) {
+    public MCDecays(ArrayList<Integer> decay, ArrayList<Integer> parents, ArrayList<Integer> dpMap, HipoReader reader, Event event, Constants constants, boolean use_coatjava_matching) {
 
         this._decay     = decay;
         this._parents   = parents;
@@ -63,6 +66,9 @@ public class MCDecays {
 	    this._schema    = this._reader.getSchemaFactory().getSchema("MC::Lund");
         this._bank      = new Bank(this._schema);
         this._constants = constants;
+        this._use_coatjava_matching = use_coatjava_matching;
+        this._mc_recmatch_schema = this._use_coatjava_matching ? this._reader.getSchemaFactory().getSchema("MC::RecMatch") : this._reader.getSchemaFactory().getSchema("MC::Lund");//NOTE: Read MC::Lund bank if you do not have MC::RecMatch since this is a relatively new bank and might not be in all datasets.
+        this._mc_recmatch_bank   = new Bank(this._mc_recmatch_schema);
 
         this._particleList       = new ArrayList<DecayProduct>();
         this._pidList            = new ArrayList<DecayProduct>();
@@ -177,6 +183,27 @@ public class MCDecays {
         if (this._particleList.size()==0) { this.setFullParticleList(); }
         // RUN MC MATCHING //NOTE: ALWAYS MAP REC ELECTRON ABOVE (index=0) to MC electron (index=3)
         LinkedHashMap<Integer,Integer> mc_matching_map = new LinkedHashMap<Integer,Integer>(); // Map REC index to top MC indices closest in theta and phi to REC track
+
+        // If requested just read the matching map provided by coatjava>=11.0.1
+        if (this._use_coatjava_matching) {
+
+            // Loop MC::RecMatch bank and set map entries
+            this._event.read(this._mc_recmatch_bank);
+            for (int j=0; j<this._mc_recmatch_bank.getRows(); j++) {
+
+                int pindex  = this._mc_recmatch_bank.getInt("pindex", j);
+                int mcindex = this._mc_recmatch_bank.getInt("mcindex", j);
+                float quality = this._mc_recmatch_bank.getFloat("quality", j);
+                mc_matching_map.put(pindex,mcindex);
+            }
+            this._event.read(this._bank);
+
+            // Set map as class attribute
+            this._recMatchingMap = mc_matching_map;
+
+            return;
+        }
+
         int rowe_mc = 3; //NOTE: THIS SHOULD ALWAYS BE THE CASE
         for (int row_rec=0; row_rec<fullRecParticleList.size(); row_rec++) { // Row loop 1
             DecayProduct p_rec = fullRecParticleList.get(row_rec);

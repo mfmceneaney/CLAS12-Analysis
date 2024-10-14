@@ -73,6 +73,7 @@ public class Analysis {
     protected static boolean _match        = false;                 // require matching decay in MC (with same parent, specify this._parent if you want a specific parent)
     protected static boolean _combo        = false;                 // use combo of MC::Lund and REC::Particle particles for tuple and kinematics
     protected static boolean _useMC        = false;                 // fill tuple with MC::Lund kinematics instead of REC::Particle
+    protected static boolean _use_coatjava_matching = false;        // Use new coatjava>=11.0.1 MC::RecMatch bank to determine REC::Particle to MC::Lund matching
     protected static int     _notify       = 0;                     // notify how many events have been added out of total read so far after given number of events, does nothing if zero
     protected static boolean _addVertices  = false;                 // Add vertices to tree
     protected static boolean _addAngles    = false;                 // Add angles (in degrees) to tree
@@ -900,6 +901,15 @@ public class Analysis {
     }
 
     /**
+    * Set boolean for using MC::RecMatch bank instead minimizing solid angle and momentum difference to find matching particles in REC::Particle.
+    * @param boolean use_coatjava_matching
+    */
+    protected void setUseCoatjavaMCMatching(boolean use_coatjava_matching) {
+
+        this._use_coatjava_matching = use_coatjava_matching;
+    }
+
+    /**
     * Set int for # of events processed after which to notify how many events have been added
     * out of total processed so far.
     * @param int notify
@@ -1080,7 +1090,7 @@ public class Analysis {
             this._event_counter += 1;
 
             // Read needed banks only once!
-            MCDecays decays = new MCDecays(this._decay,this._parents,this._dpMap,reader,event,this._constants);
+            MCDecays decays = new MCDecays(this._decay,this._parents,this._dpMap,reader,event,this._constants,this._use_coatjava_matching);
 
             // Check for event pid tag if requested
             if (this._require_tag) {
@@ -1192,7 +1202,7 @@ public class Analysis {
             // Read needed banks only once!
             if (this._requireFC) { this._fiducialCuts.setArrays(reader,event); }
             Decays decays     = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC); // Fiducial cuts implemented in Decays object
-            MCDecays mcdecays = new MCDecays(this._mcdecay,this._parents,this._dpMap,reader,event,this._constants);
+            MCDecays mcdecays = new MCDecays(this._mcdecay,this._parents,this._dpMap,reader,event,this._constants,this._use_coatjava_matching);
 
             // Check for event pid tag and filters if requested
             if (this._require_tag) {
@@ -1318,7 +1328,7 @@ public class Analysis {
             ArrayList<DecayProduct> fullParticleList = decays.getFullParticleList();
 
             // Create MCDecays object with MC Matching map which will force it to only use combos of particles coming from this map and return a default 0.0 particle combo if no matches are found
-            MCDecays mcdecays = new MCDecays(this._mcdecay,this._parents,this._dpMap,reader,event,this._constants);
+            MCDecays mcdecays = new MCDecays(this._mcdecay,this._parents,this._dpMap,reader,event,this._constants,this._use_coatjava_matching);
             mcdecays.setMatchingMap(fullParticleList); //NOTE: THIS METHOD WILL AND NEEDS TO SET FULL PARTICLE LIST!
 
             // Check for event pid tag if requested
