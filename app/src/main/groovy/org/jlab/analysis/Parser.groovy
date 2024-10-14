@@ -95,9 +95,9 @@ public class Parser {
         System.out.println("\t-mch  [int...] : Specify Lund pids to look for in MC::Lund bank");
         System.out.println("\t-pch  [int...] : Specify parent pids to look for in MC::Lund bank");
         System.out.println("\t-ma            : Require matching decay in MC::Lund bank");
+        System.out.println("\t-mcrecmatch   : Use coatjava MC matching bank MC::RecMatch");
         //TODO: Add mixing options and sector cut options
         //TODO: Option to include parents in tree or not -> Methods for reading all momenta and vertices or not?  And -> Finish mcmatch methods match just copies decay to mcchan
-        // System.out.println("\t-mc           : Look for decay in MC::Lund bank");
         System.out.println("\n * I/O Options");
         System.out.println("\t-out    [path]   : Output directory for ROOT file  (def: \$PWD)");
         System.out.println("\t-f               : Overwrite existing files without asking first");
@@ -341,7 +341,7 @@ public class Parser {
                 case "-qa":  analysis.setQA(true); valid_opt = true; break;
                 case "-fc":  analysis.setFC(true); valid_opt = true; break;
                 case "-ma":  analysis.setMatch(true); valid_opt = true; break;
-                // case "-mc":  analysis.setUseMC(true); valid_opt = true; break;
+                case "-mcrecmatch": analysis.setUseCoatjavaMCMatching(true); valid_opt = true; break;
             
                 // QA method option
                 case "-qm":
