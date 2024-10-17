@@ -98,7 +98,7 @@ public class Kinematics {
 		Schema schema = reader.getSchemaFactory().getSchema("ML::pred");
         Bank bank     = new Bank(schema);
         event.read(bank);
-		label = (double) bank.getDouble("label",0);
+		label = (double) bank.getInt("label",0);
 		return label; };
 
     protected ConfigVar _getHelicityMC = (ConfigVar)(HipoReader reader, Event event) -> {
