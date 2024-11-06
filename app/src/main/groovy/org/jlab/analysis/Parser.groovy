@@ -72,6 +72,8 @@ public class Parser {
         System.out.println("\t-s             : Use strict pid to mass assignment for kinematics");
         System.out.println("\t-rn            : Include run # in NTuple");
         System.out.println("\t-en            : Include event # in NTuple");
+        System.out.println("\t-ml            : Include ML::pred ML classification results");
+        System.out.println("\t-mlvert2       : Include ML::vert2 secondary vertex classifications");
         System.out.println("\t-lk            : Include extra kinematics for Lambda analysis");
         System.out.println("\t-ik            : Include extra kinematics for individual particles");
         System.out.println("\t-be   [float]  : Beam energy (GeV) for kinematics   (def: 10.6)");
@@ -336,6 +338,7 @@ public class Parser {
                 case "-rn":  analysis.setAddRunNum(true); valid_opt = true; break;
                 case "-en":  analysis.setAddEvNum(true); valid_opt = true; break;
                 case "-ml":  analysis.setAddML(true); valid_opt = true; break;
+                case "-mlvert2": analysis.setAddMLvert2(true); valid_opt = true; break;
                 case "-lk":  analysis.setLambdaKin(true); valid_opt = true; break;
                 case "-ik":  analysis.setIndivKin(true); valid_opt = true; break;
                 case "-qa":  analysis.setQA(true); valid_opt = true; break;

@@ -65,6 +65,7 @@ public class Analysis {
     protected static boolean _addRunNum    = false;					// include event number in TNTuple (always added as zeroeth entry)
     protected static boolean _addEvNum     = false;					// include event number in TNTuple (always added as zeroeth entry or just after run #)
     protected static boolean _addML        = false;					// include ML predictions and labels in TNTuple (NOTE: NOT SURE WHERE THIS WILL BE ADDED... TODO...)
+    protected static boolean _addMLvert2   = false;					// include ML vert2 predictions in TNTuple as part of group kinematics
     protected static boolean _lambdaKin    = false;					// include special two particle decay kinematics for Lambda baryons
     protected static boolean _indivKin     = false;					// include extra individual particle kinematics
     protected static boolean _groupKin     = false;					// include extra grouped particles' kinematics
@@ -809,6 +810,16 @@ public class Analysis {
         this._addML = addML;
         this._kinematics.setAddMLPred(addML);
         this._kinematics.setAddMLLabel(addML);
+    }
+
+    /**
+    * Set boolean for adding ML secondary vertex predictions to TNTuple and propagate changes to kinematics.
+    * @param boolean addMLvert2
+    */
+    protected void setAddMLvert2(boolean addMLvert2) {
+
+        this._addML = addMLvert2;
+        this._kinematics.setAddMLvert2(addMLvert2);
     }
 
     /**
