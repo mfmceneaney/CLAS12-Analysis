@@ -36,6 +36,7 @@ public class Kinematics {
     protected HashMap<String,ConfigVar>            _configs;      // HashMap of name to lambda expression for computing
     protected HashMap<String,SIDISVar>             _vars;         // HashMap of name to lambda expression for computing
     protected HashMap<String,Cut>                  _cuts;         // HashMap of name to boolean(double) lambda expression cut
+    protected HashMap<String,ArrayList<Double>>   _map_MLvert2;   //
 
     // Options
     protected static boolean _strict        = false;    // use strict pid to mass assignment in kinematics calculations
@@ -46,6 +47,7 @@ public class Kinematics {
     protected static boolean _addHelicity   = true;     // include helicity in TNTuple
     protected static boolean _addMLPred     = false;    // include ML prediction in TNTuple
     protected static boolean _addMLLabel    = false;    // include ML label in TNTuple
+    protected static boolean _addMLvert2    = false;    // include ML vert2 bank entries in TNTuple
     protected static boolean _addBeamCharge = false;    // include beam charge in TNTuple
     protected static boolean _addLiveTime   = false;    // include live time in TNTuple
     protected static boolean _addStartTime  = false;    // include start time in TNTuple
@@ -265,6 +267,8 @@ public class Kinematics {
     protected boolean addMLPred() {return this._addMLPred;}
     protected void setAddMLLabel(boolean addMLLabel) {this._addMLLabel = addMLLabel; if (addMLLabel) {this._configs.put("MLLabel",this._getMLLabel);} else {this._configs.remove("MLLabel");}}
     protected boolean addMLLabel() {return this._addMLLabel;}
+    protected void setAddMLvert2(boolean addMLvert2) {this._addMLvert2 = addMLvert2;}
+    protected boolean addMLvert2() {return this._addMLvert2;}
     protected void setAddBeamCharge(boolean addBeamCharge) {this._addBeamCharge = addBeamCharge; if (addBeamCharge) {this._configs.put("beamCharge",this._getBeamCharge);} else {this._configs.remove("beamCharge");}}
     protected boolean addBeamCharge() {return this._addBeamCharge;}
     protected void setAddLiveTime(boolean addLiveTime) {this._addLiveTime = addLiveTime; if (addLiveTime) {this._configs.put("liveTime",this._getLiveTime);} else {this._configs.remove("liveTime");}}
@@ -326,7 +330,16 @@ public class Kinematics {
         // Set string arrays for TNTuple entry names
         this._addGroupKin = addGroupKin;
         String[] gkin_init = ["z_", "xF_", "y_", "zeta_", "mx_", "phperp_","phi_h_","phi_rt_","costheta_h_","sintheta_p1_","mass_","alpha_","pT_"];
-        String[] gkin = new String[gkin_init.size() * this._groups.size()];
+        int gkin_init_size = gkin_init.size() * this._groups.size();
+        if (this._addMLvert2) {
+            int correlationsize = 0;
+            for (ArrayList<Integer> group : this._groups) {
+                int groupsize = group.size()*(group.size()-1);
+                correlationsize += groupsize;
+            }
+            gkin_init_size += correlationsize;
+        }
+        String[] gkin = new String[gkin_init_size];
         String[] ends = new String[this._decay.size()];
 
         // Loop this._decay pids and get particle name endings
@@ -350,6 +363,21 @@ public class Kinematics {
             for (String kin : gkin_init) {
                 gkin[l] = kin + pname;
                 l++;
+            }
+        }
+
+        // Addd MLvert2 entry names
+        if (this._addMLvert2) {
+            for (ArrayList<Integer> group : this._groups) { 
+                String pname = new String("");
+                for (int i : group) { pname += ends[i]; }
+                for (int g_idx1 : group) {
+                    for (int g_idx2 : group) {
+                        if (g_idx1==g_idx2) continue;
+                        gkin[l] = "vert2_" + pname + "__" + g_idx1 + "_" + g_idx2;
+                        l++;//NOTE: Reuse `l` from above
+                    }
+                }
             }
         }
 
@@ -614,6 +642,44 @@ public class Kinematics {
         // Get transverse lambda kinematics for A_LUT yhat
         double costhetaTy = boostedProton.vect().dot(n1) / (boostedProton.vect().mag() * n1.mag());
         kinematics.put("costhetaTy",costhetaTy);
+    }
+
+    /**
+    * Compute additional kinematics particular to Lambda baryon analysis
+    * but potentially useful for other two body decays.
+    * @param HashMap<String, Double> kinematics
+    * @param ArrayList<LorentzVector> lvList
+    * @param LorentzVector lv_parent
+    * @param LorentzVector q
+    * @param LorentzVector lv_beam
+    * @param ArrayList<LorentzVector> lvList
+    */
+    protected void getMLvert2Vars(HashMap<String, Double> kinematics, ArrayList<Integer> group, int group_counter) {
+
+        if (!this._addMLvert2) { return; }
+
+        // Read ML::vert2 bank -> NOTE: This is done in processEvents()
+
+        // Loop bank and put data in matrix
+        for (Integer g_idx1 : group) {
+            for (Integer g_idx2 : group) {
+                if (g_idx1==g_idx2) continue;
+                if (this._map_MLvert2.size()==0) {
+                    kinematics.put(this._gkin[group_counter++],(double)0.0);
+                } else {
+                    // Loop bank data and find index match
+                    for (int m_counter = 0; m_counter<this._map_MLvert2.get("idx1").size(); m_counter++) {
+                        Integer m_idx1 = (Integer)this._map_MLvert2.get("idx1")[m_counter];
+                        Integer m_idx2 = (Integer)this._map_MLvert2.get("idx2")[m_counter];
+                        double  pred   = (double)this._map_MLvert2.get("pred")[m_counter];
+                        double  label  = (double)this._map_MLvert2.get("label")[m_counter];
+                        if (m_idx1==g_idx1 && m_idx2==g_idx2) {
+                            kinematics.put(this._gkin[group_counter++],pred);
+                        }
+                    } // for (int m_counter = 0; m_counter<this._map_MLvert2.get("idx1").size(); m_counter++) {
+                } // if (this._map_MLvert2.size()==0) {
+            } // for (Integer g_idx2 : group) {
+        } // for (Integer g_idx1 : group) {
     }
 
     // /**
@@ -910,6 +976,9 @@ public class Kinematics {
             // Add Lambda kinematics if requested
             if (this._addLambdaKin) { this.getLambdaVars(kinematics,lvList,lv_parent,q,lv_beam); }
 
+            // Add secondary vertex correlation ML predictions
+            if (this._addMLvert2)   { this.getMLvert2Vars(kinematics,group,k); }
+
         } // for (ArrayList<Integer> group : this._groups) {
     }
 
@@ -1072,6 +1141,72 @@ public class Kinematics {
     }
 
     /**
+    * Read an event bank into a map
+    * @param String bankname
+    * @param HipoReader reader
+    * @param Event event
+    * @return HashMap<String,ArrayList<Double>>
+    */
+    protected HashMap<String,ArrayList<Double>> readBank2Map(String bankname, HipoReader reader, Event event) {
+
+        // Open schema and bank
+        Schema schema = reader.getSchemaFactory().getSchema(bankname);
+        Bank bank     = new Bank(schema);
+
+        // Initialize map
+        HashMap<String,ArrayList<Double>> map = new HashMap<String,ArrayList<Double>>();
+
+        // Check if bank exists and return empty map if not, otherwise proceed to read bank
+        if (!event.hasBank(schema)) return map;
+        event.read(bank);
+
+        // Loop entry names and add vectors to map
+        int counter = 0;
+        for (String entry : schema.entryList) {
+
+            // Loop entry types to use appropriate get methods
+            ArrayList<Double> data = new ArrayList<Double>();
+            int type = schema.getType(counter);
+            switch (type) {
+                case 1: // byte
+                    // ArrayList<Integer> data = new ArrayList<Integer>();
+                    for (int i = 0; i<bank.getRows(); i++) {
+                        data.add((Double)bank.getByte(entry,i));
+                    }
+                case 2: //short
+                    // ArrayList<Integer> data = new ArrayList<Integer>();
+                    for (int i = 0; i<bank.getRows(); i++) {
+                        data.add((Double)bank.getShort(entry,i));
+                    }
+                case 3: //int
+                    // ArrayList<Integer> data = new ArrayList<Integer>();
+                    for (int i = 0; i<bank.getRows(); i++) {
+                        data.add((Double)bank.getInt(entry,i));
+                    }
+                case 4: //float
+                    // ArrayList<Float> data = new ArrayList<Float>();
+                    for (int i = 0; i<bank.getRows(); i++) {
+                        data.add((Double)bank.getFloat(entry,i));
+                    }
+                case 5: //double
+                    // ArrayList<Double> data = new ArrayList<Double>();
+                    for (int i = 0; i<bank.getRows(); i++) {
+                        data.add((Double)bank.getDouble(entry,i));
+                    }
+                case 8: //long
+                    // ArrayList<Integer> data = new ArrayList<Integer>();
+                    for (int i = 0; i<bank.getRows(); i++) {
+                        data.add((Double)bank.getLong(entry,i));
+                    }
+            }
+            map.put(entry,data);
+            counter++;
+        }
+
+        return map;
+    }
+
+    /**
     * Get variables and check they pass cuts, returns empty hashmap if not so make sure to check size.
     * @param ArrayList<DecayProduct> list
     * @param DecayProduct beam
@@ -1112,6 +1247,8 @@ public class Kinematics {
     protected HashMap<String,Double> processEvent(HipoReader reader, Event event, ArrayList<DecayProduct> list, DecayProduct beam) { 
 
         HashMap<String,Double> map = new HashMap<String,Double>();
+        HashMap<String,ArrayList<Double>> map_MLvert2 = this.readBank2Map("ML::vert2",reader, event);//TODO: Read in ML::vert2 bank to hashmap
+        this._map_MLvert2 = map_MLvert2;
         HashMap<String,Double> defaults = this.getDefaultVars(list, beam);
         for (String key : defaults.keySet()) { map.put(key,defaults.get(key));}
         HashMap<String,Double> var = this.getSIDISVariables(list, beam);
@@ -1136,6 +1273,8 @@ public class Kinematics {
         int beamIndex = 3; // TODO: Fairly certain this should be the same for all lund banks... Beam, Target, q, e, final state particles...
         DecayProduct beam; HashMap<String,Double> map = new HashMap<String,Double>();
         try { beam = ilist.get(beamIndex); } catch (Exception e) { System.out.println(" *** WARNING *** ilist empty setting beam to 0"); beam = new DecayProduct(0,0,0,0,0); return map; }
+        HashMap<String,ArrayList<Double>> map_MLvert2 = this.readBank2Map("ML::vert2",reader, event);//TODO: Read in ML::vert2 bank to hashmap
+        this._map_MLvert2 = map_MLvert2;
         HashMap<String,Double> defaults = this.getMCDefaultVars(list,ilist);
         for (String key : defaults.keySet()) { map.put(key,defaults.get(key)); }
         HashMap<String,Double> var = this.getSIDISVariables(list, beam);
