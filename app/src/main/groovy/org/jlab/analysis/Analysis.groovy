@@ -820,6 +820,7 @@ public class Analysis {
 
         this._addML = addMLvert2;
         this._kinematics.setAddMLvert2(addMLvert2);
+        this._kinematics.setAddGroupKin(true);//NOTE: This must occur after calling setGroups() in setDecayAndGroups() above!
     }
 
     /**

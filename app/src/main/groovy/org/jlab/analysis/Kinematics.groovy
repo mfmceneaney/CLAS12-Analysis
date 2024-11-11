@@ -366,7 +366,7 @@ public class Kinematics {
             }
         }
 
-        // Addd MLvert2 entry names
+        // Add MLvert2 entry names
         if (this._addMLvert2) {
             for (ArrayList<Integer> group : this._groups) { 
                 String pname = new String("");
