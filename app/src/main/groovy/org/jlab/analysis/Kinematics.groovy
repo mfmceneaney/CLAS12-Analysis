@@ -1173,31 +1173,37 @@ public class Kinematics {
                     for (int i = 0; i<bank.getRows(); i++) {
                         data.add((Double)bank.getByte(entry,i));
                     }
+                    break;
                 case 2: //short
                     // ArrayList<Integer> data = new ArrayList<Integer>();
                     for (int i = 0; i<bank.getRows(); i++) {
                         data.add((Double)bank.getShort(entry,i));
                     }
+                    break;
                 case 3: //int
                     // ArrayList<Integer> data = new ArrayList<Integer>();
                     for (int i = 0; i<bank.getRows(); i++) {
                         data.add((Double)bank.getInt(entry,i));
                     }
+                    break;
                 case 4: //float
                     // ArrayList<Float> data = new ArrayList<Float>();
                     for (int i = 0; i<bank.getRows(); i++) {
                         data.add((Double)bank.getFloat(entry,i));
                     }
+                    break;
                 case 5: //double
                     // ArrayList<Double> data = new ArrayList<Double>();
                     for (int i = 0; i<bank.getRows(); i++) {
                         data.add((Double)bank.getDouble(entry,i));
                     }
+                    break;
                 case 8: //long
                     // ArrayList<Integer> data = new ArrayList<Integer>();
                     for (int i = 0; i<bank.getRows(); i++) {
                         data.add((Double)bank.getLong(entry,i));
                     }
+                    break;
             }
             map.put(entry,data);
             counter++;
