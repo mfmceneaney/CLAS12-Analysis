@@ -283,7 +283,7 @@ public class Kinematics {
     protected void setAddLambdaKin(boolean addLambdaKin) {
         if (!this._addGroupKin) return; //NOTE: Must be getting group kinematics to do this. //TODO: Generalize
         this._addLambdaKin = addLambdaKin;
-        String[] lkin = [ "costheta1" , "costheta2", "costhetaT", "costhetaTy" ]; String[] arr = new String[this._defaults.length + lkin.length];
+        String[] lkin = [ "costheta1" , "costheta2", "costhetaT", "costhetaTy", "cosalpha" ]; String[] arr = new String[this._defaults.length + lkin.length];
         int i = 0;
 	for (String defaults : this._defaults) { arr[i] = defaults; i++; }
 	for (String kin : lkin) { arr[i] = kin; i++; }
@@ -585,7 +585,7 @@ public class Kinematics {
     * @param LorentzVector q
     * @param LorentzVector lv_beam
     */
-    protected void getLambdaVars(HashMap<String, Double> kinematics, ArrayList<LorentzVector> lvList, LorentzVector lv_parent, LorentzVector q, LorentzVector lv_beam) {
+    protected void getLambdaVars(HashMap<String, Double> kinematics, ArrayList<LorentzVector> lvList, LorentzVector lv_parent, LorentzVector q, LorentzVector lv_beam, LorentzVector lv_miss, Vector3 gNBoost) {
 
         if (!this._addLambdaKin) { return; }
 
@@ -614,6 +614,14 @@ public class Kinematics {
         // Get transverse lambda kinematics for A_LUT yhat
         double costhetaTy = boostedProton.vect().dot(n1) / (boostedProton.vect().mag() * n1.mag());
         kinematics.put("costhetaTy",costhetaTy);
+
+        // Get cosine of angle between missing momentum vector and proton
+        LorentzVector gNProton = new LorentzVector(lvList.get(0)); //NOTE: This assumes proton is first in group
+        gNProton.boost(gNBoost);
+        LorentzVector gNlv_miss = new LorentzVector(lv_miss);
+        gNlv_miss.boost(gNBoost);
+        double cosalpha = gNProton.vect().dot(gNlv_miss.vect()) / (gNProton.vect().mag() * gNlv_miss.vect().mag());
+        kinematics.put("cosalpha",cosalpha);
     }
 
     // /**
@@ -908,7 +916,7 @@ public class Kinematics {
             kinematics.put(this._gkin[k++],pT_);          //NOTE: Average transverse momentum of decay products in CM frame (obviously not of parent)
             
             // Add Lambda kinematics if requested
-            if (this._addLambdaKin) { this.getLambdaVars(kinematics,lvList,lv_parent,q,lv_beam); }
+            if (this._addLambdaKin) { this.getLambdaVars(kinematics,lvList,lv_parent,q,lv_beam,lv_miss,gNBoost); }
 
         } // for (ArrayList<Integer> group : this._groups) {
     }
