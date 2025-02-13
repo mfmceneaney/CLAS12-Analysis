@@ -114,7 +114,7 @@ public class DecayProduct {
 
     /**
     * Resets ALL attributes to clone given particle.
-    * @param DecayProduct p
+    * @param p
     */
     protected void clone(DecayProduct p) {
 
@@ -134,7 +134,7 @@ public class DecayProduct {
 
     /**
     * Clones this instance.
-    * @return DecayProduct this
+    * @return this
     */
     protected DecayProduct clone() {
 
@@ -143,13 +143,13 @@ public class DecayProduct {
 
     /**
     * Set pid, momenta, and vertices for particle.  Also sets charge and mass from pid, and sets the energy from the mass and momenta.
-    * @param int pid
-    * @param double px
-    * @param double py
-    * @param double pz
-    * @param double vx
-    * @param double vy
-    * @param double vz
+    * @param pid
+    * @param px
+    * @param py
+    * @param pz
+    * @param vx
+    * @param vy
+    * @param vz
     */
     protected void setVector(int pid, double px, double py, double pz, double vx, double vy, double vz) {
 
@@ -161,9 +161,9 @@ public class DecayProduct {
 
     /**
     * Set bank, parent and daughter indices for particle.
-    * @param int index
-    * @param int parent
-    * @param int daughter
+    * @param index
+    * @param parent
+    * @param daughter
     */
     protected void setIndices(int index, int parent, int daughter) {
 
@@ -172,7 +172,7 @@ public class DecayProduct {
 
     /**
     * Set particle's pid.
-    * @param int pid
+    * @param pid
     */
     protected void pid(int pid) {
 
@@ -183,7 +183,7 @@ public class DecayProduct {
     /**
     * Set particle's pid.  (Duplicates this.pid(int pid) method for 
     * consistency with clas Particle class.)
-    * @param int pid
+    * @param pid
     */
     protected void changePid(int pid) {
 
@@ -192,7 +192,7 @@ public class DecayProduct {
 
     /**
     * Access particle's pid.
-    * @return int _pid
+    * @return _pid
     */
     protected int pid() {
 
@@ -201,7 +201,7 @@ public class DecayProduct {
 
     /**
     * Set particle's bank index.
-    * @param int index
+    * @param index
     */
     protected void index(int index) {
 
@@ -210,7 +210,7 @@ public class DecayProduct {
 
     /**
     * Access particle's bank index.
-    * @return int _index
+    * @return _index
     */
     protected int index() {
 
@@ -219,7 +219,7 @@ public class DecayProduct {
 
     /**
     * Set particle's parent index.
-    * @param int parent
+    * @param parent
     */
     protected void parent(int parent) {
 
@@ -228,7 +228,7 @@ public class DecayProduct {
 
     /**
     * Access particle's parent index.
-    * @return int _parent
+    * @return _parent
     */
     protected int parent() {
 
@@ -237,7 +237,7 @@ public class DecayProduct {
 
     /**
     * Set particle's parent pid.
-    * @param int ppid
+    * @param ppid
     */
     protected void ppid(int ppid) {
 
@@ -246,7 +246,7 @@ public class DecayProduct {
 
     /**
     * Access particle's parent pid.
-    * @return int _ppid
+    * @return _ppid
     */
     protected int ppid() {
 
@@ -255,7 +255,7 @@ public class DecayProduct {
 
     /**
     * Set particle's grandparent pid.
-    * @param int gppid
+    * @param gppid
     */
     protected void gppid(int gppid) {
 
@@ -264,7 +264,7 @@ public class DecayProduct {
 
     /**
     * Access particle's grandparent pid.
-    * @return int _gppid
+    * @return _gppid
     */
     protected int gppid() {
 
@@ -273,7 +273,7 @@ public class DecayProduct {
 
     /**
     * Set particle's daughter index.
-    * @param int daughter
+    * @param daughter
     */
     protected void daughter(int daughter) {
 
@@ -282,7 +282,7 @@ public class DecayProduct {
 
     /**
     * Access particle's daughter index.
-    * @return int _daughter
+    * @return _daughter
     */
     protected int daughter() {
 
@@ -291,7 +291,7 @@ public class DecayProduct {
 
     /**
     * Set particle's charge.
-    * @param int charge
+    * @param charge
     */
     protected void charge(int charge) {
 
@@ -300,7 +300,7 @@ public class DecayProduct {
 
     /**
     * Access particle's charge.
-    * @return int _charge
+    * @return _charge
     */
     protected int charge() {
 
@@ -309,7 +309,7 @@ public class DecayProduct {
 
     /**
     * Set particle's x momentum.
-    * @param double px
+    * @param px
     */
     protected void px(double px) {
 
@@ -318,7 +318,7 @@ public class DecayProduct {
 
     /**
     * Access particle's x momentum.
-    * @return double _px
+    * @return _px
     */
     protected double px() {
 
@@ -327,7 +327,7 @@ public class DecayProduct {
 
     /**
     * Set particle's y momentum.
-    * @param double py
+    * @param py
     */
     protected void py(double py) {
 
@@ -336,7 +336,7 @@ public class DecayProduct {
 
     /**
     * Access particle's y momentum.
-    * @return double _py
+    * @return _py
     */
     protected double py() {
 
@@ -345,7 +345,7 @@ public class DecayProduct {
 
     /**
     * Set particle's z momentum.
-    * @param double pz
+    * @param pz
     */
     protected void pz(double pz) {
 
@@ -354,7 +354,7 @@ public class DecayProduct {
 
     /**
     * Access particle's z momentum.
-    * @return double _pz
+    * @return _pz
     */
     protected double pz() {
 
@@ -363,7 +363,7 @@ public class DecayProduct {
 
     /**
     * Set particle's beta.
-    * @param double beta
+    * @param beta
     */
     protected void beta(double beta) {
 
@@ -372,7 +372,7 @@ public class DecayProduct {
 
     /**
     * Access particle's beta.
-    * @return double _beta
+    * @return _beta
     */
     protected double beta() {
 
@@ -381,7 +381,7 @@ public class DecayProduct {
 
     /**
     * Access particle's transverse momentum.
-    * @return double _pt
+    * @return _pt
     */
     protected double pt() {
 
@@ -390,7 +390,7 @@ public class DecayProduct {
 
     /**
     * Access particle's total momentum.
-    * @return double p
+    * @return p
     */
     protected double p() {
 
@@ -399,7 +399,7 @@ public class DecayProduct {
 
     /**
     * Access particle's total momentum squared.
-    * @return double p2
+    * @return p2
     */
     protected double p2() {
 
@@ -408,7 +408,7 @@ public class DecayProduct {
 
     /**
     * Access particle's azimuthal angle.
-    * @return double phi
+    * @return phi
     */
     protected double phi() {
 
@@ -418,7 +418,7 @@ public class DecayProduct {
 
     /**
     * Access particle's polar angle.
-    * @return double theta
+    * @return theta
     */
     protected double theta() {
 
@@ -427,9 +427,9 @@ public class DecayProduct {
 
     /**
     * Set particle's momentum vector.
-    * @param double px
-    * @param double py
-    * @param double pz
+    * @param px
+    * @param py
+    * @param pz
     */
     protected void mom(double px, double py, double pz) {
 
@@ -438,7 +438,7 @@ public class DecayProduct {
 
     /**
     * Access particle's momentum vector.
-    * @return Vector3 mom
+    * @return mom
     */
     protected Vector3 mom() {
 
@@ -447,7 +447,7 @@ public class DecayProduct {
 
     /**
     * Set particle's mass.
-    * @param double m
+    * @param m
     */
     protected void m(double m) {
 
@@ -457,7 +457,7 @@ public class DecayProduct {
 
     /**
     * Change particle's mass leaving pid same
-    * @param int pid
+    * @param pid
     */
     protected void changeMass(int pid) {
 
@@ -466,7 +466,7 @@ public class DecayProduct {
 
     /**
     * Access particle's mass.
-    * @return double _m
+    * @return _m
     */
     protected double m() {
 
@@ -475,7 +475,7 @@ public class DecayProduct {
 
     /**
     * Set particle's energy.
-    * @param double e
+    * @param e
     */
     protected void e(double e) {
 
@@ -485,7 +485,7 @@ public class DecayProduct {
 
     /**
     * Access particle's energy.
-    * @return double _e
+    * @return _e
     */
     protected double e() {
 
@@ -494,7 +494,7 @@ public class DecayProduct {
 
     /**
     * Access particle's lorentz vector.
-    * @return Vector3 lv
+    * @return lv
     */
     protected LorentzVector lv() {
 
@@ -503,10 +503,10 @@ public class DecayProduct {
 
     /**
     * Set particle's lorentz vector.
-    * @param double px
-    * @param double py
-    * @param double pz
-    * @param double e
+    * @param px
+    * @param py
+    * @param pz
+    * @param e
     */
     protected void setPxPyPzE(double px, double py, double pz, double e) {
 
@@ -515,10 +515,10 @@ public class DecayProduct {
 
     /**
     * Set particle's lorentz vector using particle mass instead of energy.
-    * @param double px
-    * @param double py
-    * @param double pz
-    * @param double mass
+    * @param px
+    * @param py
+    * @param pz
+    * @param mass
     */
     protected void setPxPyPzM(double px, double py, double pz, double mass) {
 
@@ -527,7 +527,7 @@ public class DecayProduct {
 
     /**
     * Set particle's x vertex.
-    * @param double vx
+    * @param vx
     */
     protected void vx(double vx) {
 
@@ -536,7 +536,7 @@ public class DecayProduct {
 
     /**
     * Access particle's x vertex.
-    * @return double _vx
+    * @return _vx
     */
     protected double vx() {
 
@@ -545,7 +545,7 @@ public class DecayProduct {
 
     /**
     * Set particle's y vertex.
-    * @param double vy
+    * @param vy
     */
     protected void vy(double vy) {
 
@@ -554,7 +554,7 @@ public class DecayProduct {
 
     /**
     * Access particle's y vertex.
-    * @return double _vy
+    * @return _vy
     */
     protected double vy() {
 
@@ -563,7 +563,7 @@ public class DecayProduct {
 
     /**
     * Set particle's z vertex.
-    * @param double vz
+    * @param vz
     */
     protected void vz(double vz) {
 
@@ -572,7 +572,7 @@ public class DecayProduct {
 
     /**
     * Access particle's z vertex.
-    * @return double _vz
+    * @return _vz
     */
     protected double vz() {
 
@@ -581,7 +581,7 @@ public class DecayProduct {
 
     /**
     * Set particle's time vertex.
-    * @param double vt
+    * @param vt
     */
     protected void vt(double vt) {
 
@@ -590,7 +590,7 @@ public class DecayProduct {
 
     /**
     * Access particle's time vertex.
-    * @return double _vt
+    * @return _vt
     */
     protected double vt() {
 
@@ -599,9 +599,9 @@ public class DecayProduct {
 
     /**
     * Set particle's vertex.
-    * @param double vx
-    * @param double vy
-    * @param double vz
+    * @param vx
+    * @param vy
+    * @param vz
     */
     protected void vtx(double vx, double vy, double vz) {
 
@@ -610,7 +610,7 @@ public class DecayProduct {
 
     /**
     * Access particle's vertex.
-    * @return Vector3 vtx
+    * @return vtx
     */
     protected Vector3 vtx() {
 
@@ -619,10 +619,10 @@ public class DecayProduct {
 
     /**
     * Set particle's vertex.
-    * @param double vx
-    * @param double vy
-    * @param double vz
-    * @param double vt
+    * @param vx
+    * @param vy
+    * @param vz
+    * @param vt
     */
     protected void vLv(double vx, double vy, double vz, double vt) {
 
@@ -631,7 +631,7 @@ public class DecayProduct {
 
     /**
     * Access particle's vertex lorentz vector.
-    * @return Vector3 vLv
+    * @return vLv
     */
     protected LorentzVector vLv() {
 
@@ -640,7 +640,7 @@ public class DecayProduct {
 
     /**
     * Set particle's chi2pid.
-    * @param double chi2pid
+    * @param chi2pid
     */
     protected void chi2pid(double chi2pid) {
 
@@ -649,7 +649,7 @@ public class DecayProduct {
 
     /**
     * Access REC::Particle particle's chi2pid.
-    * @return double _chi2pid
+    * @return _chi2pid
     */
     protected double chi2pid() {
 
@@ -658,7 +658,7 @@ public class DecayProduct {
 
     /**
     * Set REC::Particle particle's status.
-    * @param int stat
+    * @param stat
     */
     protected void status(int stat) {
 
@@ -667,7 +667,7 @@ public class DecayProduct {
 
     /**
     * Access REC::Particle particle's status.
-    * @return int _stat
+    * @return _stat
     */
     protected int status() {
 
@@ -676,7 +676,7 @@ public class DecayProduct {
 
     /**
     * Set REC::Particle particle's detector from REC::Track.
-    * @param int detector
+    * @param detector
     */
     protected void detector(int detector) {
 
@@ -685,7 +685,7 @@ public class DecayProduct {
 
     /**
     * Access REC::Particle particle's detector from REC::Track.
-    * @return int _detector
+    * @return _detector
     */
     protected int detector() {
 
@@ -694,7 +694,7 @@ public class DecayProduct {
 
     /**
     * Set REC::Particle particle's sector from REC::Track.
-    * @param int sector
+    * @param sector
     */
     protected void sector(int sector) {
 
@@ -703,7 +703,7 @@ public class DecayProduct {
 
     /**
     * Access REC::Particle particle's sector from REC::Track.
-    * @return int _sector
+    * @return _sector
     */
     protected int sector() {
 
@@ -712,7 +712,7 @@ public class DecayProduct {
 
     /**
     * Set REC::Particle particle's detector status from REC::Track.
-    * @param int detector_status
+    * @param detector_status
     */
     protected void detector_status(int detector_status) {
 
@@ -721,7 +721,7 @@ public class DecayProduct {
 
     /**
     * Access REC::Particle particle's detector status from REC::Track.
-    * @return int _detector_status
+    * @return _detector_status
     */
     protected int detector_status() {
 
@@ -730,7 +730,7 @@ public class DecayProduct {
 
     /**
     * Set REC::Particle particle's detector chi2/ndf from REC::Track.
-    * @param double detector_chi2ndf
+    * @param detector_chi2ndf
     */
     protected void detector_chi2ndf(double detector_chi2ndf) {
 
@@ -739,7 +739,7 @@ public class DecayProduct {
 
     /**
     * Access REC::Particle particle's detector chi2/ndf from REC::Track.
-    * @return double _detector_chi2ndf
+    * @return _detector_chi2ndf
     */
     protected double detector_chi2ndf() {
 

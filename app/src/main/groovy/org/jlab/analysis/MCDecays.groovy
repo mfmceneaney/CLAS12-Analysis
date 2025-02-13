@@ -47,11 +47,11 @@ public class MCDecays {
 
     /** 
     * Constructor stub
-    * @param ArrayList<Integer> decay - integer list [daughters] for decay chain
-    * @param ArrayList<Integer> parents - integer list [parents] for parent in decay
-    * @param HipoReader reader
-    * @param Event event
-    * @param Constants constants
+    * @param decay - integer list [daughters] for decay chain
+    * @param parents - integer list [parents] for parent in decay
+    * @param reader
+    * @param event
+    * @param constants
     */
     public MCDecays(ArrayList<Integer> decay, ArrayList<Integer> parents, ArrayList<Integer> dpMap, HipoReader reader, Event event, Constants constants) {
 
@@ -115,7 +115,7 @@ public class MCDecays {
 
     /**
     * Access full particle list for event.
-    * @return ArrayList<DecayProduct> _particleList
+    * @return _particleList
     */
     protected ArrayList<DecayProduct> getFullParticleList() {
 
@@ -157,7 +157,7 @@ public class MCDecays {
 
     /**
     * Access particle list for event.
-    * @return ArrayList<DecayProduct> _particleList
+    * @return _particleList
     */
     protected ArrayList<DecayProduct> getParticleList() {
 
@@ -169,7 +169,7 @@ public class MCDecays {
     /**
     * Get index to index map to match REC::Particle bank entries to MC::Lund (final state) bank entries.
     * Note that map entries map the actual index in REC::Particle bank (0->nparticles-1) (same as p_rec.index()) to the actual index (0->nparticles-1) in MC::Lund (not the same as p_mc.index())
-    * @param ArrayList<DecayProduct> fullRecParticleList
+    * @param fullRecParticleList
     */
     protected void setMatchingMap(ArrayList<DecayProduct> fullRecParticleList) {
 
@@ -204,7 +204,7 @@ public class MCDecays {
 
     /**
     * Access the REC::Particle index to MC::Lund index matching map.
-    * @return LinkedHashMap<Integer,Integer>
+    * @return _recMatchingMap
     */
     protected LinkedHashMap<Integer,Integer> getMatchingMap() {
         return this._recMatchingMap;
@@ -254,7 +254,7 @@ public class MCDecays {
 
     /**
     * Access list of all possible decay particle combinations identified by Lund pid.
-    * @return ArrayList<DecayProduct> _pidList
+    * @return _pidList
     */
     protected ArrayList<DecayProduct> getPidList() {
 
@@ -265,7 +265,7 @@ public class MCDecays {
 
     /**
     * Access list of all possible decay particle combinations identified by Lund pid.
-    * @return ArrayList<DecayProduct> _parPidList
+    * @return _parPidList
     */
     protected ArrayList<DecayProduct> getParPidList() {
 
@@ -278,8 +278,8 @@ public class MCDecays {
     * Recursive helper function to create combo list for all possible decay particle combinations in event.
     * Relies on <code>this._decay</code> and <code>this._pidList</code> (passed as plist argument the first time) 
     * being sorted.  If these are not sorted this will NOT work!
-    * @param int dIndex
-    * @param ArrayList<DecayProduct> oldlist
+    * @param dIndex
+    * @param oldlist
     */
     protected void setComboPidList(int dIndex, ArrayList<DecayProduct> plist, ArrayList<DecayProduct> oldlist) {
 
@@ -299,8 +299,8 @@ public class MCDecays {
     * Recursive helper function to create combo list for all unique parent particle combinations in event.
     * Relies on <code>this._parents</code> and <code>this._parPidList</code> (passed as plist argument the first time)
     * being sorted.  If these are not sorted this will NOT work!
-    * @param int dIndex
-    * @param ArrayList<DecayProduct> oldlist
+    * @param dIndex
+    * @param oldlist
     */
     protected void setParComboPidList(int dIndex, ArrayList<DecayProduct> plist, ArrayList<DecayProduct> oldlist) {
 
@@ -328,7 +328,7 @@ public class MCDecays {
 
     /**
     * Access list of all possible decay particle combinations identified by Lund pid.
-    * @return ArrayList<ArrayList<DecayProduct>> _comboPidList
+    * @return _comboPidList
     */
     protected ArrayList<ArrayList<DecayProduct>> getComboPidList() {
 
@@ -342,7 +342,7 @@ public class MCDecays {
 
     /**
     * Access list of all unique parent particle combinations identified by Lund pid.
-    * @return ArrayList<ArrayList<DecayProduct>> _parComboPidList
+    * @return _parComboPidList
     */
     protected ArrayList<ArrayList<DecayProduct>> getParComboPidList() {
 
@@ -359,7 +359,7 @@ public class MCDecays {
     * for matching parent/daughter index with combo in <code>this._parComboPidList</code>.
     * Relies on check in <code>this.getPidList()</code> method that all combos come from
     * same parent and corresponding check in <code>this.getParPidList()</code>.
-    * @return ArrayList<ArrayList<DecayProduct>> mergedComboPidList
+    * @return mergedComboPidList
     */
     protected ArrayList<ArrayList<DecayProduct>> getCheckedComboPidList() {
 
@@ -387,8 +387,8 @@ public class MCDecays {
     /**
     * Merge list of all unique decay particle combinations identified by Lund pid
     * with a combo list from another decay object.
-    * @param ArrayList<ArrayList<DecayProduct>>  mergeList
-    * @return ArrayList<ArrayList<DecayProduct>> mergedComboPidList
+    * @param mergeList
+    * @return mergedComboPidList
     */
     protected ArrayList<ArrayList<DecayProduct>> mergeComboPidList(ArrayList<ArrayList<DecayProduct>> mergeList) {
 
@@ -407,8 +407,8 @@ public class MCDecays {
     /**
     * Merge list of all unique parent particle combinations identified by Lund pid
     * with a combo list from another decay object.
-    * @param ArrayList<ArrayList<DecayProduct>>  mergeList
-    * @return ArrayList<ArrayList<DecayProduct>> mergedParComboPidList
+    * @param mergeList
+    * @return mergedParComboPidList
     */
     protected ArrayList<ArrayList<DecayProduct>> mergeParComboPidList(ArrayList<ArrayList<DecayProduct>> mergeList) {
 
@@ -502,7 +502,7 @@ public class MCDecays {
 
     /**
     * Access list of all possible decay particle combinations identified by charge.
-    * @return ArrayList<DecayProduct> _chargeList
+    * @return _chargeList
     */
     protected ArrayList<DecayProduct> getChargeList() {
 
@@ -513,7 +513,7 @@ public class MCDecays {
 
     /**
     * Access list of all possible decay particle combinations identified by charge.
-    * @return ArrayList<DecayProduct> _parChargeList
+    * @return _parChargeList
     */
     protected ArrayList<DecayProduct> getParChargeList() {
 
@@ -526,8 +526,8 @@ public class MCDecays {
     * Recursive helper function to create combo list for all possible decay particle combinations in event.
     * Relies on <code>this._charges</code> and <code>this._chargeList</code> (passed as plist argument the first time) 
     * being sorted.  If these are not sorted this will NOT work!
-    * @param int dIndex
-    * @param ArrayList<DecayProduct> oldlist
+    * @param dIndex
+    * @param oldlist
     */
     protected void setComboChargeList(int dIndex, ArrayList<DecayProduct> plist, ArrayList<DecayProduct> oldlist) {
 
@@ -547,8 +547,8 @@ public class MCDecays {
     * Recursive helper function to create combo list for all unique parent particle combinations in event.
     * Relies on <code>this._parCharges</code> and <code>this._parChargeList</code> (passed as plist argument the first time)
     * being sorted.  If these are not sorted this will NOT work!
-    * @param int dIndex
-    * @param ArrayList<DecayProduct> oldlist
+    * @param dIndex
+    * @param oldlist
     */
     protected void setParComboChargeList(int dIndex, ArrayList<DecayProduct> plist, ArrayList<DecayProduct> oldlist) {
 
@@ -566,7 +566,7 @@ public class MCDecays {
 
     /**
     * Access list of all possible decay particle combinations identified by charge.
-    * @return ArrayList<ArrayList<DecayProduct>> _comboChargeList
+    * @return _comboChargeList
     */
     protected ArrayList<ArrayList<DecayProduct>> getComboChargeList() {
 
@@ -580,7 +580,7 @@ public class MCDecays {
 
     /**
     * Access list of all unique parent particle combinations identified by charge.
-    * @return ArrayList<ArrayList<DecayProduct>> _parComboChargeList
+    * @return _parComboChargeList
     */
     protected ArrayList<ArrayList<DecayProduct>> getParComboChargeList() {
 
@@ -597,7 +597,7 @@ public class MCDecays {
     * for matching parent/daughter index with combo in <code>this._parComboChargeList</code>.
     * Relies on check in <code>this.getChargeList()</code> method that all combos come from
     * same parent and corresponding check in <code>this.getParChargeList()</code>.
-    * @return ArrayList<ArrayList<DecayProduct>> mergedComboChargeList
+    * @return mergedComboChargeList
     */
     protected ArrayList<ArrayList<DecayProduct>> getCheckedComboChargeList() {
 
@@ -616,8 +616,8 @@ public class MCDecays {
     /**
     * Merge list of all unique decay particle combinations identified by charge
     * with a combo list from another decay object.
-    * @param ArrayList<ArrayList<DecayProduct>>  mergeList
-    * @return ArrayList<ArrayList<DecayProduct>> mergedComboChargeList
+    * @param mergeList
+    * @return mergedComboChargeList
     */
     protected ArrayList<ArrayList<DecayProduct>> mergeComboChargeList(ArrayList<ArrayList<DecayProduct>> mergeList) {
 
@@ -636,8 +636,8 @@ public class MCDecays {
     /**
     * Merge list of all unique parent particle combinations identified by charge
     * with a combo list from another decay object.
-    * @param ArrayList<ArrayList<DecayProduct>>  mergeList
-    * @return ArrayList<ArrayList<DecayProduct>> mergedParComboChargeList
+    * @param mergeList
+    * @return mergedParComboChargeList
     */
     protected ArrayList<ArrayList<DecayProduct>> mergeParComboChargeList(ArrayList<ArrayList<DecayProduct>> mergeList) {
 
@@ -655,7 +655,7 @@ public class MCDecays {
 
     /**
     * Get beam as 0th entry from MC::Lund bank.
-    * @return DecayProduct beam
+    * @return beam
     */
     protected DecayProduct getBeam() {
         if (this._particleList.size()==0) { this.setParticleList(); }
@@ -665,7 +665,7 @@ public class MCDecays {
 
     /**
     * Get Target as 1st entry from MC::Lund bank.
-    * @return DecayProduct target
+    * @return target
     */
     protected DecayProduct getTarget() {
         if (this._particleList.size()==0) { this.setParticleList(); }
@@ -675,7 +675,7 @@ public class MCDecays {
 
     /**
     * Get virtual photon as 2nd entry from MC::Lund bank.
-    * @return DecayProduct Q
+    * @return Q
     */
     protected DecayProduct getQ() {
         if (this._particleList.size()==0) { this.setParticleList(); }
@@ -685,7 +685,7 @@ public class MCDecays {
 
     /**
     * Get scattered beam as 3rd entry from MC::Lund bank.
-    * @return DecayProduct beam
+    * @return beam
     */
     protected DecayProduct getScatteredBeam() {
         if (this._particleList.size()==0) { this.setParticleList(); } 
@@ -695,7 +695,7 @@ public class MCDecays {
 
     /**
     * Get list of entries 0:3 from MC::Lund bank, corresponding to beam, target, Q, and scattered beam.
-    * @return ArrayList<DecayProduct> parents
+    * @return parents
     */
     protected ArrayList<DecayProduct> getParents() { //TODO: This does not match logic for setParticleList() method above.... 7/5/22
         if (this._particleList.size()==0) { this.setParticleList(); }

@@ -134,7 +134,7 @@ public class FiducialCuts {
 
     /**
     * Set the level of harshness for fiducial cuts: 0-loose, 1-medium, 2-tight.
-    * @param int level
+    * @param level
     */
     protected void setLevel(int level) {
 
@@ -143,8 +143,8 @@ public class FiducialCuts {
 
     /**
     * Fill the arrays at the event level for PCal/ECal hits.  Hits in layers 1, 4, and 7 are required for a full track.
-    * @param HipoReader reader
-    * @param Event event
+    * @param reader
+    * @param event
     */
     protected void setPCalArrays(HipoReader reader, Event event) {
 
@@ -189,8 +189,8 @@ public class FiducialCuts {
 
     /**
     * Set drift chamber bank arrays at the event level. Hits are required in middle layer of each sector (6,18,36).
-    * @param HipoReader reader
-    * @param Event event
+    * @param reader
+    * @param event
     */
     protected void setTrajArrays(HipoReader reader, Event event) {
 
@@ -242,8 +242,8 @@ public class FiducialCuts {
 
     /**
     * Fill the arrays at the event level for PCal/ECal and DC hits.
-    * @param HipoReader reader
-    * @param Event event
+    * @param reader
+    * @param event
     */
     protected void setArrays(HipoReader reader, Event event) {
         
@@ -253,11 +253,11 @@ public class FiducialCuts {
     /**
     * Applies RGA fiducial cuts to particle at index current_part in REC::Particle.
     * IMPORTANT: Make sure arrays are already filled by calling setArrays() method at event level before looping particles.
-    * @param int runnum_
-    * @param int current_part
-    * @param int pid_
-    * @param Event event_
-    * @param HipoReader reader_
+    * @param runnum_
+    * @param current_part
+    * @param pid_
+    * @param event_
+    * @param reader_
     */
     protected boolean applyCuts(int runnum_, int current_part, int pid_, Event event_, HipoReader reader_) {
 
@@ -356,7 +356,7 @@ public class FiducialCuts {
 
     /** 
     * Determines the sector 1-6 in ECal for given particle at index i in REC::Particle bank.
-    * @param int i 
+    * @param i 
     */
     protected int determineSectorEC(int i){
 
@@ -384,7 +384,7 @@ public class FiducialCuts {
 
     /** 
     * Determines the sector 1-6 in DC for given particle at index i in REC::Particle bank.
-    * @param int i 
+    * @param i 
     */
     protected int determineSectorDC(int i){
 
@@ -408,7 +408,7 @@ public class FiducialCuts {
     * A cut is performed on v and w.  Different versions are available: 
     * For SIDIS I use the loose versions, for cross sections I would recommend the medium or tight version.
     *
-    * @param int j
+    * @param j
     */
     protected boolean EC_hit_position_fiducial_cut_homogeneous(int j){
 
@@ -526,9 +526,9 @@ public class FiducialCuts {
     * The inbending / outbending flags (see top of this document) have to be set to assign the correct cut
     * Note: DIM(arrays) = (6,6,3,4) (pid,sector,region,param)
     *
-    * @param int j
-    * @param int region
-    * @param int part_pid
+    * @param j
+    * @param region
+    * @param part_pid
     */
     protected boolean DC_fiducial_cut_theta_phi(int j, int region, int part_pid){
 
@@ -755,9 +755,9 @@ public class FiducialCuts {
     * j is the index of the particle. Th variable part_pid is needed to assign the correct cut
     * The inbending / outbending flags (see top of this document) have to be set to assign the correct cut
     *
-    * @param int j
-    * @param int region
-    * @param int part_pid
+    * @param j
+    * @param region
+    * @param part_pid
     */
     protected boolean DC_fiducial_cut_XY(int j, int region, int part_pid) {
 

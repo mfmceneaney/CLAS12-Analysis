@@ -139,8 +139,8 @@ public class Parser {
     * Parse and evaluate command line arguments (or lack thereof).
     * Returns true if main has enough correctly formatted arguments to run smoothly.
     * You will probably want to customize this for less general analyses.
-    * @param String[] args
-    * @return boolean (ready)
+    * @param args
+    * @return ready
     */
     protected boolean parse(String[] args, Analysis analysis) throws IOException {
 
