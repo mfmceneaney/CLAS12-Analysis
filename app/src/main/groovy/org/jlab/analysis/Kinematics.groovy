@@ -143,8 +143,8 @@ public class Kinematics {
 
     /**
     * Constructor stub
-    * @param Constants constants
-    * @param ArrayList<Integer> decay
+    * @param constants
+    * @param decay
     */
     public Kinematics(Constants constants, ArrayList<Integer> decay, ArrayList<ArrayList<Integer>> groups) {
 
@@ -160,7 +160,7 @@ public class Kinematics {
 
     /**
     * Set constants object for use in calculations.
-    * @param Constants constants
+    * @param constants
     */
     protected void setConstants(Constants constants) {
 
@@ -169,7 +169,7 @@ public class Kinematics {
 
     /**
     * Set target mass in constants.
-    * @param double TM
+    * @param TM
     */
     protected void setTargetM(double TM) {
 
@@ -178,7 +178,7 @@ public class Kinematics {
 
      /**
     * Set beam energy in constants.
-    * @param double BE
+    * @param BE
     */
     protected void setBeamE(double BE) {
 
@@ -187,7 +187,7 @@ public class Kinematics {
 
     /**
     * Access constants object for analysis.
-    * @return Constants _constants
+    * @return _constants
     */
     protected Constants getConstants() {
 
@@ -196,7 +196,7 @@ public class Kinematics {
 
     /**
     * Set list of Lund pids for decay.
-    * @param ArrayList<Integer> decay
+    * @param decay
     */
     protected void setDecay(ArrayList<Integer> decay) {
 
@@ -205,7 +205,7 @@ public class Kinematics {
 
     /**
     * Access list of decay lund pids.
-    * @return ArrayList<Integer> _decay
+    * @return _decay
     */
     protected ArrayList<Integer> getDecay() {
 
@@ -214,7 +214,7 @@ public class Kinematics {
 
     /**
     * Set list of lists of indices in this._decay to group for kinematics.
-    * @param ArrayList<ArrayList<Integer>> groups
+    * @param groups
     */
     protected void setGroups(ArrayList<ArrayList<Integer>> groups) {
 
@@ -223,7 +223,7 @@ public class Kinematics {
 
     /**
     * Access list of lists of indices in this._decay to group for kinematics.
-    * @return ArrayList<Integer> _groups
+    * @return _groups
     */
     protected ArrayList<ArrayList<Integer>> getGroups() {
 
@@ -233,7 +233,7 @@ public class Kinematics {
     /**
     * Set list of parent Lund pids for decay in MC::Lund bank.
     * Do not include parent particle from this._decay.
-    * @param ArrayList<Integer> parents
+    * @param parents
     */
     protected void setParents(ArrayList<Integer> parents) {
 
@@ -242,7 +242,7 @@ public class Kinematics {
 
     /**
     * Access list of parent Lund pids.
-    * @return ArrayList<Integer> _parents
+    * @return _parents
     */
     protected ArrayList<Integer> getParents() {
 
@@ -361,7 +361,7 @@ public class Kinematics {
 
     /**
     * Access keyset for all variables to access, useful for setting TNTuple entry names.
-    * @return String[] keySet
+    * @return keySet
     */
     protected String[] keySet() { // can call from Analysis object
 
@@ -378,7 +378,7 @@ public class Kinematics {
 
     /**
     * Access string array for names of default kinematic variables: Q2, nu, y, x, W.
-    * @return String[] _defaults
+    * @return _defaults
     */
     protected String[] getDefaults() { // can call from Analysis object
 
@@ -387,7 +387,7 @@ public class Kinematics {
 
     /**
     * Access string array for names of default individual particles' kinematic variables: z, xF, Y, zeta, phperp. //TODO: phi, phi_s, ...,
-    * @return String[] _ikin
+    * @return _ikin
     */
     protected String[] getIndivKin() { // can call from Analysis object
 
@@ -396,7 +396,7 @@ public class Kinematics {
 
     /**
     * Access string array for names of default grouped particles' kinematic variables: z, xF, Y, zeta, phperp, pT, mass. //TODO: phi, phi_s, ..., lambda kinematics
-    * @return String[] _gkin
+    * @return _gkin
     */
     protected String[] getGroupKin() { // can call from Analysis object
 
@@ -405,7 +405,7 @@ public class Kinematics {
 
     /**
     * Set hashmap of configuration variable names to lambda expressions for access.
-    * @param HashMap<String,ConfigVar> configs
+    * @param configs
     */
     protected void setConfigVars(HashMap<String,ConfigVar> configs) { // can call from Analysis object
 
@@ -414,7 +414,7 @@ public class Kinematics {
 
     /**
     * Add hashmap of configuration variable names to lambda expressions for access.
-    * @param HashMap<String,ConfigVar> configs
+    * @param configs
     */
     protected void addConfigVars(HashMap<String,ConfigVar> configs) { // can call from Analysis object
 
@@ -423,8 +423,8 @@ public class Kinematics {
 
      /**
     * Add configuration variable name and lambda expression for access.
-    * @param String name
-    * @param ConfigVar config
+    * @param name
+    * @param config
     */
     protected void addVar(String name, ConfigVar config) { // can call from Analysis object
 
@@ -433,7 +433,7 @@ public class Kinematics {
 
      /**
     * Access hashmap of configuration variable names lambda expressions for access.
-    * @return HashMap<String,ConfigVar> _configs
+    * @return _configs
     */
     protected HashMap<String,ConfigVar> getConfigVars() { // can call from Analysis object
 
@@ -442,7 +442,7 @@ public class Kinematics {
 
     /**
     * Set hashmap of kinematic names lambda expressions for computation.
-    * @param HashMap<String,SIDISVar> vars
+    * @param vars
     */
     protected void setSIDISVars(HashMap<String,SIDISVar> vars) { // can call from Analysis object
 
@@ -451,7 +451,7 @@ public class Kinematics {
 
     /**
     * Add hashmap of kinematic names lambda expressions for computation.
-    * @param HashMap<String,SIDISVar> vars
+    * @param vars
     */
     protected void addSIDISVars(HashMap<String,SIDISVar> vars) { // can call from Analysis object
 
@@ -460,8 +460,8 @@ public class Kinematics {
 
      /**
     * Add kinematic name and lambda expression for computation.
-    * @param String name
-    * @param SIDISVar var
+    * @param name
+    * @param var
     */
     protected void addVar(String name, SIDISVar var) { // can call from Analysis object
 
@@ -470,7 +470,7 @@ public class Kinematics {
 
     /**
     * Access hashmap of kinematic names lambda expressions for computation.
-    * @return HashMap<String,SIDISVar> _vars
+    * @return _vars
     */
     protected HashMap<String,SIDISVar> getSIDISVars() { // can call from Analysis object
 
@@ -479,7 +479,7 @@ public class Kinematics {
 
     /**
     * Set hashmap of kinematic names to boolean .cut(double) lambda expression cuts.
-    * @param HashMap<String,Cut> cuts
+    * @param cuts
     */
     protected void setCuts(HashMap<String,Cut> cuts) { // can call from Analysis object
 
@@ -488,7 +488,7 @@ public class Kinematics {
 
     /**
     * Add entries from ahashmap of kinematic names to min, max cuts.
-    * @param HashMap<String, Cut> cuts
+    * @param cuts
     */
     protected void addCuts(HashMap<String, Cut> cuts) { // can call from Analysis object
 
@@ -497,8 +497,8 @@ public class Kinematics {
 
     /**
     * Add entries from ahashmap of kinematic names to min, max cuts.
-    * @param String name
-    * @param Cut cut
+    * @param name
+    * @param cut
     */
     protected void addCut(String name, Cut cut) { // can call from Analysis object
 
@@ -507,7 +507,7 @@ public class Kinematics {
 
     /**
     * Access hashmap of kinematic names to min, max cuts.
-    * @return HashMap<String, Cut> _cuts
+    * @return _cuts
     */
     protected HashMap<String, Cut> getCuts() { // can call from Analysis object
 
@@ -515,9 +515,9 @@ public class Kinematics {
     }
 
     /**
-    * @param HipoReader reader
-    * @param Event event
-    * @return HashMap<String, Double> configs
+    * @param reader
+    * @param event
+    * @return configs
     */
     private HashMap<String, Double> getConfigVariables(HipoReader reader, Event event) {
 
@@ -527,9 +527,9 @@ public class Kinematics {
     }
 
     /**
-    * @param ArrayList<DecayProduct> plist
-    * @param DecayProduct beam
-    * @return HashMap<String, Double> vars
+    * @param plist
+    * @param beam
+    * @return vars
     */
     private HashMap<String, Double> getSIDISVariables(ArrayList<DecayProduct> plist, DecayProduct beam) {
 
@@ -541,8 +541,8 @@ public class Kinematics {
     /**
     * Find scattered beam with default limits on absolute value of chi2pid
     * and on the status: |chi2pid|<3 && status<=-2000.
-    * @param ArrayList<DecayProduct> list
-    * @return DecayProduct beam
+    * @param list
+    * @return beam
     */
     protected DecayProduct getScatteredBeam(ArrayList<DecayProduct> list) { // TODO: kind of obviated by getScatteredBeam method for Decays/MCDecays classes
 
@@ -559,10 +559,10 @@ public class Kinematics {
     * and on the staus.  Status limit looks for particles with status 
     * higher/lower than the limit depending on whether the status is 
     * positive/negative.
-    * @param ArrayList<DecayProduct> list
-    * @param float chi2pid
-    * @param int status
-    * @return DecayProduct beam
+    * @param list
+    * @param chi2pid
+    * @param status
+    * @return beam
     */
     protected DecayProduct getScatteredBeam(ArrayList<DecayProduct> list, float chi2pid, int status) { // TODO: kind of obviated by getScatteredBeam method for Decays/MCDecays classes
 
@@ -579,11 +579,11 @@ public class Kinematics {
     /**
     * Compute additional kinematics particular to Lambda baryon analysis
     * but potentially useful for other two body decays.
-    * @param HashMap<String, Double> kinematics
-    * @param ArrayList<LorentzVector> lvList
-    * @param LorentzVector lv_parent
-    * @param LorentzVector q
-    * @param LorentzVector lv_beam
+    * @param kinematics
+    * @param lvList
+    * @param lv_parent
+    * @param q
+    * @param lv_beam
     */
     protected void getLambdaVars(HashMap<String, Double> kinematics, ArrayList<LorentzVector> lvList, LorentzVector lv_parent, LorentzVector q, LorentzVector lv_beam, LorentzVector lv_miss, Vector3 gNBoost) {
 
@@ -628,11 +628,11 @@ public class Kinematics {
     // * Compute additional kinematics particular to \Lambda Analysis 
     // * but potentially useful for other two body decays. Set tranverse 
     // * cos(theta) lorentz vectors using dot into n = unit(p_beam X p_Lambda).
-    // * @param HashMap<String, Double> kinematics
-    // * @param ArrayList<LorentzVector> lvList
-    // * @param LorentzVector lv_parent
-    // * @param LorentzVector q
-    // * @param DecayProduct beam
+    // * @param kinematics
+    // * @param lvList
+    // * @param lv_parent
+    // * @param q
+    // * @param beam
     // */
     // protected void getTLKVars(HashMap<String, Double> kinematics, ArrayList<LorentzVector> lvList, LorentzVector lv_parent, LorentzVector q, DecayProduct beam) {
 
@@ -661,10 +661,10 @@ public class Kinematics {
 
     /**
     * Compute colinearity cos(theta_colinearity) for V^0 2-body decays.
-    * @param HashMap<String, Double> kinematics
-    * @param ArrayList<DecayProduct> particles
-    * @param LorentzVector lv_parent
-    * @param DecayProduct beam
+    * @param kinematics
+    * @param particles
+    * @param lv_parent
+    * @param beam
     */
     protected void getColinearity(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, LorentzVector lv_parent, DecayProduct beam) {
 
@@ -686,10 +686,10 @@ public class Kinematics {
 
     /**
     * Compute back-to-back angle cos(theta_b2b) for 2-body decays.
-    * @param HashMap<String, Double> kinematics
-    * @param ArrayList<DecayProduct> particles
-    * @param LorentzVector lv_parent
-    * @param DecayProduct beam
+    * @param kinematics
+    * @param particles
+    * @param lv_parent
+    * @param beam
     */
     protected void getBack2Back(HashMap<String, Double> kinematics, ArrayList<LorentzVector> lvList, LorentzVector lv_parent, DecayProduct beam) {
 
@@ -713,12 +713,12 @@ public class Kinematics {
     /**
     * Compute additional individual particle kinematics.
     * NOTE: Kinematics should already have nu and W entries for event!
-    * @param HashMap<String, Double> kinematics
-    * @param ArrayList<DecayProduct> list
-    * @param LorentzVector lv_parent
-    * @param LorentzVector q
-    * @param LorentzVector gN
-    * @param Vector3 gNBoost
+    * @param kinematics
+    * @param list
+    * @param lv_parent
+    * @param q
+    * @param gN
+    * @param gNBoost
     */
     protected void getIndivKin(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, LorentzVector lv_target, LorentzVector lv_beam, LorentzVector lv_max, LorentzVector q, LorentzVector gN, Vector3 gNBoost) {
         
@@ -784,14 +784,14 @@ public class Kinematics {
 
     /**
     * Compute additional particle correlation kinematics for particle groups.
-    * @param HashMap<String, Double> kinematics
-    * @param ArrayList<DecayProduct> list
-    * @param LorentzVector lv_target
-    * @param LorentzVector lv_beam
-    * @param LorentzVector lv_max
-    * @param LorentzVector q
-    * @param LorentzVector gN
-    * @param Vector3 gNBoost
+    * @param kinematics
+    * @param list
+    * @param lv_target
+    * @param lv_beam
+    * @param lv_max
+    * @param q
+    * @param gN
+    * @param gNBoost
     */
     protected void getGroupKin(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, LorentzVector lv_target, LorentzVector lv_beam, LorentzVector lv_max, LorentzVector q, LorentzVector gN, Vector3 gNBoost) {
 
@@ -923,8 +923,8 @@ public class Kinematics {
 
     /**
     * Checks if event passes given cuts.
-    * @param HashMap<String, Double> kinematics
-    * @return boolean passesCuts
+    * @param kinematics
+    * @return passesCuts
     */
     protected boolean passesCuts(HashMap<String, Double> kinematics) {
 
@@ -941,9 +941,9 @@ public class Kinematics {
     * Compute decay kinematics for a single decay particle combination in an event.
     * This is probably a method you will want to override if you are customizing 
     * this class.
-    * @param ArrayList<DecayProduct> list
-    * @param DecayProduct beam
-    * @return HashMap<String, Double>
+    * @param list
+    * @param beam
+    * @return kinematics
     */
     protected HashMap<String, Double> getDefaultVars(ArrayList<DecayProduct> list, DecayProduct beam) {
         
@@ -1011,9 +1011,9 @@ public class Kinematics {
     * Compute decay kinematics for a single decay particle combination in an event.
     * This is probably a method you will want to override if you are customizing 
     * this class.
-    * @param ArrayList<DecayProduct> list
-    * @param ArrayList<DecayProduct> ilist
-    * @return HashMap<String, Double>
+    * @param list
+    * @param ilist
+    * @return kinematics
     */
     protected HashMap<String, Double> getMCDefaultVars(ArrayList<DecayProduct> list, ArrayList<DecayProduct> ilist) {
 
@@ -1081,9 +1081,9 @@ public class Kinematics {
 
     /**
     * Get variables and check they pass cuts, returns empty hashmap if not so make sure to check size.
-    * @param ArrayList<DecayProduct> list
-    * @param DecayProduct beam
-    * @return HashMap<String,Double>
+    * @param list
+    * @param beam
+    * @return kinematics
     */
     protected HashMap<String,Double> processEvent(ArrayList<DecayProduct> list, DecayProduct beam) { 
 
@@ -1098,9 +1098,9 @@ public class Kinematics {
 
     /**
     * Get variables and check they pass cuts, returns empty hashmap if not so make sure to check size.
-    * @param HipoReader reader
-    * @param Event event
-    * @return HashMap<String,Double>
+    * @param reader
+    * @param event
+    * @return kinematics
     */
     protected HashMap<String,Double> processEvent(HipoReader reader, Event event) { 
 
@@ -1111,11 +1111,11 @@ public class Kinematics {
 
     /**
     * Get variables and check they pass cuts, returns empty hashmap if not so make sure to check size.
-    * @param HipoReader reader
-    * @param Event event
-    * @param ArrayList<DecayProduct> list
-    * @param DecayProduct beam
-    * @return HashMap<String,Double>
+    * @param reader
+    * @param event
+    * @param list
+    * @param beam
+    * @return kinematics
     */
     protected HashMap<String,Double> processEvent(HipoReader reader, Event event, ArrayList<DecayProduct> list, DecayProduct beam) { 
 
@@ -1132,10 +1132,10 @@ public class Kinematics {
 
     /**
     * Get MC variables and check they pass cuts, returns empty hashmap if not so make sure to check size.
-    * @param HipoReader reader
-    * @param Event event
-    * @param ArrayList<DecayProduct> list
-    * @return HashMap<String,Double>
+    * @param reader
+    * @param event
+    * @param list
+    * @return kinematics
     */
     protected HashMap<String,Double> processMCEvent(HipoReader reader, Event event, ArrayList<DecayProduct> list, ArrayList<DecayProduct> ilist) { 
 	

@@ -32,7 +32,7 @@ public class Main {
     * Use the <code>-h/--h/-help/--help</code> options for full detail or check out the <code>docs/groovy</code> folder.
     * You will probably want to customize this for less general analyses.
     *
-    * @param String[] args
+    * @param args
     */
     public static void main(String[] args) throws IOException, InterruptedException {
         Analysis analysis = new Analysis();

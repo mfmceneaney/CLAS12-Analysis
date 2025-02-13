@@ -117,7 +117,7 @@ public class Constants {
 
     /**
     * Access speed of light [m/s].
-    * @return double _C
+    * @return _C
     */
     protected double getC() {
         return this._C;
@@ -133,14 +133,14 @@ public class Constants {
 
     /**
     * Set scaled solenoid field [T].
-    * @param double S
+    * @param S
     */
     protected void setS(double S) {
         this._S = S;
     }
    /**
     * Access scaled torus field [T].
-    * @return double _T
+    * @return _T
     */
     protected double getT() {
         return this._T;
@@ -148,7 +148,7 @@ public class Constants {
 
     /**
     * Set scaled torus field [T].
-    * @param double T
+    * @param T
     */
     protected void setT(double T) {
         this._T = T;
@@ -156,7 +156,7 @@ public class Constants {
 
     /**
     * Access beam energy [GeV].
-    * @return double _BE
+    * @return _BE
     */
     protected double getBeamE() {
         return this._BE;
@@ -164,7 +164,7 @@ public class Constants {
 
     /**
     * Set beam energy [GeV].
-    * @param double BE
+    * @param BE
     */
     protected void setBeamE(double BE) {
         this._BE = BE;
@@ -172,7 +172,7 @@ public class Constants {
 
     /**
     * Access beam mass [GeV/c^2].
-    * @return double _BM
+    * @return _BM
     */
     protected double getBeamM() {
         return this._BM;
@@ -180,7 +180,7 @@ public class Constants {
 
     /**
     * Set beam mass [GeV/c^2].  Currently does nothing.
-    * @param double BM
+    * @param BM
     */
     protected void setBeamM(double BM) {
         //this._BM = BM
@@ -188,7 +188,7 @@ public class Constants {
 
     /**
     * Access beam Lund pid.
-    * @return int _BPID
+    * @return _BPID
     */
     protected int getBeamPID() {
         return this._BPID;
@@ -196,7 +196,7 @@ public class Constants {
 
     /**
     * Set beam Lund pid.
-    * @param int BPID
+    * @param BPID
     */
     protected void setBeamPID(int BPID) {
         this._BPID = BPID;
@@ -205,7 +205,7 @@ public class Constants {
 
     /**
     * Access target energy [GeV].
-    * @return double _TE
+    * @return _TE
     */
     protected double getTargetE() {
         return this._TE;
@@ -213,7 +213,7 @@ public class Constants {
 
     /**
     * Set target energy [GeV].
-    * @param double TE
+    * @param TE
     */
     protected void setTargetE(double TE) {
         this._TE = TE;
@@ -221,7 +221,7 @@ public class Constants {
 
     /**
     * Access target mass [GeV/c^2].
-    * @return double _TM
+    * @return _TM
     */
     protected double getTargetM() {
         return this._TM;
@@ -229,7 +229,7 @@ public class Constants {
 
     /**
     * Set Target mass [GeV/c^2].  Currently does nothing unless pid mass pair is already loaded.
-    * @param double TM
+    * @param TM
     */
     protected void setTargetM(double TM) {
         this._TM = TM;
@@ -239,7 +239,7 @@ public class Constants {
 
     /**
     * Access target Lund pid.
-    * @return int _TPID
+    * @return _TPID
     */
     protected int getTargetPID() {
         return this._TPID;
@@ -247,7 +247,7 @@ public class Constants {
 
     /**
     * Set Target Lund pid.
-    * @param int TPID
+    * @param TPID
     */
     protected void setTargetPID(int TPID) {
         this._TPID = TPID;
@@ -256,7 +256,7 @@ public class Constants {
 
     /**
     * Access hashmap of Lund pid to mass.
-    * @return HashMap<Integer,Double> _MMAP
+    * @return _MMAP
     */
     protected HashMap<Integer,Double> getMMap() {
         return this._MMAP;
@@ -264,7 +264,7 @@ public class Constants {
 
     /**
     * Set hashmap of Lund pid to mass.
-    * @param HashMap<Integer,Double> map
+    * @param map
     */
     protected void setMMap(HashMap<Integer,Double> map) {
         this._MMAP = map;
@@ -272,8 +272,8 @@ public class Constants {
 
     /** 
     * Add key value pair to hashmap of Lund pid to mass.
-    * @param int pid
-    * @param double mass
+    * @param pid
+    * @param mass
     */
     protected void addMMapEntry(int pid, double mass) {
         this._MMAP.put(pid,mass);
@@ -281,8 +281,8 @@ public class Constants {
 
     /** 
     * Get mass by Lund pid (charge does not matter).  Returns 0 if pid not found.
-    * @param int pid
-    * @return double mass
+    * @param pid
+    * @return mass
     */
     protected double getMass(int pid) {
         if (this._MMAP.containsKey(Math.abs(pid))) { return this._MMAP.get(Math.abs(pid)); }
@@ -291,7 +291,7 @@ public class Constants {
 
     /**
     * Access hashmap of Lund pid to charge.
-    * @return HashMap<Integer,Integer> _QMAP
+    * @return _QMAP
     */
     protected HashMap<Integer,Integer> getQMap() {
         return this._QMAP;
@@ -299,7 +299,7 @@ public class Constants {
 
     /**
     * Set hashmap of Lund pid to mass.
-    * @param HashMap<Integer,Integer> map
+    * @param map
     */
     protected void setQMap(HashMap<Integer,Integer> map) {
         this._QMAP = map;
@@ -307,8 +307,8 @@ public class Constants {
 
     /** 
     * Add key value pair to hashmap of Lund pid to charge.
-    * @param int pid
-    * @param int charge
+    * @param pid
+    * @param charge
     */
     protected void addQMapEntry(int pid, int q) {
         this._QMAP.put(pid,q);
@@ -316,8 +316,8 @@ public class Constants {
 
     /** 
     * Access charge by Lund pid.  Sets charge to 0 if not found in maps.
-    * @param int pid
-    * @return int charge
+    * @param pid
+    * @return charge
     */
     protected int getCharge(int pid) {
         int sign = 1;
@@ -328,7 +328,7 @@ public class Constants {
 
     /**
     * Access hashmap of Lund pid to name.
-    * @return HashMap<Integer,String> _NMAP
+    * @return _NMAP
     */
     protected HashMap<Integer,String> getNMap() {
             return this._NMAP;
@@ -336,7 +336,7 @@ public class Constants {
 
     /**
     * Set hashmap of Lund pid to name.
-    * @param HashMap<Integer,String> map
+    * @param map
     */
     protected void setNMap(HashMap<Integer,String> map) {
         this._NMAP = map;
@@ -344,8 +344,8 @@ public class Constants {
 
     /** 
     * Add key value pair to hashmap of Lund pid to name.
-    * @param int pid
-    * @param String n
+    * @param pid
+    * @param n
     */
     protected void addNMapEntry(int pid, String n) {
         this._NMAP.put(Math.abs(pid),n);
@@ -353,8 +353,8 @@ public class Constants {
 
     /** 
     * Access particle name by Lund pid.  Returns string pid if pid not found in name map.
-    * @param int pid
-    * @return String name
+    * @param pid
+    * @return name
     */
     protected String getName(int pid) {
         if (!this._NMAP.containsKey(Math.abs(pid))) { return Integer.toString(pid); }

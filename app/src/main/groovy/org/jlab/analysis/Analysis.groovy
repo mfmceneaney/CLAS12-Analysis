@@ -106,10 +106,10 @@ public class Analysis {
 
     /**
     * Constructor stub
-    * @param Constants constants
-    * @param ArrayList<Integer> decay
-    * @param String inPath
-    * @param String outPath
+    * @param constants
+    * @param decay
+    * @param inPath
+    * @param outPath
     */
     public Analysis(Constants constants, ArrayList<Integer> decay, String inPath, String outPath) {
 
@@ -133,12 +133,12 @@ public class Analysis {
     /**
     * Constructor stub with defaults for processing MC::Lund event (just pass empty list to decay parameter
     * or if you want to use a combo MC/REC event resett the decay for the kinematics object).
-    * @param Constants constants
-    * @param ArrayList<Integer> decay
-    * @param ArrayList<Integer> mcdecay
-    * @param ArrayList<Integer> parents
-    * @param String inPath
-    * @param String outPath
+    * @param constants
+    * @param decay
+    * @param mcdecay
+    * @param parents
+    * @param inPath
+    * @param outPath
     */
     public Analysis(Constants constants, ArrayList<Integer> decay, ArrayList<Integer> mcdecay, ArrayList<Integer> parents, String inPath, String outPath) {
 
@@ -162,7 +162,7 @@ public class Analysis {
 
     /**
     * Set constants object for analysis and propagate changes to kinematics object.
-    * @param Constants constants
+    * @param constants
     */
     protected void setConstants(Constants constants) {
 
@@ -172,7 +172,7 @@ public class Analysis {
 
     /**
     * Set target mass in constants and propagate changes to kinematics.
-    * @param double TM
+    * @param TM
     */
     protected void setTargetM(double TM) {
 
@@ -182,7 +182,7 @@ public class Analysis {
 
     /**
     * Set target lund pid in constants and propagate changes to kinematics.
-    * @param int pid
+    * @param pid
     */
     protected void setTargetPID(int pid) {
 
@@ -192,7 +192,7 @@ public class Analysis {
 
     /**
     * Set beam energy in constants and propagate changes to kinematics.
-    * @param double BE
+    * @param BE
     */
     protected void setBeamE(double BE) {
 
@@ -202,7 +202,7 @@ public class Analysis {
 
     /**
     * Access constants object for analysis.
-    * @return Constants _constants
+    * @return _constants
     */
     protected Constants getConstants() {
 
@@ -211,7 +211,7 @@ public class Analysis {
 
     /**
     * Set list of Lund pids for decay.  Parent particle is always first.
-    * @param ArrayList<Integer> decay
+    * @param decay
     */
     protected void setDecay(ArrayList<Integer> decay) {
 
@@ -232,7 +232,7 @@ public class Analysis {
 
     /**
     * Get list of decay lund pids.
-    * @return ArrayList<Integer> _decay
+    * @return _decay
     */
     protected ArrayList<Integer> getDecay() {
 
@@ -241,7 +241,7 @@ public class Analysis {
 
     /**
     * Set list of lists of indices in this._decay to group for kinematics.
-    * @param ArrayList<ArrayList<Integer>> groups
+    * @param groups
     */
     protected void setGroups(ArrayList<ArrayList<Integer>> groups) {
         
@@ -254,7 +254,7 @@ public class Analysis {
 
     /**
     * Get list of lists of indices in this._decay to group for kinematics.
-    * @return ArrayList<ArrayList<Integer>> _groups
+    * @return _groups
     */
     protected ArrayList<ArrayList<Integer>> getGroups() {
 
@@ -263,7 +263,7 @@ public class Analysis {
 
     /**
     * Set list of Lund pids for decay.  Parent particle is always first.
-    * @param ArrayList<Integer> decay
+    * @param decay
     */
     protected void setDecayAndGroups(ArrayList<Integer> decay, ArrayList<ArrayList<Integer>> groups) {
         
@@ -367,7 +367,7 @@ public class Analysis {
 
     /**
     * Set list of Lund pids for decay in MC::Lund bank.
-    * @param ArrayList<Integer> mcdecay
+    * @param mcdecay
     */
     protected void setMCDecay(ArrayList<Integer> mcdecay) {
 
@@ -378,7 +378,7 @@ public class Analysis {
 
     /**
     * Get list of decay lund pids for MC::Lund bank.
-    * @return ArrayList<Integer> _mcdecay
+    * @return _mcdecay
     */
     protected ArrayList<Integer> getMCDecay() {
 
@@ -387,7 +387,7 @@ public class Analysis {
 
     /**
     * Set list of Lund pids for parents in MC.  Do not include parent from this._decay.
-    * @param ArrayList<Integer> parents
+    * @param parents
     */
     protected void setParents(ArrayList<Integer> parents) {
 
@@ -397,7 +397,7 @@ public class Analysis {
 
     /**
     * Get list of parents lund pids in MC.
-    * @return ArrayList<Integer> _parents
+    * @return _parents
     */
     protected ArrayList<Integer> getParents() {
 
@@ -406,7 +406,7 @@ public class Analysis {
 
     /**
     * Set kinematics object for analysis.
-    * @param Kinematics kinematics
+    * @param kinematics
     */
     protected void setKinematics(Kinematics kinematics) {
 
@@ -416,7 +416,7 @@ public class Analysis {
 
     /**
     * Set hashmap of configuration variable names to lambda expressions for access.
-    * @param HashMap<String,ConfigVar> configs
+    * @param configs
     */
     protected void setConfigVars(HashMap<String,ConfigVar> configs) { 
 
@@ -425,7 +425,7 @@ public class Analysis {
 
     /**
     * Add hashmap of configuration variable names to lambda expressions for access.
-    * @param HashMap<String,ConfigVar> configs
+    * @param configs
     */
     protected void addConfigVars(HashMap<String,ConfigVar> configs) { 
 
@@ -434,8 +434,8 @@ public class Analysis {
 
     /**
     * Add configuration variable name and lambda expression for access.
-    * @param String name
-    * @param ConfigVar config
+    * @param name
+    * @param config
     */
     protected void addVar(String name, ConfigVar config) { 
 
@@ -444,7 +444,7 @@ public class Analysis {
 
     /**
     * Set hashmap of kinematic names lambda expressions for computation.
-    * @param HashMap<String,SIDISVar> vars
+    * @param vars
     */
     protected void setSIDISVars(HashMap<String,SIDISVar> vars) { 
 
@@ -453,7 +453,7 @@ public class Analysis {
 
     /**
     * Add hashmap of kinematic names lambda expressions for computation.
-    * @param HashMap<String,SIDISVar> vars
+    * @param vars
     */
     protected void addSIDISVars(HashMap<String,SIDISVar> vars) { 
 
@@ -462,8 +462,8 @@ public class Analysis {
 
     /**
     * Add kinematic name and lambda expression for computation.
-    * @param String name
-    * @param SIDISVar var
+    * @param name
+    * @param var
     */
     protected void addVar(String name, SIDISVar var) { 
 
@@ -472,7 +472,7 @@ public class Analysis {
 
     /**
     * Set hashmap of kinematic names to boolean .cut(double) lambda expression cuts.
-    * @param HashMap<String,Cut> cuts
+    * @param cuts
     */
     protected void setCuts(HashMap<String,Cut> cuts) { 
 
@@ -481,7 +481,7 @@ public class Analysis {
 
     /**
     * Add entries from ahashmap of kinematic names to min, max cuts.
-    * @param HashMap<String, Cut> cuts
+    * @param cuts
     */
     protected void addCuts(HashMap<String, Cut> cuts) { 
 
@@ -490,8 +490,8 @@ public class Analysis {
 
     /**
     * Add entries from a hashmap of kinematic names to min, max cuts.
-    * @param String name
-    * @param Cut cut
+    * @param name
+    * @param cut
     */
     protected void addCut(String name, Cut cut) { 
 
@@ -500,7 +500,7 @@ public class Analysis {
 
     /**
     * Access kinematics object for analysis.
-    * @return Kinematics _kinematics
+    * @return _kinematics
     */
     protected Kinematics getKinematics() {
 
@@ -509,7 +509,7 @@ public class Analysis {
 
     /**
     * Access string array for names of default kinematic variables: eg. Q2, nu, W, y, x.
-    * @return String[] _defaults
+    * @return _defaults
     */
     protected String[] getDefaults() {
 
@@ -518,7 +518,7 @@ public class Analysis {
 
     /**
     * Access string array for names of default individual particles' kinematics.
-    * @return String[] _ikin
+    * @return _ikin
     */
     protected String[] getIndivKin() {
 
@@ -527,7 +527,7 @@ public class Analysis {
 
     /**
     * Access string array for names of default grouped particles' kinematics.
-    * @return String[] _gkin
+    * @return _gkin
     */
     protected String[] getGroupKin() {
 
@@ -536,7 +536,7 @@ public class Analysis {
 
     /**
     * Access hashmap of configuration variable names lambda expressions for access.
-    * @return HashMap<String,ConfigVar> _configs
+    * @return _configs
     */
     protected HashMap<String,ConfigVar> getConfigVars() {
 
@@ -545,7 +545,7 @@ public class Analysis {
 
     /**
     * Access hashmap of kinematic names lambda expressions for computation.
-    * @return HashMap<String,SIDISVar> _vars
+    * @return _vars
     */
     protected HashMap<String,SIDISVar> getSIDISVars() {
 
@@ -554,7 +554,7 @@ public class Analysis {
 
     /**
     * Access hashmap of kinematic names to min, max cuts.
-    * @return HashMap<String, Cut> _cuts
+    * @return _cuts
     */
     protected HashMap<String, Cut> getCuts() { 
 
@@ -563,7 +563,7 @@ public class Analysis {
 
     /**
     * Set method for CLASQADB. 
-    * @param String qaMethod
+    * @param qaMethod
     */
     protected void setQAMethod(String qaMethod) {
 
@@ -574,7 +574,7 @@ public class Analysis {
 
     /**
     * Get method for CLASQADB.
-    * @return String qaMethod
+    * @return qaMethod
     */
     protected String getQAMethod() {
 
@@ -583,7 +583,7 @@ public class Analysis {
 
     /**
     * Set input file path for analysis.
-    * @param String inPath
+    * @param inPath
     */
     protected void setInPath(String inPath) {
 
@@ -592,7 +592,7 @@ public class Analysis {
 
     /**
     * Access string for input file path.
-    * @return String _inFiles
+    * @return _inFiles
     */
     protected String getInPath() {
 
@@ -601,7 +601,7 @@ public class Analysis {
 
     /**
     * Set output path for analysis.
-    * @param String outPath
+    * @param outPath
     */
     protected void setOutPath(String outPath) {
 
@@ -610,7 +610,7 @@ public class Analysis {
 
     /**
     * Access string for output file path.
-    * @return String _outPath
+    * @return _outPath
     */
     protected String getOutPath() {
 
@@ -619,7 +619,7 @@ public class Analysis {
 
     /**
     * Set tree name for output TNTuple.
-    * @param String treeName
+    * @param treeName
     */
     protected void setTreeName(String treeName) {
 
@@ -628,7 +628,7 @@ public class Analysis {
 
     /**
     * Access tree name for output TNTuple.
-    * @return String _treeName
+    * @return _treeName
     */
     protected String getTreeName() {
 
@@ -637,7 +637,7 @@ public class Analysis {
 
     /**
     * Set max mass limit for events to add.
-    * @param double maxMass
+    * @param maxMass
     */
     protected void setMaxMass(double maxMass) {
 
@@ -647,7 +647,7 @@ public class Analysis {
 
     /**
     * Set min xF limit for events to add.
-    * @param double minxF
+    * @param minxF
     */
     protected void setMinxF(double minxF) {
 
@@ -657,7 +657,7 @@ public class Analysis {
 
     /**
     * Set max number of files for analysis to process.
-    * @param int n_files
+    * @param n_files
     */
     protected void setNFiles(int n_files) {
 
@@ -667,7 +667,7 @@ public class Analysis {
     /**
     * Set max number of events for analysis to add to tree.
     * Note: The actual number of events looked at may be greater.
-    * @param int n_events
+    * @param n_events
     */
     protected void setNEvents(int n_events) {
 
@@ -676,7 +676,7 @@ public class Analysis {
 
     /**
     * Set number of events to split outfiles on.
-    * @param int split
+    * @param split
     */
     protected void setSplit(int split) {
 
@@ -685,7 +685,7 @@ public class Analysis {
 
     /**
     * Set boolean for requiring pid tag in event.
-    * @param boolean require_tag
+    * @param require_tag
     */
     protected void setTag(boolean require_tag) {
 
@@ -694,7 +694,7 @@ public class Analysis {
 
     /**
     * Set boolean for requiring pid tag(s) in event and lund pid(s) to tag.
-    * @param int... tag_pid
+    * @param... tag_pid
     */
     protected void setTag(int... tag_pids) {
 
@@ -705,7 +705,7 @@ public class Analysis {
 
     /**
     * Set boolean for requiring pid tag(s) in event and lund pid(s) to tag.
-    * @param ArrayList<Integer> tag_pid
+    * @param tag_pid
     */
     protected void setTag(ArrayList<Integer> tag_pids) {
 
@@ -715,7 +715,7 @@ public class Analysis {
 
     /**
     * Set boolean for requiring exclusive tag in event.
-    * @param boolean require_ex
+    * @param require_ex
     */
     protected void setExclusive(boolean require_ex) {
 
@@ -725,8 +725,8 @@ public class Analysis {
 
     /**
     * Set boolean for requiring pid tag(s) in event and lund pid(s) to tag.
-    * @param ArrayList<Integer> tag_pids
-    * @param ArrayList<Integer> filters
+    * @param tag_pids
+    * @param filters
     */
     protected void setPidFilter(ArrayList<Integer> tag_pids, ArrayList<Integer> filters) {
 
@@ -736,8 +736,8 @@ public class Analysis {
 
     /**
     * Filter list of particles by pid counts.
-    * @param  ArrayList<DecayProduct> list
-    * @return boolean filter
+    * @param list
+    * @return filter
     */
     protected boolean filter(ArrayList<DecayProduct> list) {
 
@@ -753,7 +753,7 @@ public class Analysis {
 
     /**
     * Set boolean for requiring particle identification by pid instead of charge.
-    * @param boolean require_pid
+    * @param require_pid
     */
     protected void setRequirePID(boolean require_pid) {
 
@@ -762,7 +762,7 @@ public class Analysis {
 
     /**
     * Set boolean for requiring scattered electron in event and propagate changes to kinematics.
-    * @param boolean require_e
+    * @param require_e
     */
     protected void setRequireE(boolean require_e) {
 
@@ -772,7 +772,7 @@ public class Analysis {
 
     /**
     * Set boolean for strict pid to mass assignment in kinematics calculations.
-    * @param boolean strict
+    * @param strict
     */
     protected void setStrict(boolean strict) {
 
@@ -782,7 +782,7 @@ public class Analysis {
 
     /**
     * Set boolean for adding event number to TNTuple and propagate changes to kinematics.
-    * @param boolean addEvNum
+    * @param addEvNum
     */
     protected void setAddEvNum(boolean addEvNum) {
 
@@ -792,7 +792,7 @@ public class Analysis {
 
     /**
     * Set boolean for adding run number to TNTuple and propagate changes to kinematics.
-    * @param boolean addRunNum
+    * @param addRunNum
     */
     protected void setAddRunNum(boolean addRunNum) {
 
@@ -802,7 +802,7 @@ public class Analysis {
 
     /**
     * Set boolean for adding ML predictions and labels to TNTuple and propagate changes to kinematics.
-    * @param boolean addEvNum
+    * @param addEvNum
     */
     protected void setAddML(boolean addML) {
 
@@ -814,7 +814,7 @@ public class Analysis {
     /**
     * Set boolean for including lambda analysis kinematics and propagate changes to kinematics.
     * Only applies for 2 particle decays.
-    * @param boolean LK
+    * @param LK
     */
     protected void setLambdaKin(boolean LK) {
 
@@ -825,7 +825,7 @@ public class Analysis {
     /**
     * Set boolean for including more individual particle kinematics (relevant for dihadron analysis) 
     * and propagate changes to kinematics.
-    * @param boolean IK
+    * @param IK
     */
     protected void setIndivKin(boolean IK) {
 
@@ -836,7 +836,7 @@ public class Analysis {
     /**
     * Set boolean for using clasqaDB cuts 
     * @see <a href="https://github.com/JeffersonLab/clasqaDB">clasqaDB GitHub repository</a>.
-    * @param boolean QA
+    * @param QA
     */
     protected void setQA(boolean QA) {
 
@@ -847,7 +847,7 @@ public class Analysis {
     /**
     * Set boolean for requiring fiducial cuts 
     * @see <a href="https://github.com/c-dilks/dispin/tree/master/src">c-dilks GitHub dispin repository</a>. 
-    * @param boolean FC
+    * @param FC
     */
     protected void setFC(boolean FC) {
 
@@ -857,8 +857,8 @@ public class Analysis {
     /**
     * Set boolean for requiring fiducial cuts 
     * @see <a href="https://github.com/c-dilks/dispin/tree/master/src">c-dilks GitHub dispin repository</a>.
-    * @param boolean FC
-    * @param int level
+    * @param FC
+    * @param level
     */
     protected void setFCLevel(boolean FC, int level) {
 
@@ -868,7 +868,7 @@ public class Analysis {
 
     /**
     * Set boolean for requiring matching decay in mc.
-    * @param boolean MC
+    * @param MC
     */
     protected void setMatch(boolean match) {//TODO: Make this parameter setting less fragile
 
@@ -880,7 +880,7 @@ public class Analysis {
 
     /**
     * Set boolean for using combo of MC::Lund and REC::Particle particles for kinematics.
-    * @param boolean combo
+    * @param combo
     */
     protected void setCombo(boolean combo) {
 
@@ -892,7 +892,7 @@ public class Analysis {
 
     /**
     * Set boolean for using MC::Lund bank instead of REC::Particle.  Also applies for beam for kinematics when using combo event.
-    * @param boolean MC
+    * @param MC
     */
     protected void setUseMC(boolean useMC) {
 
@@ -902,7 +902,7 @@ public class Analysis {
     /**
     * Set int for # of events processed after which to notify how many events have been added
     * out of total processed so far.
-    * @param int notify
+    * @param notify
     */
     protected void setNotify(int notify) {
 
@@ -911,7 +911,7 @@ public class Analysis {
 
     /**
     * Include particle vertices in tree.
-    * @param boolean addVertices
+    * @param addVertices
     */
     protected void setAddVertices(boolean addVertices) {
 
@@ -920,7 +920,7 @@ public class Analysis {
 
     /**
     * Include particle angles (in degrees) in tree.
-    * @param boolean addAngles
+    * @param addAngles
     */
     protected void setAddAngles(boolean addAngles) {
 
@@ -932,7 +932,7 @@ public class Analysis {
     * You may want to override and customize this method.
     * Make sure you exactly mirror the order of variables in your NTuple
     * when adding to the data array.
-    * @param HipoReader reader
+    * @param reader
     */
     protected void processEvents(HipoReader reader) throws InterruptedException {
 
@@ -1065,7 +1065,7 @@ public class Analysis {
     * You may want to override and customize this method.
     * Make sure you exactly mirror the order of variables in your NTuple
     * when adding to the data array.
-    * @param HipoReader reader
+    * @param reader
     */
     protected void processMCEvents(HipoReader reader) throws InterruptedException {
 
@@ -1168,7 +1168,7 @@ public class Analysis {
     * You may want to override and customize this method.
     * Make sure you exactly mirror the order of variables in your NTuple
     * when adding to the data array.
-    * @param HipoReader reader
+    * @param reader
     */
     protected void processComboEvents(HipoReader reader) throws InterruptedException {
 
@@ -1289,7 +1289,7 @@ public class Analysis {
     * You may want to override and customize this method.
     * Make sure you exactly mirror the order of variables in your NTuple
     * when adding to the data array.
-    * @param HipoReader reader
+    * @param reader
     */
     protected void processMatchEvents(HipoReader reader) throws InterruptedException {
 
@@ -1562,7 +1562,7 @@ public class Analysis {
     * data events added to output or event/run number (TODO), modifiable via command
     * line argument.
     *
-    * @param int num
+    * @param num
     */
     protected void splitOutFile(int num) {
 
@@ -1646,7 +1646,7 @@ public class Analysis {
 
     /**
     * Loop through events in input files and write to output files.
-    * @param String files
+    * @param files
     */
     protected void processFiles(String files) throws InterruptedException {
 
