@@ -24,7 +24,6 @@ release = '1.0.0'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'breathe',
     'sphinx.ext.mathjax',
     'sphinx.ext.duration',
     'sphinx.ext.doctest',
