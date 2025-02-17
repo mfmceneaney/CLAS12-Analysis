@@ -10,9 +10,10 @@ read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
 if read_the_docs_build or True:
 
     # Run `groovydoc`
-    input_files = '../app/src/main/groovy/org/jlab/analysis/*.groovy'
+    input_files = '../app/src/main/groovy'
     output_dir = '_static'
-    #subprocess.call('groovydoc -d '+os.path.join(output_dir)+' '+os.path.join(input_files), shell=True) #NOTE: Add these in git.
+    package_name = 'org.jlab.analysis'
+    #subprocess.call('groovydoc -sourcepath '+os.path.join(input_files)+' -d '+os.path.join(output_dir)+' '+package_name, shell=True) #NOTE: Add these in git.
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
