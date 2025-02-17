@@ -18,10 +18,10 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven {
-    	  url "https://clasweb.jlab.org/clas12maven"
+    	  url = "https://clasweb.jlab.org/clas12maven"
     }
     maven {
-    	  url "https://clasweb.jlab.org/jhep/maven"
+    	  url = "https://clasweb.jlab.org/jhep/maven"
     }
     flatDir {
         dirs '../clasqaDB'
