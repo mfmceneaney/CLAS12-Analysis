@@ -47,11 +47,12 @@ public class MCDecays {
 
     /** 
     * Constructor stub
-    * @param decay - integer list [daughters] for decay chain
-    * @param parents - integer list [parents] for parent in decay
-    * @param reader
-    * @param event
-    * @param constants
+    * @param decay      Integer list of daughters for decay chain
+    * @param parents    Integer list of parents for decay chain
+    * @param dpMap      Integer list to map daughter to parent indices
+    * @param reader     HIPO file reader
+    * @param event      HIPO event
+    * @param constants  Physics constants object
     */
     public MCDecays(ArrayList<Integer> decay, ArrayList<Integer> parents, ArrayList<Integer> dpMap, HipoReader reader, Event event, Constants constants) {
 
@@ -114,7 +115,7 @@ public class MCDecays {
     }
 
     /**
-    * Access full particle list for event.
+    * Set and access full particle list for event.
     * @return _particleList
     */
     protected ArrayList<DecayProduct> getFullParticleList() {
@@ -169,7 +170,7 @@ public class MCDecays {
     /**
     * Get index to index map to match REC::Particle bank entries to MC::Lund (final state) bank entries.
     * Note that map entries map the actual index in REC::Particle bank (0->nparticles-1) (same as p_rec.index()) to the actual index (0->nparticles-1) in MC::Lund (not the same as p_mc.index())
-    * @param fullRecParticleList
+    * @param fullRecParticleList  Full list of reconstructed particle for an event
     */
     protected void setMatchingMap(ArrayList<DecayProduct> fullRecParticleList) {
 

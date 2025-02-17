@@ -35,6 +35,8 @@ public class Parser {
 
     /**
     * Print out author, contact, version, etc.
+    *
+    * @return Boolean flag
     */
     protected boolean version() {
 
@@ -47,7 +49,11 @@ public class Parser {
     }
 
     /**
-    * Print out available kinematic variables
+    * Print out available kinematic variables for an Analysis
+    *
+    * @param analysis
+    *
+    * @return Boolean flag
     */
     protected boolean kinematics(Analysis analysis) {
 
@@ -60,6 +66,8 @@ public class Parser {
 
     /**
     * Print out available command line options with descriptions.
+    *
+    * @return Boolean flag
     */
     protected boolean options() {
 
@@ -120,6 +128,10 @@ public class Parser {
 
     /**
     * Print out available Lund pid to name, charge, mass maps.
+    *
+    * @param analysis
+    *
+    * @return Boolean flag
     */
     protected boolean maps(Analysis analysis) {
         System.out.println(" Available PID Maps:");
@@ -139,8 +151,9 @@ public class Parser {
     * Parse and evaluate command line arguments (or lack thereof).
     * Returns true if main has enough correctly formatted arguments to run smoothly.
     * You will probably want to customize this for less general analyses.
-    * @param args
-    * @return ready
+    * @param args      Command line arguments
+    * @param analysis  Analysis for which to parse command line arguments
+    * @return Boolean flag
     */
     protected boolean parse(String[] args, Analysis analysis) throws IOException {
 

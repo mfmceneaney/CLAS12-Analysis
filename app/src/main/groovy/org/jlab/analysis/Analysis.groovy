@@ -132,7 +132,7 @@ public class Analysis {
 
     /**
     * Constructor stub with defaults for processing MC::Lund event (just pass empty list to decay parameter
-    * or if you want to use a combo MC/REC event resett the decay for the kinematics object).
+    * or if you want to use a combo MC/REC event reset the decay for the kinematics object).
     * @param constants
     * @param decay
     * @param mcdecay
