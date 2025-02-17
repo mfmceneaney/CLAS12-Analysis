@@ -27,12 +27,16 @@ import org.jlab.jroot.TNtuple;
 public class Main {
 
     /**
-    * Main method processes command line arguments such as paths for input/output file/directory,
-    * limited kinematic cuts, and charge/pid identification requirements.
-    * Use the <code>-h/--h/-help/--help</code> options for full detail or check out the <code>docs/groovy</code> folder.
+    * Process command line arguments such as paths for input/output file/directory,
+    * limited kinematic cuts, and charge/pid identification requirements.  Then, run an analysis that identifies
+    * all unique particle combinations corresponding to the given final state in each HIPO events and
+    * outputs particle information and kinematics to a ROOT TNTuple.  Use the <code>-h/--h/-help/--help</code>
+    * options when executing the application for full detail or check out the <code>docs/</code> folder.
     * You will probably want to customize this for less general analyses.
     *
-    * @param String[] args
+    * @param args  Command line arguments
+    * @throws IOException
+    * @throws InterruptedException
     */
     public static void main(String[] args) throws IOException, InterruptedException {
         Analysis analysis = new Analysis();

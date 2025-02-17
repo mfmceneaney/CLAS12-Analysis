@@ -43,13 +43,13 @@ public class Decays {
 
     /** 
     * Default constructor
-    * @param ArrayList<Integer> decay
-    * @param HipoReader reader
-    * @param Integer runnum
-    * @param Event event
-    * @param Constants constants
-    * @param FiducialCuts FC
-    * @param boolean requireFC
+    * @param decay
+    * @param reader
+    * @param runnum
+    * @param event
+    * @param constants
+    * @param FC
+    * @param requireFC
     */
     public Decays(ArrayList<Integer> decay, HipoReader reader, Integer runnum, Event event, Constants constants, FiducialCuts FC, boolean requireFC) {
 
@@ -139,7 +139,7 @@ public class Decays {
 
     /**
     * Access full particle list for event.
-    * @return ArrayList<DecayProduct> _particleList
+    * @return _particleList
     */
     protected ArrayList<DecayProduct> getFullParticleList() {
 
@@ -210,7 +210,7 @@ public class Decays {
 
     /**
     * Access particle list for event.
-    * @return ArrayList<DecayProduct> _particleList
+    * @return _particleList
     */
     protected ArrayList<DecayProduct> getParticleList() {
 
@@ -237,7 +237,7 @@ public class Decays {
 
     /**
     * Access list of all possible decay particle combinations identified by Lund pid.
-    * @return ArrayList<ArrayList<DecayProduct>> _pidList
+    * @return _pidList
     */
     protected ArrayList<DecayProduct> getPidList() {
 
@@ -250,8 +250,8 @@ public class Decays {
     * Recursive helper function to create combo list for all possible decay particle combinations in event.
     * Relies on this._decay and this._pidList (passed as plist argument the first time) 
     * being sorted.  If these are not sorted this will NOT work!
-    * @param int dIndex
-    * @param ArrayList<DecayProduct> oldlist
+    * @param dIndex
+    * @param oldlist
     */
     protected void setComboPidList(int dIndex, ArrayList<DecayProduct> plist, ArrayList<DecayProduct> oldlist) {
 
@@ -269,7 +269,7 @@ public class Decays {
 
     /**
     * Access list of all possible decay particle combinations identified by Lund pid.
-    * @return ArrayList<ArrayList<DecayProduct>> _comboPidList
+    * @return _comboPidList
     */
     protected ArrayList<ArrayList<DecayProduct>> getComboPidList() {
 
@@ -284,8 +284,8 @@ public class Decays {
     /**
     * Merge list of all unique decay particle combinations identified by Lund pid
     * with a combo list from another decay object.
-    * @param ArrayList<ArrayList<DecayProduct>>  mergeList
-    * @return ArrayList<ArrayList<DecayProduct>> mergedComboPidList
+    * @param mergeList
+    * @return mergedComboPidList
     */
     protected ArrayList<ArrayList<DecayProduct>> mergeComboPidList(ArrayList<ArrayList<DecayProduct>> mergeList) {
 
@@ -306,9 +306,9 @@ public class Decays {
     * using a mc matching map of REC::Particle to MC::Lund bank indices (not Lund indices)
     * and the full list of MC::Lund particles.  This essentially duplicates each
     * particle in each combo list with an mc counterpart appended to the end of the combo list.
-    * @param LinkedHashMap<Integer,Integer> recMatchingMap
-    * @param ArrayList<DecayProduct> mcFullParticleList
-    * @return ArrayList<ArrayList<DecayProduct>> mergedComboPidList 
+    * @param recMatchingMap
+    * @param mcFullParticleList
+    * @return mergedComboPidList 
     */
     protected ArrayList<ArrayList<DecayProduct>> mergeComboPidList(LinkedHashMap<Integer,Integer> recMatchingMap, ArrayList<DecayProduct> mcFullParticleList) {
 
@@ -405,7 +405,7 @@ public class Decays {
 
     /**
     * Access list of all possible decay particle combinations identified by charge.
-    * @return ArrayList<ArrayList<DecayProduct>> _chargeList
+    * @return _chargeList
     */
     protected ArrayList<DecayProduct> getChargeList() {
 
@@ -418,8 +418,8 @@ public class Decays {
     * Recursive helper function to create combo list for all possible decay particle combinations in event.
     * Relies on this._charges and this._chargeList (passed as plist argument the first time) 
     * being sorted.  If these are not sorted this will NOT work!
-    * @param int dIndex
-    * @param ArrayList<DecayProduct> oldlist
+    * @param dIndex
+    * @param oldlist
     */
     protected void setComboChargeList(int dIndex, ArrayList<DecayProduct> plist, ArrayList<DecayProduct> oldlist) {
 
@@ -437,7 +437,7 @@ public class Decays {
 
     /**
     * Access list of all possible decay particle combinations identified by charge.
-    * @return ArrayList<ArrayList<DecayProduct>> _comboChargeList
+    * @return _comboChargeList
     */
     protected ArrayList<ArrayList<DecayProduct>> getComboChargeList() {
 
@@ -452,8 +452,8 @@ public class Decays {
     /**
     * Merge list of all unique decay particle combinations identified by charge
     * with a combo list from another decay object.
-    * @param ArrayList<ArrayList<DecayProduct>>  mergeList
-    * @return ArrayList<ArrayList<DecayProduct>> mergedComboPidList
+    * @param mergeList
+    * @return mergedComboPidList
     */
     protected ArrayList<ArrayList<DecayProduct>> mergeComboChargeList(ArrayList<ArrayList<DecayProduct>> mergeList) {
 
@@ -474,9 +474,9 @@ public class Decays {
     * using a mc matching map of REC::Particle to MC::Lund bank indices (not Lund indices)
     * and the full list of MC::Lund particles.  This essentially duplicates each
     * particle in each combo list with an mc counterpart appended to the end of the combo list.
-    * @param LinkedHashMap<Integer,Integer> recMatchingMap
-    * @param ArrayList<DecayProduct> mcFullParticleList
-    * @return ArrayList<ArrayList<DecayProduct>> mergedComboPidList
+    * @param recMatchingMap
+    * @param mcFullParticleList
+    * @return mergedComboPidList
     */
     protected ArrayList<ArrayList<DecayProduct>> mergeComboChargeList(LinkedHashMap<Integer,Integer> recMatchingMap, ArrayList<DecayProduct> mcFullParticleList) {
 
@@ -501,7 +501,7 @@ public class Decays {
      /**
     * Find scattered beam with default limits on absolute value of chi2pid
     * and on the status: |chi2pid|<3 && stat<=-2000.
-    * @return DecayProduct beam
+    * @return beam
     */
     protected DecayProduct getScatteredBeam() {
 
@@ -519,9 +519,9 @@ public class Decays {
     * and on the staus.  status limit looks for particles with status 
     * higher/lower than the limit depending on whether the status is 
     * positive/negative.
-    * @param float chi2pid
-    * @param int stat
-    * @return DecayProduct beam
+    * @param chi2pid
+    * @param stat
+    * @return beam
     */
     protected DecayProduct getScatteredBeam(float chi2pid, int stat) {
 
