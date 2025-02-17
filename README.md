@@ -15,10 +15,11 @@ This tool only reads HIPO files (see [CLAS12-Offline-Software](https://github.co
 
 ## Pre-requisites
 To build the project you will need the following additional tools:
-* groovy
-* gradle
-* scons
-* maven
+* jdk==17.0.*
+* groovy==4.0.*
+* gradle==8.12
+* scons>=4.5.2
+* maven==3.9.9
 
 Note that this project is under active development and has only been tested for jdk/17.0.2 and groovy 4.0.3.  On ifarm you may need to module load this java version.  You may also need to update the library versions in `gradle/libs.versions.toml` and the java version in `app/build.gradle`.
 
