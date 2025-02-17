@@ -1,5 +1,6 @@
 # CLAS12-Analysis
-Generic analysis for CLAS12 in groovy
+Generic analysis for CLAS12 in groovy to read HIPO events selecting all unique final state particle combinations corresponding to a given topology,
+compute generic event-level kinematics commonly used for SIDIS analyses, and output the selected combinations and their respective kinematics to ROOT TNTuples.
 
 ## Dependencies
 * [CLAS12-Offline-Software](https://github.com/JeffersonLab/clas12-offline-software)
@@ -54,7 +55,7 @@ Finally, you might have to run the following so that gradle can jobs can read yo
 chmod +r ~/.gradle/daemon/<version>/registry.bin
 ```
 
-However, you can run into thread permissions errors running gradle from `an-groovy` in jobs so it is better to just set `$CLASSPATH` manually like so (borrowed from `bin/clara-shell` script in `$CLARA_HOME`):
+However, you can run into thread permissions errors running gradle from the `bin/an-groovy` script in SLURM jobs so it is better to just set `$CLASSPATH` manually like so (borrowed from `bin/clara-shell` script in `$CLARA_HOME`):
 
 ```bash
 # set default classpath
@@ -75,12 +76,12 @@ if [ -z "${CLASSPATH}" ]; then
     export CLASSPATH
 fi
 ```
-
-Then you can just use `$C12ANALYSIS/bin/run.sh` which runs directly from groovy.
+and run from `$C12ANALYSIS/bin/run.sh`.
 
 ## Getting Started
-You should now be able to run the ```an-groovy``` from the command line and see some version info pop up.
-Use ```an-groovy -h/--help``` to see a list of available options with basic descriptions.
+You should now be able to run the application with `$C12ANALYSIS/bin/run.sh` which runs directly from groovy.
+Some version info will pop up if you do not supply any arguments.
+Use the `-h` or  `--help` option to see a detailed list of all available command line options and arguments.
 
 The main purpose of this library is being able to compute kinematics for all unique combinations of a 
 given set of particles (e.g. proton pion pairs) without the hassle of rewriting your analysis and plugging in different numbers every time.
@@ -92,10 +93,11 @@ You can also follow the examples to see how you might add customized kinematic v
 an analysis or manually select other options.  Please note the Constants class is not necessarily up to date and you should be especially careful to correctly set the beam energy and target mass.
 
 ### If you already have J2ROOT and CLASQADB setup
-Assuming your ```$CLASSPATH``` is setup correctly you can instead run:
+Assuming your ```$CLASSPATH``` is setup correctly you can just run:
 ```bash
 $C12ANALYSIS/bin/run.sh --help
 ```
+without further setup.
 
 #
 
