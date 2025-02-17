@@ -8,8 +8,17 @@ import os, subprocess
 read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
 
 if read_the_docs_build or True:
+
+    # Install groovy
+    print("INFO: Installing sdk...")
+    subprocess.call('curl -s "https://get.sdkman.io" | bash', shell=True)#NOTE: Check download instructions on SDK page.
+    print("INFO: Installing groovy with sdk...")
+    subprocess.call('source "$HOME/.sdkman/bin/sdkman-init.sh; sdk install groovy', shell=True)
+
+    # Run `groovydoc`
     input_files = '../app/src/main/groovy/org/jlab/analysis/*.groovy'
     output_dir = '_static'
+    print("INFO: Creating groovy docs...")
     subprocess.call('groovydoc -d '+os.path.join(output_dir)+' '+os.path.join(input_files), shell=True)
 
 # -- Project information -----------------------------------------------------
