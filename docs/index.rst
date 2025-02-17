@@ -17,7 +17,7 @@ combinations to `ROOT <https://root.cern.ch>`_ TTrees.
 Contents
 --------
 
-`Groovy docs <../_static/index.html>`_
+`Groovy docs <_static/index.html>`_
 
 .. include:: ../README.md
    :parser: myst_parser.sphinx_
