@@ -191,6 +191,26 @@ public class Analysis {
     }
 
     /**
+    * Set target spin lorentz vector in kinematics.
+    * @param lv_s
+    */
+    protected void setTargetSpinLV(LorentzVector lv_s) {
+
+        this._kinematics.setTargetSpinLV(lv_s);
+    }
+
+    /**
+    * Set sign of target spin lorentz vector in kinematics.
+    * @param sign
+    */
+    protected void setTargetSpinLVSign(int sign) {
+
+        LorentzVector lv_s = new LorentzVector(this._kinematics.getTargetSpinLV());
+        if (sign<0) lv_s.invert();
+        this._kinematics.setTargetSpinLV(lv_s);
+    }
+
+    /**
     * Set beam energy in constants and propagate changes to kinematics.
     * @param BE
     */

@@ -7,6 +7,7 @@ import groovy.transform.CompileStatic;
 import java.io.*;
 import java.util.*;
 import java.text.*;
+import org.jlab.jnp.physics.LorentzVector;
 
 /**
 * Encapsulates most of the command line parsing and messaging for the Analysis class.
@@ -85,6 +86,8 @@ public class Parser {
         System.out.println("\t-be   [float]  : Beam energy (GeV) for kinematics   (def: 10.6)");
         System.out.println("\t-tm   [float]  : Target mass (GeV) for kinematics   (def: 0.9383)");
         System.out.println("\t-tpid [int]    : Target Lund pid for kinematics     (def: 2212)");
+        System.out.println("\t-tspin [float..] : Target spin vector components for kinematics (def: 0 0 1)");
+        System.out.println("\t-tspin_sign [int] : Target spin vector sign (def: 1)");
         System.out.println("\t-qa            : Use clasqaDB check");
         System.out.println("\t-qm   [string] : Specify clasqaDB check method (def: OkForAsymmetry)");
         System.out.println("\t-fc   [int]    : Use fiducial volume cuts (0-loose, 1-med, 2-tight)");
@@ -431,6 +434,25 @@ public class Parser {
                 // Target Mass option
                 case "-tpid":
                     if (args.length>2) { try { analysis.setTargetPID(Integer.parseInt(args[i+1])); valid_opt = true; break; }
+                    catch (Exception exception) { return this.help(); } }
+
+                // Target spin vector option
+                case "-tspin":
+                    if (args.length>2) {
+                        try {
+                            double px = Float.parseFloat(args[i+1]);
+                            double py = Float.parseFloat(args[i+2]);
+                            double pz = Float.parseFloat(args[i+3]);
+                            LorentzVector lv_s = new LorentzVector();
+                            lv_s.setPxPyPzM(px,py,pz,(double)0.0);
+                            analysis.setTargetSpinLV(lv_s);
+                            valid_opt = true; break;
+                        }
+                    catch (Exception exception) { return this.help(); } }
+
+                // Target spin vector sign option
+                case "-tspin_sign":
+                    if (args.length>2) { try { analysis.setTargetSpinLVSign(Integer.parseInt(args[i+1])); valid_opt = true; break; }
                     catch (Exception exception) { return this.help(); } }
 
                 // xF cut option
