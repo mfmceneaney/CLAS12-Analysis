@@ -45,6 +45,9 @@ dependencies {
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-csv
+    implementation("org.apache.commons:commons-csv:1.14.0")
+
     // CLAS12 libraries
     implementation 'org.jlab.coat:coat-libs:11.1.1-SNAPSHOT' // from https://clasweb.jlab.org/clas12maven/
     implementation 'org.jlab.jnp:jnp-hipo4:4.1-SNAPSHOT'     // From mavenLocal()
