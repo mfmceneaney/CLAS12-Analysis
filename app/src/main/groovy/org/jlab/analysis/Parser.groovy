@@ -455,6 +455,21 @@ public class Parser {
                     if (args.length>2) { try { analysis.setTargetSpinLVSign(Integer.parseInt(args[i+1])); valid_opt = true; break; }
                     catch (Exception exception) { return this.help(); } }
 
+                // Target polarizations by run csv run key option
+                case "-tpol_csv_run_key":
+                    if (args.length>2) { try { analysis.setTPolCSVRunKey((String)args[i+1]); valid_opt = true; break; }
+                    catch (Exception exception) { return this.help(); } }
+
+                // Target polarizations by run csv run key option
+                case "-tpol_csv_pol_key":
+                    if (args.length>2) { try { analysis.setTPolCSVPolKey((String)args[i+1]); valid_opt = true; break; }
+                    catch (Exception exception) { return this.help(); } }
+
+                // Target polarizations by run csv option
+                case "-tpol_csv":
+                    if (args.length>2) { try { analysis.setTPolCSV((String)args[i+1]); valid_opt = true; break; }
+                    catch (Exception exception) { return this.help(); } }
+
                 // xF cut option
                 case "-xF":
                     if (args.length>2) { try { analysis.setMinxF(Float.parseFloat(args[i+1])); valid_opt = true; break; }
