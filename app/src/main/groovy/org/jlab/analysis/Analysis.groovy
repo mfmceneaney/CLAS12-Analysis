@@ -821,6 +821,15 @@ public class Analysis {
     }
 
     /**
+    * Set target spin sign to record for MC samples.
+    * @param tspin_sign
+    */
+    protected void setTSpinSign(int tspin_sign) {
+
+        this._kinematics.setTSpinSign(tspin_sign);
+    }
+
+    /**
     * Set boolean for including lambda analysis kinematics and propagate changes to kinematics.
     * Only applies for 2 particle decays.
     * @param LK

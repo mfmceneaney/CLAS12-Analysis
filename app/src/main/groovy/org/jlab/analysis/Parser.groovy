@@ -450,6 +450,11 @@ public class Parser {
                         }
                     catch (Exception exception) { return this.help(); } }
 
+                // Target spin sign option
+                case "-tspin_sign":
+                    if (args.length>2) { try { analysis.setTSpinSign(Integer.parseInt(args[i+1])); valid_opt = true; break; }
+                    catch (Exception exception) { return this.help(); } }
+
                 // xF cut option
                 case "-xF":
                     if (args.length>2) { try { analysis.setMinxF(Float.parseFloat(args[i+1])); valid_opt = true; break; }

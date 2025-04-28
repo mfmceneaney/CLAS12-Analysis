@@ -38,6 +38,7 @@ public class Kinematics {
     protected HashMap<String,Cut>                  _cuts;         // HashMap of name to boolean(double) lambda expression cut
     protected LorentzVector                        _lv_s_up;         // Lorentz vector of target spin in lab frame (up)
     protected LorentzVector                        _lv_s_dn;         // Lorentz vector of target spin in lab frame (down)
+    protected int                                  _tspin_sign;    // sign of target spin, useful for MC samples
 
     // Options
     protected static boolean _strict        = false;    // use strict pid to mass assignment in kinematics calculations
@@ -142,6 +143,9 @@ public class Kinematics {
         event.read(bank);
 		RFTime = (double) bank.getFloat("RFTime",0);
 		return RFTime; };
+
+    protected ConfigVar _getTSpinSign = (ConfigVar)(HipoReader reader, Event event) -> {
+		return (double)this._tspin_sign; };
 
     /**
     * Constructor stub
@@ -300,6 +304,9 @@ public class Kinematics {
         this._addMxMomenta = addMxMomenta;
         this._defaults = ["Q2", "nu", "y", "x", "W", "Mh", "Mx","phi_s_up","phi_s_dn","px","py","pz"]; //NOTE: Make sure you change this too if you change the initial _defaults above!
     }
+
+    protected void setTSpinSign(int tspin_sign) {this._tspin_sign = (tspin_sign>=0) ? 1 : -1; this._configs.put("tspin_sign",this._getTSpinSign);}
+    protected boolean getTSpinSign() {return this._tspin_sign;}
 
     // Option for adding Lambda analysis variables
     protected void setAddLambdaKin(boolean addLambdaKin) {
