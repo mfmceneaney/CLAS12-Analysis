@@ -30,13 +30,14 @@ public class Kinematics {
     protected static ArrayList<ArrayList<Integer>> _groups;       // List of lists of grouped indices in this._decay
     protected static ArrayList<Integer>            _parents;      // List of parent Lund pids without parent particle from _decay
     protected static Constants                     _constants;
-    protected String[]                             _defaults = ["Q2", "nu", "y", "x", "W", "Mh", "Mx","phi_s"]; //NOTE: OLD rest: "z", "xF", "pT", "phperp", "mass","mx"
+    protected String[]                             _defaults = ["Q2", "nu", "y", "x", "W", "Mh", "Mx","phi_s_up","phi_s_dn"]; //NOTE: OLD rest: "z", "xF", "pT", "phperp", "mass","mx"
     protected String[]                             _ikin = [];         // List of individual particle kinematics
     protected String[]                             _gkin = [];         // List of individual particle kinematics
     protected HashMap<String,ConfigVar>            _configs;      // HashMap of name to lambda expression for computing
     protected HashMap<String,SIDISVar>             _vars;         // HashMap of name to lambda expression for computing
     protected HashMap<String,Cut>                  _cuts;         // HashMap of name to boolean(double) lambda expression cut
-    protected LorentzVector                        _lv_s;         // Lorentz vector of target spin in lab frame
+    protected LorentzVector                        _lv_s_up;         // Lorentz vector of target spin in lab frame (up)
+    protected LorentzVector                        _lv_s_dn;         // Lorentz vector of target spin in lab frame (down)
 
     // Options
     protected static boolean _strict        = false;    // use strict pid to mass assignment in kinematics calculations
@@ -178,21 +179,23 @@ public class Kinematics {
     }
 
     /**
-    * Set target spin lorentz vector in lab fraame.
+    * Set target spin lorentz vector in lab frame.
     * @param lv_s
     */
     protected void setTargetSpinLV(LorentzVector lv_s) {
 
-        this._lv_s = new LorentzVector(lv_s);
+        this._lv_s_up = new LorentzVector(lv_s);
+        this._lv_s_dn = new LorentzVector(lv_s);
+        this._lv_s_dn.invert();
     }
 
     /**
-    * Set target spin lorentz vector in lab fraame.
-    * @return this._lv_s
+    * Set target spin lorentz vector in lab frame.
+    * @return this._lv_s_up
     */
     LorentzVector getTargetSpinLV() {
 
-        return this._lv_s;
+        return this._lv_s_up;
     }
 
      /**
@@ -295,7 +298,7 @@ public class Kinematics {
 
     protected void setAddMxMomenta(boolean addMxMomenta) {
         this._addMxMomenta = addMxMomenta;
-        this._defaults = ["Q2", "nu", "y", "x", "W", "Mh", "Mx","px","py","pz"]; //NOTE: Make sure you change this too if you change the initial _defaults above!
+        this._defaults = ["Q2", "nu", "y", "x", "W", "Mh", "Mx","phi_s_up","phi_s_dn","px","py","pz"]; //NOTE: Make sure you change this too if you change the initial _defaults above!
     }
 
     // Option for adding Lambda analysis variables
@@ -1003,18 +1006,31 @@ public class Kinematics {
         double Mh   = lv_parent.mass(); //NOTE: Hadronic mass of final state particles together
         double Mx   = lv_miss.mass(); //NOTE: Missing mass of final state particles together
 
-        // Compute phi_s
-        LorentzVector lv_s__ = new LorentzVector(this._lv_s);
-        lv_s__.boost(gNBoost);
+        // Compute phi_s up
+        LorentzVector lv_s_up__ = new LorentzVector(this._lv_s_up);
+        lv_s_up__.boost(gNBoost);
         LorentzVector q__ = new LorentzVector(q);
         q__.boost(gNBoost);
         LorentzVector lv_max__ = new LorentzVector(lv_max);
         lv_max__.boost(gNBoost);
         Vector3 nhat   = q__.vect().cross(lv_max__.vect()); // vA x vB
-        Vector3 phihat = q__.vect().cross(lv_s__.vect());     // vC x vD
-        double sign__  = nhat.dot(lv_s__.vect())>=0 ? 1 : -1; // sign of (vA x vB) . vD
-        double phi_s_  = sign__ * Math.acos(nhat.dot(phihat)/(nhat.mag()*phihat.mag()));
-        if (phi_s_<0) phi_s_ = 2*Math.PI + phi_s_;
+        Vector3 phihat_up = q__.vect().cross(lv_s_up__.vect());     // vC x vD
+        double sign_up__  = nhat.dot(lv_s_up__.vect())>=0 ? 1 : -1; // sign of (vA x vB) . vD
+        double phi_s_up_  = sign_up__ * Math.acos(nhat.dot(phihat_up)/(nhat.mag()*phihat_up.mag()));
+        if (phi_s_up_<0) phi_s_up_ = 2*Math.PI + phi_s_up_;
+
+        // Compute phi_s down
+        LorentzVector lv_s_dn__ = new LorentzVector(this._lv_s_dn);
+        lv_s_dn__.boost(gNBoost);
+        // LorentzVector q__ = new LorentzVector(q);
+        // q__.boost(gNBoost);
+        // LorentzVector lv_max__ = new LorentzVector(lv_max);
+        // lv_max__.boost(gNBoost);
+        // Vector3 nhat   = q__.vect().cross(lv_max__.vect()); // vA x vB
+        Vector3 phihat_dn = q__.vect().cross(lv_s_dn__.vect());     // vC x vD
+        double sign_dn__  = nhat.dot(lv_s_dn__.vect())>=0 ? 1 : -1; // sign of (vA x vB) . vD
+        double phi_s_dn_  = sign_dn__ * Math.acos(nhat.dot(phihat_dn)/(nhat.mag()*phihat_dn.mag()));
+        if (phi_s_dn_<0) phi_s_dn_ = 2*Math.PI + phi_s_dn_;
 
         // Add SIDIS variables to map
         kinematics.put("Q2",Q2); //TODO: How to make sure entries match up when mapping to TREE?????
@@ -1024,7 +1040,8 @@ public class Kinematics {
         kinematics.put("W",W);
         kinematics.put("Mh",Mh);
         kinematics.put("Mx",Mx);
-        kinematics.put("phi_s",phi_s_);
+        kinematics.put("phi_s_up",phi_s_up_);
+        kinematics.put("phi_s_dn",phi_s_dn_);
 
         // Add momenta from missing lv for exclusive analysis
         if (this._addMxMomenta) {
@@ -1089,18 +1106,31 @@ public class Kinematics {
         double Mh   = lv_parent.mass(); //NOTE: Hadronic mass of final state particles together
         double Mx   = lv_miss.mass(); //NOTE: Missing mass of final state particles together 
 
-        // Compute phi_s
-        LorentzVector lv_s__ = new LorentzVector(this._lv_s);
-        lv_s__.boost(gNBoost);
+        // Compute phi_s up
+        LorentzVector lv_s_up__ = new LorentzVector(this._lv_s_up);
+        lv_s_up__.boost(gNBoost);
         LorentzVector q__ = new LorentzVector(q);
         q__.boost(gNBoost);
         LorentzVector lv_max__ = new LorentzVector(lv_max);
         lv_max__.boost(gNBoost);
         Vector3 nhat   = q__.vect().cross(lv_max__.vect()); // vA x vB
-        Vector3 phihat = q__.vect().cross(lv_s__.vect());     // vC x vD
-        double sign__  = nhat.dot(lv_s__.vect())>=0 ? 1 : -1; // sign of (vA x vB) . vD
-        double phi_s_  = sign__ * Math.acos(nhat.dot(phihat)/(nhat.mag()*phihat.mag()));
-        if (phi_s_<0) phi_s_ = 2*Math.PI + phi_s_;
+        Vector3 phihat_up = q__.vect().cross(lv_s_up__.vect());     // vC x vD
+        double sign_up__  = nhat.dot(lv_s_up__.vect())>=0 ? 1 : -1; // sign of (vA x vB) . vD
+        double phi_s_up_  = sign_up__ * Math.acos(nhat.dot(phihat_up)/(nhat.mag()*phihat_up.mag()));
+        if (phi_s_up_<0) phi_s_up_ = 2*Math.PI + phi_s_up_;
+
+        // Compute phi_s down
+        LorentzVector lv_s_dn__ = new LorentzVector(this._lv_s_dn);
+        lv_s_dn__.boost(gNBoost);
+        // LorentzVector q__ = new LorentzVector(q);
+        // q__.boost(gNBoost);
+        // LorentzVector lv_max__ = new LorentzVector(lv_max);
+        // lv_max__.boost(gNBoost);
+        // Vector3 nhat   = q__.vect().cross(lv_max__.vect()); // vA x vB
+        Vector3 phihat_dn = q__.vect().cross(lv_s_dn__.vect());     // vC x vD
+        double sign_dn__  = nhat.dot(lv_s_dn__.vect())>=0 ? 1 : -1; // sign of (vA x vB) . vD
+        double phi_s_dn_  = sign_dn__ * Math.acos(nhat.dot(phihat_dn)/(nhat.mag()*phihat_dn.mag()));
+        if (phi_s_dn_<0) phi_s_dn_ = 2*Math.PI + phi_s_dn_;
 
         // Add SIDIS variables to map
         kinematics.put("Q2",Q2);
@@ -1110,7 +1140,8 @@ public class Kinematics {
         kinematics.put("W",W);
         kinematics.put("Mh",Mh);
         kinematics.put("Mx",Mx);
-        kinematics.put("phi_s",phi_s_);
+        kinematics.put("phi_s_up",phi_s_up_);
+        kinematics.put("phi_s_dn",phi_s_dn_);
 
         // Add momenta from missing lv for exclusive analysis
         if (this._addMxMomenta) {

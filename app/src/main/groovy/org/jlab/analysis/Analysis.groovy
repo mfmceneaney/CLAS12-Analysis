@@ -20,9 +20,6 @@ import org.jlab.jroot.TNtuple;
 // CLAS QADB Import
 import clasqa.QADB;
 
-// CSV Imports
-import org.apache.commons.csv.*
-
 /**
 * Encapsulates some common analysis procedures.
 * If you are doing a more customized/less general analysis
@@ -54,9 +51,6 @@ public class Analysis {
     protected String                         _tupleNames;
     protected int                            _event_counter;
     protected int                            _data_counter;
-    protected String                         _tpol_run_key;
-    protected String                         _tpol_pol_key;
-    protected HashMap<Integer,Integer>       _tpol_runmap; // Hashmap of run number to target polarization which will be loaded from a CSV.
 
 	// Options
 	protected static int     _n_files      = 10; 					// max number of files to analyze
@@ -82,7 +76,6 @@ public class Analysis {
     protected static int     _notify       = 0;                     // notify how many events have been added out of total read so far after given number of events, does nothing if zero
     protected static boolean _addVertices  = false;                 // Add vertices to tree
     protected static boolean _addAngles    = false;                 // Add angles (in degrees) to tree
-    protected int            _tspin_sign   = 1;                     // Target spin sign
 
     // Tagging options
     protected static ArrayList<Integer>       _tag_pids   = new ArrayList<Integer>();        // List of pid tags for event, just checks that at least one is present in event
@@ -109,9 +102,6 @@ public class Analysis {
         this._treeName         = new String("t");
         this._event_counter    = 0;
         this._data_counter     = 0;
-        this._tpol_run_key     = "Run";
-        this._tpol_pol_key     = "PbPt";
-        this._tpol_runmap      = new HashMap<Integer,Integer>();
     }
 
     /**
@@ -138,9 +128,6 @@ public class Analysis {
         this._treeName         = new String("t");
         this._event_counter    = 0;
         this._data_counter     = 0;
-        this._tpol_run_key     = "Run";
-        this._tpol_pol_key     = "PbPt";
-        this._tpol_runmap      = new HashMap<Integer,Integer>();
     }
 
     /**
@@ -171,9 +158,6 @@ public class Analysis {
         this._treeName         = new String("t");
         this._event_counter    = 0;
         this._data_counter     = 0;
-        this._tpol_run_key     = "Run";
-        this._tpol_pol_key     = "PbPt";
-        this._tpol_runmap      = new HashMap<Integer,Integer>();
     }
 
     /**
@@ -213,58 +197,6 @@ public class Analysis {
     protected void setTargetSpinLV(LorentzVector lv_s) {
 
         this._kinematics.setTargetSpinLV(lv_s);
-    }
-
-    /**
-    * Set sign of target spin lorentz vector in kinematics.
-    * @param sign
-    */
-    protected void setTargetSpinLVSign(int sign) {
-
-        LorentzVector lv_s = new LorentzVector(this._kinematics.getTargetSpinLV());
-        if ((sign<0 && this._tspin_sign>0) || (sign>0 && this._tspin_sign<0)) {
-            lv_s.invert();
-            this._kinematics.setTargetSpinLV(lv_s);
-            this._tspin_sign = sign;
-        }
-    }
-
-    /**
-    * Set target polarization CSV run key.
-    * @param run_key
-    */
-    protected void setTPolCSVRunKey(String run_key) {
-
-        this._tpol_run_key = run_key;
-    }
-
-    /**
-    * Set target polarization CSV polarization key.
-    * @param pol_key
-    */
-    protected void setTPolCSVPolKey(String pol_key) {
-
-        this._tpol_pol_key = pol_key;
-    }
-
-    /**
-    * Set sign of target spin lorentz vector in kinematics.
-    * @param sign
-    */
-    protected void setTPolCSV(String tpol_csv) {
-
-        HashMap<Integer,Integer> tpol_runmap = new HashMap<Integer,Integer>();
-
-        // Read CSV and set map entries
-        Reader in = new FileReader(tpol_csv);
-        Iterable<CSVRecord> records = CSVFormat.EXCEL.withHeader().parse(in); //TODO: Would be good to at least document what format is expected somewhere...
-        for (CSVRecord record : records) {
-            Integer run = Integer.parseInt(record.get(this._tpol_run_key));
-            Float   pol = Float.parseFloat(record.get(this._tpol_pol_key));
-            tpol_runmap.put(run,(pol >= 0) ? 1 : -1);
-        }
-
-        this._tpol_runmap = tpol_runmap;
     }
 
     /**
@@ -1057,9 +989,6 @@ public class Analysis {
             // Check for scattered electron if requested
             DecayProduct beam = decays.getScatteredBeam(); //NOTE: quicker since already have particle list, also implemented for MC;)
             if (this._require_e && beam.p()==0.0) { continue; } // IMPORTANT! Scattered beam pid and p are set to zero if no scattered electron is found
-
-            // Set target spin vector sign
-            if (this._tpol_runmap.get(runnum)!=null) setTargetSpinLVSign((int)this._tpol_runmap.get(runnum));
 
             // Loop through combinations
             boolean addedEvent = false;
