@@ -33,6 +33,8 @@ public class Kinematics {
     protected String[]                             _defaults = ["Q2", "nu", "y", "x", "W", "Mh", "Mx"]; //NOTE: OLD rest: "z", "xF", "pT", "phperp", "mass","mx"
     protected String[]                             _ikin = [];         // List of individual particle kinematics
     protected String[]                             _gkin = [];         // List of individual particle kinematics
+    protected String[]                             _aff_ikin = [];     // List of individual particle Affinity kinematics
+    protected String[]                             _aff_kin = [];      // List of general Affinity kinematics
     protected HashMap<String,ConfigVar>            _configs;      // HashMap of name to lambda expression for computing
     protected HashMap<String,SIDISVar>             _vars;         // HashMap of name to lambda expression for computing
     protected HashMap<String,Cut>                  _cuts;         // HashMap of name to boolean(double) lambda expression cut
@@ -54,6 +56,7 @@ public class Kinematics {
     protected static boolean _addIndivKin   = false;    // include individual kinematics
     protected static boolean _addGroupKin   = false;    // include grouped particles' kinematics
     protected static boolean _addMxMomenta  = false;    // include px, py, pz from missing mass lorentz vector for exclusive analysis
+    protected static boolean _addAffKin     = false;    // include Affinity partonic variables for MC matched events
 
     // built in lambdas
     protected ConfigVar _getEventNum = (ConfigVar)(HipoReader reader, Event event) -> {
@@ -279,6 +282,40 @@ public class Kinematics {
         this._defaults = ["Q2", "nu", "y", "x", "W", "Mh", "Mx","px","py","pz"]; //NOTE: Make sure you change this too if you change the initial _defaults above!
     }
 
+    // Option for adding Affinity partonic variables //TODO: Currently you have to call this after setting decay from command line...  Would be nice if order didn't matter.
+    protected void setAddAffKin(boolean addAffKin) {
+
+        // Check condition
+        this._addAffKin = addAffKin;
+        if (!addAffKin) return;
+
+        // Set general kinematics
+        this._aff_kin = ["aff_m_k_i","aff_m_k_f","aff_xi","aff_theta_k_i"]; //NOTE: Make sure you change this too if you change the initial _aff_kin above!
+
+        // Set string arrays for TNTuple entry names
+        String[] aff_ikin_init = ["aff_zeta_","aff_zN_","aff_theta_H_","aff_theta_delta_kT_","aff_xN_","aff_kT_i_","aff_delta_kT_"];
+        String[] aff_ikin = new String[aff_ikin_init.size() * this._decay.size()];
+
+        // Loop this._decay pids and individual kinematics names and add to keyset
+        int k = 0;
+        HashMap<Integer,Integer> pidCounts = new HashMap<Integer,Integer>();
+        ArrayList<Integer> unique_pids = (ArrayList<Integer>)this._decay.stream().distinct().collect(Collectors.toList());
+        for (Integer pid : unique_pids) { pidCounts.put(pid,0); }
+        for (int i=0; i<this._decay.size(); i++) {
+            Integer pid = this._decay.get(i);
+            String pname = this._constants.getName(pid);
+            pidCounts[pid] += 1;
+            if (i!=0) { if (pid==this._decay.get(i-1)) { pname += pidCounts.get(pid); } } //NOTE: Append occurence number of pid to distinguish between different particles of same pid.
+            for (String aff_kin : aff_ikin_init) {
+                aff_ikin[k] = aff_kin + pname;
+                k++;
+            }
+        }
+
+        // Reset this._aff_ikin
+        this._aff_ikin     = aff_ikin;
+    }
+
     // Option for adding Lambda analysis variables
     protected void setAddLambdaKin(boolean addLambdaKin) {
         if (!this._addGroupKin) return; //NOTE: Must be getting group kinematics to do this. //TODO: Generalize
@@ -365,10 +402,12 @@ public class Kinematics {
     */
     protected String[] keySet() { // can call from Analysis object
 
-        String[] arr = new String[this._configs.size() + this._defaults.length + this._ikin.length + this._gkin.length + this._vars.size()];
+        String[] arr = new String[this._configs.size() + this._defaults.length + this._aff_ikin.length + this._aff_kin.length + this._ikin.length + this._gkin.length + this._vars.size()];
         int i = 0;
         for (String con : this._configs.keySet()) { arr[i] = con; i++; }
         for (String defaults : this._defaults)    { arr[i] = defaults; i++; } //NOTE: Ordering must match order variables are added to kinematics map.
+        for (String aff_ikin : this._aff_ikin)    { arr[i] = aff_ikin; i++ }
+        for (String aff_kin : this._aff_kin)      { arr[i] = aff_kin; i++ }
         for (String ikin : this._ikin)            { arr[i] = ikin; i++; }
         for (String gkin : this._gkin)            { arr[i] = gkin; i++; }
         for (String var : this._vars.keySet())    { arr[i] = var; i++; }
@@ -708,6 +747,107 @@ public class Kinematics {
 
         kinematics.put("costhetab2b",costhetab2b);
 
+    }
+
+    /**
+    * Compute additional individual particle kinematics.
+    * NOTE: Kinematics should already have nu and W entries for event!
+    * @param kinematics
+    * @param list
+    * @param lv_parent
+    * @param q
+    * @param gN
+    * @param gNBoost
+    */
+    protected void getAffKin(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, ArrayList<DecayProduct> ilist, LorentzVector lv_target, LorentzVector lv_beam, LorentzVector lv_max, LorentzVector q, LorentzVector gN, Vector3 gNBoost) {
+
+        // Get outgoing quark from MC truth
+        DecayProduct quark_out = new DecayProduct(0,0,0,0,0);
+        for (int i=0; i<ilist.size(); i++) {
+            DecayProduct p = ilist.get(i);
+            if (p.parent()==0 && p.pid()!=0 && Math.abs(p.pid())<=8) { //NOTE: Quark pids satisfy pid_q!=0 and abs(pid_q)\in[1,8].
+                q_out = new DecayProduct(p);
+            }
+        }
+
+        // Get the quark Lorentz vectors
+        LorentzVector lv_LAB_k_f = q_out.lv();
+        LorentzVector lv_LAB_k_i = lv_LAB_k_f.sub(q);
+
+        // Boost quark vectors to Breit frame
+        LorentzVector lv_BF_k_f = new LorentzVector(lv_LAB_k_f);
+        lv_BF_k_f.boost(gNBoost);
+        LorentzVector lv_BF_k_i = new LorentzVector(lv_LAB_k_i);
+        lv_BF_k_i.boost(gNBoost);
+        LorentzVector lv_BF_q = new LorentzVector(q);
+        lv_BF_q.boost(gNBoost);
+        LorentzVector lv_BF_P = new LorentzVector(lv_target);
+        lv_BF_P.boost(gNBoost);
+
+        //TODO: Compute the rotation angle AND rotate vectors below
+        // Vector3 zAxis = new Vector3(0,0,1);
+        // Math.PI
+        //TODO: Rotate virtual photon and quark vectors
+
+        // Compute (+, -) light cone components for (k_i, k_f, P)
+        double lv_BF_k_i__neg = 1.0/Math.sqrt(2) * (lv_BF_k_i.e()+lv_BF_k_i.pz());
+        double lv_BF_k_i__pos = 1.0/Math.sqrt(2) * (lv_BF_k_i.e()-lv_BF_k_i.pz());
+        double lv_BF_k_f__neg = 1.0/Math.sqrt(2) * (lv_BF_k_f.e()+lv_BF_k_f.pz());
+        double lv_BF_k_f__pos = 1.0/Math.sqrt(2) * (lv_BF_k_f.e()-lv_BF_k_f.pz());
+        double lv_BF_q__neg   = 1.0/Math.sqrt(2) * (lv_BF_q.e()+lv_BF_q.pz());
+        double lv_BF_q__pos   = 1.0/Math.sqrt(2) * (lv_BF_q.e()-lv_BF_q.pz());
+        double lv_BF_P__neg   = 1.0/Math.sqrt(2) * (lv_BF_P.e()+lv_BF_P.pz());
+        double lv_BF_P__pos   = 1.0/Math.sqrt(2) * (lv_BF_P.e()-lv_BF_P.pz());
+
+        // Compute Affinity variables
+        double m_k_i     = Math.sqrt(Math.abs(lv_BF_k_i.mass2()));
+        double m_k_f     = Math.sqrt(Math.abs(lv_BF_k_f.mass2()));
+        double xi        = lv_BF_k_i__pos / lv_BF_P__pos;
+        double theta_k_i = Math.atan2(lv_BF_k_i.py()/lv_BF_k_i.px());
+
+        // Add entries to the affinity kinematics map //NOTE: The # of kinematics added here must exactly match the # set in this.setAddAffKin() above.
+        int j = 0;
+        kinematics.put(this._aff_kin[j++],m_k_i);
+        kinematics.put(this._aff_kin[j++],m_k_f);
+        kinematics.put(this._aff_kin[j++],xi);
+        kinematics.put(this._aff_kin[j++],theta_k_i);
+        
+        // Add individual hadron kinematics
+        int k = 0;
+        for (int i=0; i<list.size(); i++) { //IMPORTANT: start at 0 since beam is separate from list { //NOTE: IMPORTANT: Should already be ordered same as this._decay
+            DecayProduct p = list.get(i);
+            if (!this._strict) { p.changeMass(this._decay.get(i)); } //NOTE: Calculate with assumed mass unless strict option selected
+
+            // Grab lorentz vectors and boost
+            LorentzVector lv_LAB_P_h = p.lv();
+            LorentzVector lv_BF_P_h = new LorentzVector(lv_LAB_P_h);
+            lv_BF_P_h.boost(gNBoost);
+
+            //TODO: Compute lv_BF_qT and lv_BF_delta_kT
+            LorentzVector lv_BF_delta_kT = TODO
+            LorentzVector lv_BF_qT       = TODO
+
+            // Compute (+, -) light cone components for P_h
+            double lv_BF_P_h__neg = 1.0/Math.sqrt(2) * (lv_BF_P_h.e()+lv_BF_P_h.pz());
+            double lv_BF_P_h__pos = 1.0/Math.sqrt(2) * (lv_BF_P_h.e()-lv_BF_P_h.pz());
+
+            // Get Affinity variables for individual particles
+            double zeta_h = lv_BF_P_h__neg / lv_BF_k_f__neg;
+            double z_N = lv_BF_P_h__neg / lv_BF_q__neg;
+            double theta_H = Math.atan2(lv_BF_qT.py()/lv_BF_qT.px());
+            double theta_delta_kT = Math.atan2(lv_BF_delta_k.py()/lv_BF_delta_k.px());
+            double kT_i = lv_BF_k_i.pt();
+            double delta_kT = lv_BF_delta_k.pt()
+
+            // Add entries to the Affinity individual kinematics map //NOTE: The # of kinematics added here must exactly match the # set in this.setAddAffKin() above.
+            kinematics.put(this._aff_ikin[k++],zeta_h);
+            kinematics.put(this._aff_ikin[k++],z_N);
+            kinematics.put(this._aff_ikin[k++],theta_H);
+            kinematics.put(this._aff_ikin[k++],theta_delta_kT);
+            kinematics.put(this._aff_ikin[k++],(double)0.0/*x_N*/);
+            kinematics.put(this._aff_ikin[k++],kT_i);
+            kinematics.put(this._aff_ikin[k++],delta_kT);
+        }
     }
 
     /**
@@ -1073,6 +1213,7 @@ public class Kinematics {
         }
 
         // Get individual and group kinematics if requested
+        if (this._addAffKin)    { this.getAffKin(kinematics,list,ilist,lv_target,lv_beam,lv_mmax,q,gN,gNBoost); }//NOTE: ORDERING MATTERS HERE!
         if (this._addIndivKin)  { this.getIndivKin(kinematics,list,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//TODO: Check this.
         if (this._addGroupKin)  { this.getGroupKin(kinematics,list,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//TODO: Check this.
 

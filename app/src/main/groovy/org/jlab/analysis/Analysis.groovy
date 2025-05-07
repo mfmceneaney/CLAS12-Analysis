@@ -66,6 +66,7 @@ public class Analysis {
     protected static boolean _addEvNum     = false;					// include event number in TNTuple (always added as zeroeth entry or just after run #)
     protected static boolean _addML        = false;					// include ML predictions and labels in TNTuple (NOTE: NOT SURE WHERE THIS WILL BE ADDED... TODO...)
     protected static boolean _lambdaKin    = false;					// include special two particle decay kinematics for Lambda baryons
+    protected static boolean _affKin       = false;					// include Affinity partonic kinematics
     protected static boolean _indivKin     = false;					// include extra individual particle kinematics
     protected static boolean _groupKin     = false;					// include extra grouped particles' kinematics
     protected static boolean _requireQA    = false;                 // require clasqaDB check for run and event #'s
@@ -227,6 +228,7 @@ public class Analysis {
         Collections.sort(this._decay); //IMPORTANT: Combinations algorithm relies on this in Decays.groovy.
         this._kinematics.setDecay(decay); //NOTE: Using unsorted decay here though.
         if (this._match) this.setMatch(this._match); //NOTE: Reset after setting decay
+        if (this._affKin) { this.setAffKin(this._affKin); } //NOTE: Reset after setting decay just in case.
         if (this._indivKin) { this.setIndivKin(this._indivKin); } //NOTE: Reset after setting decay just in case.
     }
 
@@ -328,6 +330,7 @@ public class Analysis {
             this._kinematics.setAddGroupKin(true);//NOTE: This must occur after calling setGroups() above!
         }
         if (this._match) this.setMatch(this._match); //NOTE: Reset after setting decay
+        if (this._affKin) { this.setAffKin(this._affKin); } //NOTE: Reset after setting decay just in case.
         if (this._indivKin) { this.setIndivKin(this._indivKin); } //NOTE: Reset after setting decay just in case.
         if ((this._useMC && !this._combo && !this._match) || this._combo || this._match ) { this.setDPMap(); } //NOTE: Set daughter parent map from decays and groups.
     }
@@ -820,6 +823,17 @@ public class Analysis {
 
         this._lambdaKin = LK;
         this._kinematics.setAddLambdaKin(LK);
+    }
+
+    /**
+    * Set boolean for including Affinity partonic kinematics
+    * and propagate changes to kinematics.
+    * @param AK
+    */
+    protected void setAffKin(boolean AK) {
+
+        this._affKin = AK;
+        this._kinematics.setAddAffKin(AK);
     }
 
     /**
