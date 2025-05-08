@@ -805,11 +805,11 @@ public class Kinematics {
         lv_BF_lprime.boost(gNBoost);
 
         // Set coordinate unit vectors for Breit Frame
-        Vector3 zhat = lv_BF_q.vect(); // zhat is along the virtual photon momentum. (q)
+        Vector3 zhat = lv_BF_P.vect(); // zhat is opposite the virtual photon momentum and along the target hadron momentum.  See Figs. 1 and 2 from http://arxiv.org/abs/1904.12882. (P)
         zhat.unit();
-        Vector3 yhat = lv_BF_q.vect().cross(lv_BF_lprime.vect()); // yhat is perpendicular to the scattering plane. (q X l')
+        Vector3 yhat = lv_BF_P.vect().cross(lv_BF_lprime.vect()); // yhat is perpendicular to the scattering plane. (P X l')
         yhat.unit();
-        Vector3 xhat = lv_BF_q.vect().cross(lv_BF_lprime.vect()).cross(zhat); // xhat is the remaining orthogonal vector which forms a right-handed coordinate system. ((q X l') X q)
+        Vector3 xhat = lv_BF_P.vect().cross(lv_BF_lprime.vect()).cross(zhat); // xhat is the remaining orthogonal vector which forms a right-handed coordinate system. ((P X l') X P)
         xhat.unit();
 
         // Compute (+, -) light cone components for (k_i, k_f, P) using the Breit frame coordinate vectors
@@ -822,11 +822,16 @@ public class Kinematics {
         double lv_BF_P__pos   = 1.0/Math.sqrt(2) * (lv_BF_P.e()+lv_BF_P.vect().dot(zhat));
         double lv_BF_P__neg   = 1.0/Math.sqrt(2) * (lv_BF_P.e()-lv_BF_P.vect().dot(zhat));
 
+        // Grab previously calculated kinematics
+        double Q2 = (double)kinematics.get("Q2");
+        double x  = (double)kinematics.get("x");
+
         // Compute Affinity variables using the Breit frame coordinate vectors
-        double m_k_i     = Math.sqrt(Math.abs(lv_BF_k_i.mass2()));
+        double m_k_i     = Math.sqrt(Math.abs(lv_BF_k_i.mass2())); //NOTE: From http://arxiv.org/abs/1904.12882: eq. 2.5
         double m_k_f     = Math.sqrt(Math.abs(lv_BF_k_f.mass2()));
-        double xi        = lv_BF_k_i__pos / lv_BF_P__pos;
-        double x_N       = - lv_BF_q__pos / lv_BF_P__pos;
+        double xi        = lv_BF_k_i__pos / lv_BF_P__pos; //NOTE: From http://arxiv.org/abs/1904.12882: eq. 8.6
+        double x_N       = 2.0 * x / ( 1.0 + Math.sqrt((double)(1.0 + 4.0 * x * x * lv_target.mass2() / Q2)) ); //NOTE: From http://arxiv.org/abs/1904.12882: eq. 3.2 //NOTE: Denominator term cast is necessary to avoid some weird type errors about java.BigDecimal...
+        double x_N_hat   = - lv_BF_q__pos / lv_BF_k_i__pos; //NOTE: From http://arxiv.org/abs/1904.12882: eq. 8.6
         double theta_k_i = Math.atan2(lv_BF_k_i.vect().dot(yhat),lv_BF_k_i.vect().dot(xhat));
         double k_iT = lv_BF_k_i.vect().cross(zhat).mag();
 
@@ -855,12 +860,13 @@ public class Kinematics {
             double lv_BF_P_h__neg = 1.0/Math.sqrt(2) * (lv_BF_P_h.e()-lv_BF_P_h.vect().dot(zhat));
 
             // Get Affinity variables for individual particles using the Breit frame coordinate vectors
-            double zeta_h = lv_BF_P_h__neg / lv_BF_k_f__neg; //NOTE: zeta_h = P_h^- / k_f^-
-            double z_N = lv_BF_P_h__neg / lv_BF_q__neg; //NOTE: z_N = P_h^- / q^-
-            LorentzVector lv_BF_delta_k = new LorentzVector(lv_BF_k_f); //NOTE: delta_kT = k_fT - P_hT and you haven't rotated into the Breit frame here so keep all components.
+            double zeta_h = lv_BF_P_h__neg / lv_BF_k_f__neg; ///NOTE: From http://arxiv.org/abs/1904.12882: eq. 8.6 // zeta_h = P_h^- / k_f^-
+            double z_N = lv_BF_P_h__neg / lv_BF_q__neg; ///NOTE: From http://arxiv.org/abs/1904.12882: eq. 8.6 // z_N = P_h^- / q^-
+            double z_N_hat = lv_BF_k_f__neg / lv_BF_q__neg; ///Note: From http://arxiv.org/abs/1904.12882: eq. 8.6 // z_N_hat = k_f^- / q^-
+            LorentzVector lv_BF_delta_k = new LorentzVector(lv_BF_k_f); //NOTE: //From http://arxiv.org/abs/1904.12882: eq. 8.2: delta_kT = k_fT - P_hT and you haven't rotated into the Breit frame here so keep all components.
             lv_BF_delta_k.sub(lv_BF_P_h);
             LorentzVector lv_BF_qT = new LorentzVector(lv_BF_P_h);
-            lv_BF_qT.setPxPyPzE(-1.0/z_N * lv_BF_qT.px(), -1.0/z_N * lv_BF_qT.py(), -1.0/z_N * lv_BF_qT.pz(), -1.0/z_N * lv_BF_qT.e()); //NOTE: qT = - P_hT / z_N and you haven't rotated into the Breit frame here so keep all components.
+            lv_BF_qT.setPxPyPzE(-1.0/z_N * lv_BF_qT.px(), -1.0/z_N * lv_BF_qT.py(), -1.0/z_N * lv_BF_qT.pz(), -1.0/z_N * lv_BF_qT.e()); //NOTE: From http://arxiv.org/abs/1904.12882: eq. 5.3 // qT = - P_hT / z_N and you haven't rotated into the Breit frame here so keep all components.
             double theta_H = Math.atan2(lv_BF_qT.vect().dot(yhat),lv_BF_qT.vect().dot(xhat)); //NOTE: theta_H = atan2(qT_y/qT_x)
             double theta_delta_kT = Math.atan2(lv_BF_delta_k.vect().dot(yhat),lv_BF_delta_k.vect().dot(xhat)); //NOTE: theta_delta_kT = atan2(delta_k_y/delta_k_x)
             double delta_kT = lv_BF_delta_k.vect().cross(zhat).mag(); //NOTE: delta_kT = |delta_k X zhat|
