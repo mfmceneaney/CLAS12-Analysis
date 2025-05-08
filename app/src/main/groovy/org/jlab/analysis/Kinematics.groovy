@@ -819,7 +819,7 @@ public class Kinematics {
         kinematics.put(this._aff_kin[j++],xi);
         kinematics.put(this._aff_kin[j++],x_N);
         kinematics.put(this._aff_kin[j++],theta_k_i);
-        kinematics.put(this._aff_ikin[j++],k_iT);
+        kinematics.put(this._aff_kin[j++],k_iT);
         
         // Add individual hadron kinematics
         int k = 0;
