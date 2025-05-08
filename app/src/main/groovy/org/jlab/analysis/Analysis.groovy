@@ -1121,7 +1121,7 @@ public class Analysis {
                 if (kinematics.size()==0) { continue; } else { addedEvent = true; }
                 ArrayList<Double> data = new ArrayList<Double>();
                 if (this._require_e) {
-                    for (String key : this._kinematics.keySet()) { data.add(kinematics.get(key)); }
+                    for (String key : this._kinematics.mcKeySet()) { data.add(kinematics.get(key)); }
                     data.add(beam.px());
                     data.add(beam.py());
                     data.add(beam.pz());
@@ -1365,7 +1365,7 @@ public class Analysis {
                 ArrayList<Double> data = new ArrayList<Double>();
                 if (this._require_e) { //TODO: Evaluate if this requirement makes sense for all kinematics?  Always should see scattered electron though...
                     for (String key : this._kinematics.keySet()) { data.add(kinematics.get(key)); }
-                    for (String key : this._kinematics.keySet()) { data.add(mckinematics.get(key)); }
+                    for (String key : this._kinematics.mcKeySet()) { data.add(mckinematics.get(key)); }
                     // Add REC::Particle Beam
                     data.add(beam.px());
                     data.add(beam.py());
@@ -1499,7 +1499,7 @@ public class Analysis {
         if (this._require_e) {
             for (String kin : this._kinematics.keySet()) { this._tupleNames += kin + ":"; }
             if (this._match) {//NOTE: Double kinematics if matching REC/MC banks
-                for (String kin : this._kinematics.keySet()) { this._tupleNames += kin + "_mc" + ":"; }
+                for (String kin : this._kinematics.mcKeySet()) { this._tupleNames += kin + "_mc" + ":"; }
             }
         }
         String[] names = ["px_",":py_",":pz_",":beta_"];
