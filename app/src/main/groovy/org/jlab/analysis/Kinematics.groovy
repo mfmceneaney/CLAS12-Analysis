@@ -776,14 +776,15 @@ public class Kinematics {
     * @param gN
     * @param gNBoost
     */
-    protected void getAffKin(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, ArrayList<DecayProduct> ilist, LorentzVector lv_target, LorentzVector lv_beam, LorentzVector lv_max, LorentzVector q, LorentzVector gN, Vector3 gNBoost) {
+    protected void getAffKin(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, ArrayList<DecayProduct> fullmclist, LorentzVector lv_target, LorentzVector lv_beam, LorentzVector lv_max, LorentzVector q, LorentzVector gN, Vector3 gNBoost) {
 
         // Get outgoing quark from MC truth
         DecayProduct q_out = new DecayProduct(0,0,0,0,0);
-        for (int i=0; i<ilist.size(); i++) {
-            DecayProduct p = ilist.get(i);
+        for (int i=0; i<fullmclist.size(); i++) {
+            DecayProduct p = fullmclist.get(i);
             if (p.parent()==0 && p.pid()!=0 && Math.abs(p.pid())<=8) { //NOTE: Quark pids satisfy pid_q!=0 and abs(pid_q)\in[1,8].
                 q_out = new DecayProduct(p);
+                break; //NOTE: Only select the first particle to satisfy this condition.
             }
         }
 
@@ -1178,7 +1179,7 @@ public class Kinematics {
     * @param ilist
     * @return kinematics
     */
-    protected HashMap<String, Double> getMCDefaultVars(ArrayList<DecayProduct> list, ArrayList<DecayProduct> ilist) {
+    protected HashMap<String, Double> getMCDefaultVars(ArrayList<DecayProduct> list, ArrayList<DecayProduct> ilist, ArrayList<DecayProduct> fullmclist) {
 
         HashMap<String, Double> kinematics = new HashMap<String, Double>();
         if (!this._require_e) { return kinematics; } // Return empty hashmap if don't require electron
@@ -1236,7 +1237,7 @@ public class Kinematics {
         }
 
         // Get individual and group kinematics if requested
-        if (this._addAffKin)    { this.getAffKin(kinematics,list,ilist,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//NOTE: ORDERING MATTERS HERE!
+        if (this._addAffKin)    { this.getAffKin(kinematics,list,fullmclist,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//NOTE: ORDERING MATTERS HERE!
         if (this._addIndivKin)  { this.getIndivKin(kinematics,list,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//TODO: Check this.
         if (this._addGroupKin)  { this.getGroupKin(kinematics,list,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//TODO: Check this.
 
@@ -1301,14 +1302,14 @@ public class Kinematics {
     * @param list
     * @return kinematics
     */
-    protected HashMap<String,Double> processMCEvent(HipoReader reader, Event event, ArrayList<DecayProduct> list, ArrayList<DecayProduct> ilist) { 
+    protected HashMap<String,Double> processMCEvent(HipoReader reader, Event event, ArrayList<DecayProduct> list, ArrayList<DecayProduct> ilist, ArrayList<DecayProduct> fullmclist) { 
 	
         this._configs.put("helicity",this._getHelicityMC);
 
         int beamIndex = 3; // TODO: Fairly certain this should be the same for all lund banks... Beam, Target, q, e, final state particles...
         DecayProduct beam; HashMap<String,Double> map = new HashMap<String,Double>();
         try { beam = ilist.get(beamIndex); } catch (Exception e) { System.out.println(" *** WARNING *** ilist empty setting beam to 0"); beam = new DecayProduct(0,0,0,0,0); return map; }
-        HashMap<String,Double> defaults = this.getMCDefaultVars(list,ilist);
+        HashMap<String,Double> defaults = this.getMCDefaultVars(list,ilist,fullmclist);
         for (String key : defaults.keySet()) { map.put(key,defaults.get(key)); }
         HashMap<String,Double> var = this.getSIDISVariables(list, beam);
         for (String key : var.keySet()) { map.put(key,var.get(key)); }
