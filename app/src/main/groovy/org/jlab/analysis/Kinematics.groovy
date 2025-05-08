@@ -290,10 +290,10 @@ public class Kinematics {
         if (!addAffKin) return;
 
         // Set general kinematics
-        this._aff_kin = ["aff_m_k_i","aff_m_k_f","aff_xi","aff_theta_k_i"]; //NOTE: Make sure you change this too if you change the initial _aff_kin above!
+        this._aff_kin = ["aff_m_k_i","aff_m_k_f","aff_xi","aff_x_N","aff_theta_k_i","aff_k_iT"]; //NOTE: Make sure you change this too if you change the initial _aff_kin above!
 
         // Set string arrays for TNTuple entry names
-        String[] aff_ikin_init = ["aff_zeta_","aff_zN_","aff_theta_H_","aff_theta_delta_kT_","aff_xN_","aff_kT_i_","aff_delta_kT_"];
+        String[] aff_ikin_init = ["aff_zeta_","aff_zN_","aff_theta_H_","aff_theta_delta_kT_","aff_delta_kT_"];
         String[] aff_ikin = new String[aff_ikin_init.size() * this._decay.size()];
 
         // Loop this._decay pids and individual kinematics names and add to keyset
@@ -762,7 +762,7 @@ public class Kinematics {
     protected void getAffKin(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, ArrayList<DecayProduct> ilist, LorentzVector lv_target, LorentzVector lv_beam, LorentzVector lv_max, LorentzVector q, LorentzVector gN, Vector3 gNBoost) {
 
         // Get outgoing quark from MC truth
-        DecayProduct quark_out = new DecayProduct(0,0,0,0,0);
+        DecayProduct q_out = new DecayProduct(0,0,0,0,0);
         for (int i=0; i<ilist.size(); i++) {
             DecayProduct p = ilist.get(i);
             if (p.parent()==0 && p.pid()!=0 && Math.abs(p.pid())<=8) { //NOTE: Quark pids satisfy pid_q!=0 and abs(pid_q)\in[1,8].
@@ -783,34 +783,43 @@ public class Kinematics {
         lv_BF_q.boost(gNBoost);
         LorentzVector lv_BF_P = new LorentzVector(lv_target);
         lv_BF_P.boost(gNBoost);
+        LorentzVector lv_BF_lprime = new LorentzVector(lv_max);
+        lv_BF_lprime.boost(gNBoost);
 
-        //TODO: Compute the rotation angle AND rotate vectors below
-        // Vector3 zAxis = new Vector3(0,0,1);
-        // Math.PI
-        //TODO: Rotate virtual photon and quark vectors
+        // Set coordinate unit vectors for Breit Frame
+        Vector3 zhat = lv_BF_q.vect(); // zhat is along the virtual photon momentum. (q)
+        zhat.unit();
+        Vector3 yhat = lv_BF_q.vect().cross(lv_BF_lprime.vect()); // yhat is perpendicular to the scattering plane. (q X l')
+        yhat.unit();
+        Vector3 xhat = lv_BF_q.vect().cross(lv_BF_lprime.vect()).cross(zhat); // xhat is the remaining orthogonal vector which forms a right-handed coordinate system. ((q X l') X q)
+        xhat.unit();
 
-        // Compute (+, -) light cone components for (k_i, k_f, P)
-        double lv_BF_k_i__neg = 1.0/Math.sqrt(2) * (lv_BF_k_i.e()+lv_BF_k_i.pz());
-        double lv_BF_k_i__pos = 1.0/Math.sqrt(2) * (lv_BF_k_i.e()-lv_BF_k_i.pz());
-        double lv_BF_k_f__neg = 1.0/Math.sqrt(2) * (lv_BF_k_f.e()+lv_BF_k_f.pz());
-        double lv_BF_k_f__pos = 1.0/Math.sqrt(2) * (lv_BF_k_f.e()-lv_BF_k_f.pz());
-        double lv_BF_q__neg   = 1.0/Math.sqrt(2) * (lv_BF_q.e()+lv_BF_q.pz());
-        double lv_BF_q__pos   = 1.0/Math.sqrt(2) * (lv_BF_q.e()-lv_BF_q.pz());
-        double lv_BF_P__neg   = 1.0/Math.sqrt(2) * (lv_BF_P.e()+lv_BF_P.pz());
-        double lv_BF_P__pos   = 1.0/Math.sqrt(2) * (lv_BF_P.e()-lv_BF_P.pz());
+        // Compute (+, -) light cone components for (k_i, k_f, P) using the Breit frame coordinate vectors
+        double lv_BF_k_i__pos = 1.0/Math.sqrt(2) * (lv_BF_k_i.e()+lv_BF_k_i.vect().dot(zhat));
+        double lv_BF_k_i__neg = 1.0/Math.sqrt(2) * (lv_BF_k_i.e()-lv_BF_k_i.vect().dot(zhat));
+        double lv_BF_k_f__pos = 1.0/Math.sqrt(2) * (lv_BF_k_f.e()+lv_BF_k_f.vect().dot(zhat));
+        double lv_BF_k_f__neg = 1.0/Math.sqrt(2) * (lv_BF_k_f.e()-lv_BF_k_f.vect().dot(zhat));
+        double lv_BF_q__pos   = 1.0/Math.sqrt(2) * (lv_BF_q.e()+lv_BF_q.vect().dot(zhat));
+        double lv_BF_q__neg   = 1.0/Math.sqrt(2) * (lv_BF_q.e()-lv_BF_q.vect().dot(zhat));
+        double lv_BF_P__pos   = 1.0/Math.sqrt(2) * (lv_BF_P.e()+lv_BF_P.vect().dot(zhat));
+        double lv_BF_P__neg   = 1.0/Math.sqrt(2) * (lv_BF_P.e()-lv_BF_P.vect().dot(zhat));
 
-        // Compute Affinity variables
+        // Compute Affinity variables using the Breit frame coordinate vectors
         double m_k_i     = Math.sqrt(Math.abs(lv_BF_k_i.mass2()));
         double m_k_f     = Math.sqrt(Math.abs(lv_BF_k_f.mass2()));
         double xi        = lv_BF_k_i__pos / lv_BF_P__pos;
-        double theta_k_i = Math.atan2(lv_BF_k_i.py()/lv_BF_k_i.px());
+        double x_N       = - lv_BF_q__pos / lv_BF_P__pos;
+        double theta_k_i = Math.atan2(lv_BF_k_i.vect().dot(yhat),lv_BF_k_i.vect().dot(xhat));
+        double k_iT = lv_BF_k_i.vect().cross(zhat).mag();
 
         // Add entries to the affinity kinematics map //NOTE: The # of kinematics added here must exactly match the # set in this.setAddAffKin() above.
         int j = 0;
         kinematics.put(this._aff_kin[j++],m_k_i);
         kinematics.put(this._aff_kin[j++],m_k_f);
         kinematics.put(this._aff_kin[j++],xi);
+        kinematics.put(this._aff_kin[j++],x_N);
         kinematics.put(this._aff_kin[j++],theta_k_i);
+        kinematics.put(this._aff_ikin[j++],k_iT);
         
         // Add individual hadron kinematics
         int k = 0;
@@ -823,29 +832,26 @@ public class Kinematics {
             LorentzVector lv_BF_P_h = new LorentzVector(lv_LAB_P_h);
             lv_BF_P_h.boost(gNBoost);
 
-            //TODO: Compute lv_BF_qT and lv_BF_delta_kT
-            LorentzVector lv_BF_delta_kT = TODO
-            LorentzVector lv_BF_qT       = TODO
+            // Compute (+, -) light cone components for P_h using the Breit frame coordinate vectors
+            double lv_BF_P_h__pos = 1.0/Math.sqrt(2) * (lv_BF_P_h.e()+lv_BF_P_h.vect().dot(zhat));
+            double lv_BF_P_h__neg = 1.0/Math.sqrt(2) * (lv_BF_P_h.e()-lv_BF_P_h.vect().dot(zhat));
 
-            // Compute (+, -) light cone components for P_h
-            double lv_BF_P_h__neg = 1.0/Math.sqrt(2) * (lv_BF_P_h.e()+lv_BF_P_h.pz());
-            double lv_BF_P_h__pos = 1.0/Math.sqrt(2) * (lv_BF_P_h.e()-lv_BF_P_h.pz());
-
-            // Get Affinity variables for individual particles
-            double zeta_h = lv_BF_P_h__neg / lv_BF_k_f__neg;
-            double z_N = lv_BF_P_h__neg / lv_BF_q__neg;
-            double theta_H = Math.atan2(lv_BF_qT.py()/lv_BF_qT.px());
-            double theta_delta_kT = Math.atan2(lv_BF_delta_k.py()/lv_BF_delta_k.px());
-            double kT_i = lv_BF_k_i.pt();
-            double delta_kT = lv_BF_delta_k.pt()
+            // Get Affinity variables for individual particles using the Breit frame coordinate vectors
+            double zeta_h = lv_BF_P_h__neg / lv_BF_k_f__neg; //NOTE: zeta_h = P_h^- / k_f^-
+            double z_N = lv_BF_P_h__neg / lv_BF_q__neg; //NOTE: z_N = P_h^- / q^-
+            LorentzVector lv_BF_delta_k = new LorentzVector(lv_BF_k_f); //NOTE: delta_kT = k_fT - P_hT and you haven't rotated into the Breit frame here so keep all components.
+            lv_BF_delta_k.sub(lv_BF_P_h);
+            LorentzVector lv_BF_qT = new LorentzVector(lv_BF_P_h);
+            lv_BF_qT.setPxPyPzE(-1.0/z_N * lv_BF_qT.px(), -1.0/z_N * lv_BF_qT.py(), -1.0/z_N * lv_BF_qT.pz(), -1.0/z_N * lv_BF_qT.e()); //NOTE: qT = - P_hT / z_N and you haven't rotated into the Breit frame here so keep all components.
+            double theta_H = Math.atan2(lv_BF_qT.vect().dot(yhat),lv_BF_qT.vect().dot(xhat)); //NOTE: theta_H = atan2(qT_y/qT_x)
+            double theta_delta_kT = Math.atan2(lv_BF_delta_k.vect().dot(yhat),lv_BF_delta_k.vect().dot(xhat)); //NOTE: theta_delta_kT = atan2(delta_k_y/delta_k_x)
+            double delta_kT = lv_BF_delta_k.vect().cross(zhat).mag(); //NOTE: delta_kT = |delta_k X zhat|
 
             // Add entries to the Affinity individual kinematics map //NOTE: The # of kinematics added here must exactly match the # set in this.setAddAffKin() above.
             kinematics.put(this._aff_ikin[k++],zeta_h);
             kinematics.put(this._aff_ikin[k++],z_N);
             kinematics.put(this._aff_ikin[k++],theta_H);
             kinematics.put(this._aff_ikin[k++],theta_delta_kT);
-            kinematics.put(this._aff_ikin[k++],(double)0.0/*x_N*/);
-            kinematics.put(this._aff_ikin[k++],kT_i);
             kinematics.put(this._aff_ikin[k++],delta_kT);
         }
     }
@@ -1213,7 +1219,7 @@ public class Kinematics {
         }
 
         // Get individual and group kinematics if requested
-        if (this._addAffKin)    { this.getAffKin(kinematics,list,ilist,lv_target,lv_beam,lv_mmax,q,gN,gNBoost); }//NOTE: ORDERING MATTERS HERE!
+        if (this._addAffKin)    { this.getAffKin(kinematics,list,ilist,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//NOTE: ORDERING MATTERS HERE!
         if (this._addIndivKin)  { this.getIndivKin(kinematics,list,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//TODO: Check this.
         if (this._addGroupKin)  { this.getGroupKin(kinematics,list,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//TODO: Check this.
 
