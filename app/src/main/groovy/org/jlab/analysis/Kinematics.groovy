@@ -402,12 +402,12 @@ public class Kinematics {
     */
     protected String[] keySet() { // can call from Analysis object
 
-        String[] arr = new String[this._configs.size() + this._defaults.length + this._aff_ikin.length + this._aff_kin.length + this._ikin.length + this._gkin.length + this._vars.size()];
+        String[] arr = new String[this._configs.size() + this._defaults.length + this._aff_kin.length + this._aff_ikin.length + this._ikin.length + this._gkin.length + this._vars.size()];
         int i = 0;
         for (String con : this._configs.keySet()) { arr[i] = con; i++; }
         for (String defaults : this._defaults)    { arr[i] = defaults; i++; } //NOTE: Ordering must match order variables are added to kinematics map.
-        for (String aff_ikin : this._aff_ikin)    { arr[i] = aff_ikin; i++ }
         for (String aff_kin : this._aff_kin)      { arr[i] = aff_kin; i++ }
+        for (String aff_ikin : this._aff_ikin)    { arr[i] = aff_ikin; i++ }
         for (String ikin : this._ikin)            { arr[i] = ikin; i++; }
         for (String gkin : this._gkin)            { arr[i] = gkin; i++; }
         for (String var : this._vars.keySet())    { arr[i] = var; i++; }
