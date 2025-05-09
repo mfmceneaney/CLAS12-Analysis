@@ -790,7 +790,8 @@ public class Kinematics {
 
         // Get the quark Lorentz vectors
         LorentzVector lv_LAB_k_f = q_out.lv();
-        LorentzVector lv_LAB_k_i = lv_LAB_k_f.sub(q);
+        LorentzVector lv_LAB_k_i = new LorentzVector(lv_LAB_k_f);
+        lv_LAB_k_i.sub(q);
 
         // Boost quark vectors to Breit frame
         LorentzVector lv_BF_k_f = new LorentzVector(lv_LAB_k_f);
