@@ -1117,7 +1117,7 @@ public class Analysis {
             boolean addedEvent = false;
             for (ArrayList<DecayProduct> l : list) {
                 if (l.size()==0) { continue; } // IMPORTANT!
-                HashMap<String, Double> kinematics = this._kinematics.processMCEvent(reader, event, l, decays.getParents(), decays.getFullParticleList());
+                HashMap<String, Double> kinematics = this._kinematics.processMCEvent(reader, event, l, decays.getParents(), decays.getParticleList());
                 if (kinematics.size()==0) { continue; } else { addedEvent = true; }
                 ArrayList<Double> data = new ArrayList<Double>();
                 if (this._require_e) {
@@ -1232,7 +1232,7 @@ public class Analysis {
             for (ArrayList<DecayProduct> l : list) {
                 if (l.size()==0) { continue; } //IMPORTANT!
                 HashMap<String, Double> kinematics;
-                if (this._useMC) { kinematics = this._kinematics.processMCEvent(reader, event, l, mcdecays.getParents(), mcdecays.getFullParticleList()); }
+                if (this._useMC) { kinematics = this._kinematics.processMCEvent(reader, event, l, mcdecays.getParents(), mcdecays.getParticleList()); }
                 else             { kinematics = this._kinematics.processEvent(reader, event, l, beam); }
                 if (kinematics.size()==0) { continue; } else { addedEvent = true; }
                 ArrayList<Double> data = new ArrayList<Double>();
@@ -1360,7 +1360,7 @@ public class Analysis {
             for (ArrayList<DecayProduct> l : list) {
                 if (l.size()==0) { continue; } //IMPORTANT!
                 HashMap<String, Double> kinematics = this._kinematics.processEvent(reader, event, (ArrayList<DecayProduct>)l.subList(0,this._decay.size()), beam);
-                HashMap<String, Double> mckinematics = this._kinematics.processMCEvent(reader, event, (ArrayList<DecayProduct>)l.subList(this._decay.size(),this._decay.size()*2), mcdecays.getParents(), mcdecays.getFullParticleList());
+                HashMap<String, Double> mckinematics = this._kinematics.processMCEvent(reader, event, (ArrayList<DecayProduct>)l.subList(this._decay.size(),this._decay.size()*2), mcdecays.getParents(), mcdecays.getParticleList());
                 if (kinematics.size()==0 || mckinematics.size()==0) { continue; } else { addedEvent = true; }
                 ArrayList<Double> data = new ArrayList<Double>();
                 if (this._require_e) { //TODO: Evaluate if this requirement makes sense for all kinematics?  Always should see scattered electron though...
