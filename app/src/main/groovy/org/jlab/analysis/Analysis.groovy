@@ -192,6 +192,15 @@ public class Analysis {
     }
 
     /**
+    * Set target spin lorentz vector in kinematics.
+    * @param lv_s
+    */
+    protected void setTargetSpinLV(LorentzVector lv_s) {
+
+        this._kinematics.setTargetSpinLV(lv_s);
+    }
+
+    /**
     * Set beam energy in constants and propagate changes to kinematics.
     * @param BE
     */
@@ -812,6 +821,15 @@ public class Analysis {
         this._addML = addML;
         this._kinematics.setAddMLPred(addML);
         this._kinematics.setAddMLLabel(addML);
+    }
+
+    /**
+    * Set target spin sign to record for MC samples.
+    * @param tspin_sign
+    */
+    protected void setTSpinSign(int tspin_sign) {
+
+        this._kinematics.setTSpinSign(tspin_sign);
     }
 
     /**

@@ -1,5 +1,5 @@
 # CLAS12-Analysis
-Generic analysis for CLAS12 in groovy to read HIPO events selecting all unique final state particle combinations corresponding to a given topology,
+This is a generic analysis application for CLAS12 in groovy to read HIPO events selecting all unique final state particle combinations corresponding to a given topology,
 compute generic event-level kinematics commonly used for SIDIS analyses, and output the selected combinations and their respective kinematics to ROOT TNTuples.
 
 The main purpose of this tool is to to compute event-level kinematics for all unique combinations of a 
@@ -98,7 +98,7 @@ As a legacy option, you may also run the application with `$C12ANALYSIS/bin/an-g
 
 Although this tool is primarily intended to have a generic application and primarily be used via execution of `$C12ANALYSIS/bin/run.sh` from the command line, you may also configure and run an analysis with more direct control over the configuration process by using a groovy script.  See the `examples` folder for, well, examples!
 
-Please note, the `Constants` and `ExtendedConstants` classes arrre not necessarily up to date, and you should also be especially careful to correctly set the beam energy and target mass.
+Please note, the `Constants` and `ExtendedConstants` classes are not necessarily up to date, and you should also be especially careful to correctly set the beam energy and target mass.
 
 ## Documentation
 Check out our [Read The Docs](https://clas12-analysis.readthedocs.io/en/latest/) page for the full groovy docs!
