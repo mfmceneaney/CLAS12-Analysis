@@ -33,6 +33,8 @@ public class Kinematics {
     protected String[]                             _defaults = ["Q2", "nu", "y", "x", "W", "Mh", "Mx","phi_s_up","phi_s_dn"]; //NOTE: OLD rest: "z", "xF", "pT", "phperp", "mass","mx"
     protected String[]                             _ikin = [];         // List of individual particle kinematics
     protected String[]                             _gkin = [];         // List of individual particle kinematics
+    protected String[]                             _aff_ikin = [];     // List of individual particle Affinity kinematics
+    protected String[]                             _aff_kin = [];      // List of general Affinity kinematics
     protected HashMap<String,ConfigVar>            _configs;      // HashMap of name to lambda expression for computing
     protected HashMap<String,SIDISVar>             _vars;         // HashMap of name to lambda expression for computing
     protected HashMap<String,Cut>                  _cuts;         // HashMap of name to boolean(double) lambda expression cut
@@ -57,6 +59,7 @@ public class Kinematics {
     protected static boolean _addIndivKin   = false;    // include individual kinematics
     protected static boolean _addGroupKin   = false;    // include grouped particles' kinematics
     protected static boolean _addMxMomenta  = false;    // include px, py, pz from missing mass lorentz vector for exclusive analysis
+    protected static boolean _addAffKin     = false;    // include Affinity partonic variables for MC matched events
 
     // built in lambdas
     protected ConfigVar _getEventNum = (ConfigVar)(HipoReader reader, Event event) -> {
@@ -307,6 +310,39 @@ public class Kinematics {
 
     protected void setTSpinSign(int tspin_sign) {this._tspin_sign = (tspin_sign>=0) ? 1 : -1; this._configs.put("tspin_sign",this._getTSpinSign);}
     protected boolean getTSpinSign() {return this._tspin_sign;}
+    // Option for adding Affinity partonic variables //TODO: Currently you have to call this after setting decay from command line...  Would be nice if order didn't matter.
+    protected void setAddAffKin(boolean addAffKin) {
+
+        // Check condition
+        this._addAffKin = addAffKin;
+        if (!addAffKin) return;
+
+        // Set general kinematics
+        this._aff_kin = ["aff_m_k_i","aff_m_k_f","aff_xi","aff_x_N","aff_theta_k_i","aff_k_iT"]; //NOTE: Make sure you change this too if you change the initial _aff_kin above!
+
+        // Set string arrays for TNTuple entry names
+        String[] aff_ikin_init = ["aff_zeta_","aff_zN_","aff_theta_H_","aff_theta_delta_kT_","aff_delta_kT_"];
+        String[] aff_ikin = new String[aff_ikin_init.size() * this._decay.size()];
+
+        // Loop this._decay pids and individual kinematics names and add to keyset
+        int k = 0;
+        HashMap<Integer,Integer> pidCounts = new HashMap<Integer,Integer>();
+        ArrayList<Integer> unique_pids = (ArrayList<Integer>)this._decay.stream().distinct().collect(Collectors.toList());
+        for (Integer pid : unique_pids) { pidCounts.put(pid,0); }
+        for (int i=0; i<this._decay.size(); i++) {
+            Integer pid = this._decay.get(i);
+            String pname = this._constants.getName(pid);
+            pidCounts[pid] += 1;
+            if (i!=0) { if (pid==this._decay.get(i-1)) { pname += pidCounts.get(pid); } } //NOTE: Append occurence number of pid to distinguish between different particles of same pid.
+            for (String aff_kin : aff_ikin_init) {
+                aff_ikin[k] = aff_kin + pname;
+                k++;
+            }
+        }
+
+        // Reset this._aff_ikin
+        this._aff_ikin     = aff_ikin;
+    }
 
     // Option for adding Lambda analysis variables
     protected void setAddLambdaKin(boolean addLambdaKin) {
@@ -398,6 +434,25 @@ public class Kinematics {
         int i = 0;
         for (String con : this._configs.keySet()) { arr[i] = con; i++; }
         for (String defaults : this._defaults)    { arr[i] = defaults; i++; } //NOTE: Ordering must match order variables are added to kinematics map.
+        for (String ikin : this._ikin)            { arr[i] = ikin; i++; }
+        for (String gkin : this._gkin)            { arr[i] = gkin; i++; }
+        for (String var : this._vars.keySet())    { arr[i] = var; i++; }
+
+        return arr;
+    }
+
+    /**
+    * Access keyset for all MC variables to access, useful for setting TNTuple entry names.
+    * @return mcKeySet
+    */
+    protected String[] mcKeySet() { // can call from Analysis object
+
+        String[] arr = new String[this._configs.size() + this._defaults.length + this._aff_kin.length + this._aff_ikin.length + this._ikin.length + this._gkin.length + this._vars.size()];
+        int i = 0;
+        for (String con : this._configs.keySet()) { arr[i] = con; i++; }
+        for (String defaults : this._defaults)    { arr[i] = defaults; i++; } //NOTE: Ordering must match order variables are added to kinematics map.
+        for (String aff_kin : this._aff_kin)      { arr[i] = aff_kin; i++ }
+        for (String aff_ikin : this._aff_ikin)    { arr[i] = aff_ikin; i++ }
         for (String ikin : this._ikin)            { arr[i] = ikin; i++; }
         for (String gkin : this._gkin)            { arr[i] = gkin; i++; }
         for (String var : this._vars.keySet())    { arr[i] = var; i++; }
@@ -749,6 +804,121 @@ public class Kinematics {
     * @param gN
     * @param gNBoost
     */
+    protected void getAffKin(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, ArrayList<DecayProduct> fullmclist, LorentzVector lv_target, LorentzVector lv_beam, LorentzVector lv_max, LorentzVector q, LorentzVector gN, Vector3 gNBoost) {
+
+        // Get outgoing quark from MC truth
+        DecayProduct q_out = new DecayProduct(0,0,0,0,0);
+        for (int i=0; i<fullmclist.size(); i++) {
+            DecayProduct p = fullmclist.get(i);
+            if (p.parent()==0 && p.pid()!=0 && Math.abs(p.pid())<=8) { //NOTE: Quark pids satisfy pid_q!=0 and abs(pid_q)\in[1,8].
+                q_out = new DecayProduct(p);
+                break; //NOTE: Only select the first particle to satisfy this condition.
+            }
+        }
+
+        // Get the quark Lorentz vectors
+        LorentzVector lv_LAB_k_f = q_out.lv();
+        LorentzVector lv_LAB_k_i = new LorentzVector(lv_LAB_k_f);
+        lv_LAB_k_i.sub(q);
+
+        // Boost quark vectors to Breit frame
+        LorentzVector lv_BF_k_f = new LorentzVector(lv_LAB_k_f);
+        lv_BF_k_f.boost(gNBoost);
+        LorentzVector lv_BF_k_i = new LorentzVector(lv_LAB_k_i);
+        lv_BF_k_i.boost(gNBoost);
+        LorentzVector lv_BF_q = new LorentzVector(q);
+        lv_BF_q.boost(gNBoost);
+        LorentzVector lv_BF_P = new LorentzVector(lv_target);
+        lv_BF_P.boost(gNBoost);
+        LorentzVector lv_BF_lprime = new LorentzVector(lv_max);
+        lv_BF_lprime.boost(gNBoost);
+
+        // Set coordinate unit vectors for Breit Frame
+        Vector3 zhat = lv_BF_P.vect(); // zhat is opposite the virtual photon momentum and along the target hadron momentum.  See Figs. 1 and 2 from http://arxiv.org/abs/1904.12882. (P)
+        zhat.unit();
+        Vector3 yhat = lv_BF_P.vect().cross(lv_BF_lprime.vect()); // yhat is perpendicular to the scattering plane. (P X l')
+        yhat.unit();
+        Vector3 xhat = lv_BF_P.vect().cross(lv_BF_lprime.vect()).cross(zhat); // xhat is the remaining orthogonal vector which forms a right-handed coordinate system. ((P X l') X P)
+        xhat.unit();
+
+        // Compute (+, -) light cone components for (k_i, k_f, P) using the Breit frame coordinate vectors
+        double lv_BF_k_i__pos = 1.0/Math.sqrt(2) * (lv_BF_k_i.e()+lv_BF_k_i.vect().dot(zhat));
+        double lv_BF_k_i__neg = 1.0/Math.sqrt(2) * (lv_BF_k_i.e()-lv_BF_k_i.vect().dot(zhat));
+        double lv_BF_k_f__pos = 1.0/Math.sqrt(2) * (lv_BF_k_f.e()+lv_BF_k_f.vect().dot(zhat));
+        double lv_BF_k_f__neg = 1.0/Math.sqrt(2) * (lv_BF_k_f.e()-lv_BF_k_f.vect().dot(zhat));
+        double lv_BF_q__pos   = 1.0/Math.sqrt(2) * (lv_BF_q.e()+lv_BF_q.vect().dot(zhat));
+        double lv_BF_q__neg   = 1.0/Math.sqrt(2) * (lv_BF_q.e()-lv_BF_q.vect().dot(zhat));
+        double lv_BF_P__pos   = 1.0/Math.sqrt(2) * (lv_BF_P.e()+lv_BF_P.vect().dot(zhat));
+        double lv_BF_P__neg   = 1.0/Math.sqrt(2) * (lv_BF_P.e()-lv_BF_P.vect().dot(zhat));
+
+        // Grab previously calculated kinematics
+        double Q2 = (double)kinematics.get("Q2");
+        double x  = (double)kinematics.get("x");
+
+        // Compute Affinity variables using the Breit frame coordinate vectors
+        double m_k_i     = Math.sqrt(Math.abs(lv_BF_k_i.mass2())); //NOTE: From http://arxiv.org/abs/1904.12882: eq. 2.5
+        double m_k_f     = Math.sqrt(Math.abs(lv_BF_k_f.mass2()));
+        double xi        = lv_BF_k_i__pos / lv_BF_P__pos; //NOTE: From http://arxiv.org/abs/1904.12882: eq. 8.6
+        double x_N       = 2.0 * x / ( 1.0 + Math.sqrt((double)(1.0 + 4.0 * x * x * lv_target.mass2() / Q2)) ); //NOTE: From http://arxiv.org/abs/1904.12882: eq. 3.2 //NOTE: Denominator term cast is necessary to avoid some weird type errors about java.BigDecimal...
+        double x_N_hat   = - lv_BF_q__pos / lv_BF_k_i__pos; //NOTE: From http://arxiv.org/abs/1904.12882: eq. 8.6
+        double theta_k_i = Math.atan2(lv_BF_k_i.vect().dot(yhat),lv_BF_k_i.vect().dot(xhat));
+        double k_iT = lv_BF_k_i.vect().cross(zhat).mag();
+
+        // Add entries to the affinity kinematics map //NOTE: The # of kinematics added here must exactly match the # set in this.setAddAffKin() above.
+        int j = 0;
+        kinematics.put(this._aff_kin[j++],m_k_i);
+        kinematics.put(this._aff_kin[j++],m_k_f);
+        kinematics.put(this._aff_kin[j++],xi);
+        kinematics.put(this._aff_kin[j++],x_N);
+        kinematics.put(this._aff_kin[j++],theta_k_i);
+        kinematics.put(this._aff_kin[j++],k_iT);
+        
+        // Add individual hadron kinematics
+        int k = 0;
+        for (int i=0; i<list.size(); i++) { //IMPORTANT: start at 0 since beam is separate from list { //NOTE: IMPORTANT: Should already be ordered same as this._decay
+            DecayProduct p = list.get(i);
+            if (!this._strict) { p.changeMass(this._decay.get(i)); } //NOTE: Calculate with assumed mass unless strict option selected
+
+            // Grab lorentz vectors and boost
+            LorentzVector lv_LAB_P_h = p.lv();
+            LorentzVector lv_BF_P_h = new LorentzVector(lv_LAB_P_h);
+            lv_BF_P_h.boost(gNBoost);
+
+            // Compute (+, -) light cone components for P_h using the Breit frame coordinate vectors
+            double lv_BF_P_h__pos = 1.0/Math.sqrt(2) * (lv_BF_P_h.e()+lv_BF_P_h.vect().dot(zhat));
+            double lv_BF_P_h__neg = 1.0/Math.sqrt(2) * (lv_BF_P_h.e()-lv_BF_P_h.vect().dot(zhat));
+
+            // Get Affinity variables for individual particles using the Breit frame coordinate vectors
+            double zeta_h = lv_BF_P_h__neg / lv_BF_k_f__neg; ///NOTE: From http://arxiv.org/abs/1904.12882: eq. 8.6 // zeta_h = P_h^- / k_f^-
+            double z_N = lv_BF_P_h__neg / lv_BF_q__neg; ///NOTE: From http://arxiv.org/abs/1904.12882: eq. 8.6 // z_N = P_h^- / q^-
+            double z_N_hat = lv_BF_k_f__neg / lv_BF_q__neg; ///Note: From http://arxiv.org/abs/1904.12882: eq. 8.6 // z_N_hat = k_f^- / q^-
+            LorentzVector lv_BF_delta_k = new LorentzVector(lv_BF_k_f); //NOTE: //From http://arxiv.org/abs/1904.12882: eq. 8.2: delta_kT = k_fT - P_hT and you haven't rotated into the Breit frame here so keep all components.
+            lv_BF_delta_k.sub(lv_BF_P_h);
+            LorentzVector lv_BF_qT = new LorentzVector(lv_BF_P_h);
+            lv_BF_qT.setPxPyPzE(-1.0/z_N * lv_BF_qT.px(), -1.0/z_N * lv_BF_qT.py(), -1.0/z_N * lv_BF_qT.pz(), -1.0/z_N * lv_BF_qT.e()); //NOTE: From http://arxiv.org/abs/1904.12882: eq. 5.3 // qT = - P_hT / z_N and you haven't rotated into the Breit frame here so keep all components.
+            double theta_H = Math.atan2(lv_BF_qT.vect().dot(yhat),lv_BF_qT.vect().dot(xhat)); //NOTE: theta_H = atan2(qT_y/qT_x)
+            double theta_delta_kT = Math.atan2(lv_BF_delta_k.vect().dot(yhat),lv_BF_delta_k.vect().dot(xhat)); //NOTE: theta_delta_kT = atan2(delta_k_y/delta_k_x)
+            double delta_kT = lv_BF_delta_k.vect().cross(zhat).mag(); //NOTE: delta_kT = |delta_k X zhat|
+
+            // Add entries to the Affinity individual kinematics map //NOTE: The # of kinematics added here must exactly match the # set in this.setAddAffKin() above.
+            kinematics.put(this._aff_ikin[k++],zeta_h);
+            kinematics.put(this._aff_ikin[k++],z_N);
+            kinematics.put(this._aff_ikin[k++],theta_H);
+            kinematics.put(this._aff_ikin[k++],theta_delta_kT);
+            kinematics.put(this._aff_ikin[k++],delta_kT);
+        }
+    }
+
+    /**
+    * Compute additional individual particle kinematics.
+    * NOTE: Kinematics should already have nu and W entries for event!
+    * @param kinematics
+    * @param list
+    * @param lv_parent
+    * @param q
+    * @param gN
+    * @param gNBoost
+    */
     protected void getIndivKin(HashMap<String, Double> kinematics, ArrayList<DecayProduct> list, LorentzVector lv_target, LorentzVector lv_beam, LorentzVector lv_max, LorentzVector q, LorentzVector gN, Vector3 gNBoost) {
         
         // Add individual hadron kinematics
@@ -1072,7 +1242,7 @@ public class Kinematics {
     * @param ilist
     * @return kinematics
     */
-    protected HashMap<String, Double> getMCDefaultVars(ArrayList<DecayProduct> list, ArrayList<DecayProduct> ilist) {
+    protected HashMap<String, Double> getMCDefaultVars(ArrayList<DecayProduct> list, ArrayList<DecayProduct> ilist, ArrayList<DecayProduct> fullmclist) {
 
         HashMap<String, Double> kinematics = new HashMap<String, Double>();
         if (!this._require_e) { return kinematics; } // Return empty hashmap if don't require electron
@@ -1158,6 +1328,7 @@ public class Kinematics {
         }
 
         // Get individual and group kinematics if requested
+        if (this._addAffKin)    { this.getAffKin(kinematics,list,fullmclist,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//NOTE: ORDERING MATTERS HERE!
         if (this._addIndivKin)  { this.getIndivKin(kinematics,list,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//TODO: Check this.
         if (this._addGroupKin)  { this.getGroupKin(kinematics,list,lv_target,lv_beam,lv_max,q,gN,gNBoost); }//TODO: Check this.
 
@@ -1222,14 +1393,14 @@ public class Kinematics {
     * @param list
     * @return kinematics
     */
-    protected HashMap<String,Double> processMCEvent(HipoReader reader, Event event, ArrayList<DecayProduct> list, ArrayList<DecayProduct> ilist) { 
+    protected HashMap<String,Double> processMCEvent(HipoReader reader, Event event, ArrayList<DecayProduct> list, ArrayList<DecayProduct> ilist, ArrayList<DecayProduct> fullmclist) { 
 	
         this._configs.put("helicity",this._getHelicityMC);
 
         int beamIndex = 3; // TODO: Fairly certain this should be the same for all lund banks... Beam, Target, q, e, final state particles...
         DecayProduct beam; HashMap<String,Double> map = new HashMap<String,Double>();
         try { beam = ilist.get(beamIndex); } catch (Exception e) { System.out.println(" *** WARNING *** ilist empty setting beam to 0"); beam = new DecayProduct(0,0,0,0,0); return map; }
-        HashMap<String,Double> defaults = this.getMCDefaultVars(list,ilist);
+        HashMap<String,Double> defaults = this.getMCDefaultVars(list,ilist,fullmclist);
         for (String key : defaults.keySet()) { map.put(key,defaults.get(key)); }
         HashMap<String,Double> var = this.getSIDISVariables(list, beam);
         for (String key : var.keySet()) { map.put(key,var.get(key)); }
