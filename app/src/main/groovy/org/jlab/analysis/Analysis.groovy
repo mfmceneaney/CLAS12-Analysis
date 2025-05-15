@@ -66,6 +66,7 @@ public class Analysis {
     protected static boolean _addEvNum     = false;					// include event number in TNTuple (always added as zeroeth entry or just after run #)
     protected static boolean _addML        = false;					// include ML predictions and labels in TNTuple (NOTE: NOT SURE WHERE THIS WILL BE ADDED... TODO...)
     protected static boolean _lambdaKin    = false;					// include special two particle decay kinematics for Lambda baryons
+    protected static boolean _affKin       = false;					// include Affinity partonic kinematics
     protected static boolean _indivKin     = false;					// include extra individual particle kinematics
     protected static boolean _groupKin     = false;					// include extra grouped particles' kinematics
     protected static boolean _requireQA    = false;                 // require clasqaDB check for run and event #'s
@@ -227,6 +228,7 @@ public class Analysis {
         Collections.sort(this._decay); //IMPORTANT: Combinations algorithm relies on this in Decays.groovy.
         this._kinematics.setDecay(decay); //NOTE: Using unsorted decay here though.
         if (this._match) this.setMatch(this._match); //NOTE: Reset after setting decay
+        if (this._affKin) { this.setAffKin(this._affKin); } //NOTE: Reset after setting decay just in case.
         if (this._indivKin) { this.setIndivKin(this._indivKin); } //NOTE: Reset after setting decay just in case.
     }
 
@@ -328,6 +330,7 @@ public class Analysis {
             this._kinematics.setAddGroupKin(true);//NOTE: This must occur after calling setGroups() above!
         }
         if (this._match) this.setMatch(this._match); //NOTE: Reset after setting decay
+        if (this._affKin) { this.setAffKin(this._affKin); } //NOTE: Reset after setting decay just in case.
         if (this._indivKin) { this.setIndivKin(this._indivKin); } //NOTE: Reset after setting decay just in case.
         if ((this._useMC && !this._combo && !this._match) || this._combo || this._match ) { this.setDPMap(); } //NOTE: Set daughter parent map from decays and groups.
     }
@@ -823,6 +826,17 @@ public class Analysis {
     }
 
     /**
+    * Set boolean for including Affinity partonic kinematics
+    * and propagate changes to kinematics.
+    * @param AK
+    */
+    protected void setAffKin(boolean AK) {
+
+        this._affKin = AK;
+        this._kinematics.setAddAffKin(AK);
+    }
+
+    /**
     * Set boolean for including more individual particle kinematics (relevant for dihadron analysis) 
     * and propagate changes to kinematics.
     * @param IK
@@ -1103,11 +1117,11 @@ public class Analysis {
             boolean addedEvent = false;
             for (ArrayList<DecayProduct> l : list) {
                 if (l.size()==0) { continue; } // IMPORTANT!
-                HashMap<String, Double> kinematics = this._kinematics.processMCEvent(reader, event, l, decays.getParents());
+                HashMap<String, Double> kinematics = this._kinematics.processMCEvent(reader, event, l, decays.getParents(), decays.getParticleList());
                 if (kinematics.size()==0) { continue; } else { addedEvent = true; }
                 ArrayList<Double> data = new ArrayList<Double>();
                 if (this._require_e) {
-                    for (String key : this._kinematics.keySet()) { data.add(kinematics.get(key)); }
+                    for (String key : this._kinematics.mcKeySet()) { data.add(kinematics.get(key)); }
                     data.add(beam.px());
                     data.add(beam.py());
                     data.add(beam.pz());
@@ -1218,7 +1232,7 @@ public class Analysis {
             for (ArrayList<DecayProduct> l : list) {
                 if (l.size()==0) { continue; } //IMPORTANT!
                 HashMap<String, Double> kinematics;
-                if (this._useMC) { kinematics = this._kinematics.processMCEvent(reader, event, l, mcdecays.getParents()); }
+                if (this._useMC) { kinematics = this._kinematics.processMCEvent(reader, event, l, mcdecays.getParents(), mcdecays.getParticleList()); }
                 else             { kinematics = this._kinematics.processEvent(reader, event, l, beam); }
                 if (kinematics.size()==0) { continue; } else { addedEvent = true; }
                 ArrayList<Double> data = new ArrayList<Double>();
@@ -1346,12 +1360,12 @@ public class Analysis {
             for (ArrayList<DecayProduct> l : list) {
                 if (l.size()==0) { continue; } //IMPORTANT!
                 HashMap<String, Double> kinematics = this._kinematics.processEvent(reader, event, (ArrayList<DecayProduct>)l.subList(0,this._decay.size()), beam);
-                HashMap<String, Double> mckinematics = this._kinematics.processMCEvent(reader, event, (ArrayList<DecayProduct>)l.subList(this._decay.size(),this._decay.size()*2), mcdecays.getParents());
+                HashMap<String, Double> mckinematics = this._kinematics.processMCEvent(reader, event, (ArrayList<DecayProduct>)l.subList(this._decay.size(),this._decay.size()*2), mcdecays.getParents(), mcdecays.getParticleList());
                 if (kinematics.size()==0 || mckinematics.size()==0) { continue; } else { addedEvent = true; }
                 ArrayList<Double> data = new ArrayList<Double>();
                 if (this._require_e) { //TODO: Evaluate if this requirement makes sense for all kinematics?  Always should see scattered electron though...
                     for (String key : this._kinematics.keySet()) { data.add(kinematics.get(key)); }
-                    for (String key : this._kinematics.keySet()) { data.add(mckinematics.get(key)); }
+                    for (String key : this._kinematics.mcKeySet()) { data.add(mckinematics.get(key)); }
                     // Add REC::Particle Beam
                     data.add(beam.px());
                     data.add(beam.py());
@@ -1485,7 +1499,7 @@ public class Analysis {
         if (this._require_e) {
             for (String kin : this._kinematics.keySet()) { this._tupleNames += kin + ":"; }
             if (this._match) {//NOTE: Double kinematics if matching REC/MC banks
-                for (String kin : this._kinematics.keySet()) { this._tupleNames += kin + "_mc" + ":"; }
+                for (String kin : this._kinematics.mcKeySet()) { this._tupleNames += kin + "_mc" + ":"; }
             }
         }
         String[] names = ["px_",":py_",":pz_",":beta_"];

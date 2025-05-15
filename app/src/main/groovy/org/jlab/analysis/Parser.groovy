@@ -81,6 +81,7 @@ public class Parser {
         System.out.println("\t-rn            : Include run # in NTuple");
         System.out.println("\t-en            : Include event # in NTuple");
         System.out.println("\t-lk            : Include extra kinematics for Lambda analysis");
+        System.out.println("\t-ak            : Include Affinity partonic kinematics for MC matched-events");
         System.out.println("\t-ik            : Include extra kinematics for individual particles");
         System.out.println("\t-be   [float]  : Beam energy (GeV) for kinematics   (def: 10.6)");
         System.out.println("\t-tm   [float]  : Target mass (GeV) for kinematics   (def: 0.9383)");
@@ -350,6 +351,7 @@ public class Parser {
                 case "-en":  analysis.setAddEvNum(true); valid_opt = true; break;
                 case "-ml":  analysis.setAddML(true); valid_opt = true; break;
                 case "-lk":  analysis.setLambdaKin(true); valid_opt = true; break;
+                case "-ak":  analysis.setAffKin(true); valid_opt = true; break;
                 case "-ik":  analysis.setIndivKin(true); valid_opt = true; break;
                 case "-qa":  analysis.setQA(true); valid_opt = true; break;
                 case "-fc":  analysis.setFC(true); valid_opt = true; break;

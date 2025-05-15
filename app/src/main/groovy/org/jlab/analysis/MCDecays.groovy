@@ -110,6 +110,11 @@ public class MCDecays {
             double vz = this._bank.getFloat("vz", i);
 
             DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,i+1,parent,daughter,ppid,gppid);
+
+            // Set mass
+            double m  = this._bank.getFloat("mass", i);
+            p.m(m);
+
             this._particleList.add(p);
         }
     }
@@ -152,6 +157,11 @@ public class MCDecays {
             double vz = this._bank.getFloat("vz", i);
 
             DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,i+1,parent,daughter,ppid,gppid);
+
+            // Set mass
+            double m  = this._bank.getFloat("mass", i);
+            p.m(m);
+
             this._particleList.add(p);
         }
     }

@@ -110,6 +110,7 @@ public class DecayProduct {
         this.setIndices(p.index(),p.parent(),p.daughter());//NOTE: ADDED
         this.ppid(p.ppid());//NOTE: ADDED
         this.gppid(p.gppid());//NOTE: ADDED
+        this.m(p.m());
     }
 
     /**
@@ -130,6 +131,7 @@ public class DecayProduct {
         this.setIndices(p.index(),p.parent(),p.daughter());//NOTE: ADDED
         this.ppid(p.ppid());//NOTE: ADDED
         this.gppid(p.gppid());//NOTE: ADDED
+        this.m(p.m());
     }
 
     /**
