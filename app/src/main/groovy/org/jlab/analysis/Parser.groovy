@@ -92,6 +92,10 @@ public class Parser {
         System.out.println("\t-qa            : Use clasqaDB check");
         System.out.println("\t-qm   [string] : Specify clasqaDB check method (def: OkForAsymmetry)");
         System.out.println("\t-fc   [int]    : Use fiducial volume cuts (0-loose, 1-med, 2-tight)");
+        System.out.println("\t-momc [string, int, int] : Use momentum corrections. Parameters:");
+        System.out.println("\t                           * dataset (Fall2018 or Spring2019)");
+        System.out.println("\t                           * pass version (1,2,3,...)");
+        System.out.println("\t                           * outbending (0 : false, 1 : true)");
         System.out.println("\t-xF   [float]  : Minimum xF cut for events          (def: none)");
         System.out.println("\t-m    [float]  : Maximum mass cut for events        (def: none)");
         System.out.println("\t-'[var]>(<)[float]' : Cut kinematic variable");
@@ -370,6 +374,11 @@ public class Parser {
                 case "-fc":
                     if (args.length>2) { try { analysis.setFCLevel(true,Integer.parseInt(args[i+1])); valid_opt = true; break; }
                     catch (Exception exception) { System.out.println(" WARNING: Using loose fiducial cuts.  Level not specified."); } }
+
+                // Momentum corrections option
+                case "-momc":
+                    if (args.length>2) { try { analysis.setMCVersion(args[i+1],Integer.parseInt(args[i+2]),Integer.parseInt(args[i+3])); valid_opt = true; break; }
+                    catch (Exception exception) { System.out.println(" WARNING: Using Momentum Correction version for dataset: Fall2018, pass: 1."); } }
 
                 // PID tag option
                 case "-tag":

@@ -43,6 +43,7 @@ public class Analysis {
     protected QADB                           _qa;
     protected String                         _qaMethod;
     protected FiducialCuts                   _fiducialCuts;
+    protected MomentumCorrections            _momCorrections;
     protected String                         _inPath;
     protected String                         _outPath;
     protected ROOTFile                       _outFile;
@@ -71,6 +72,7 @@ public class Analysis {
     protected static boolean _groupKin     = false;					// include extra grouped particles' kinematics
     protected static boolean _requireQA    = false;                 // require clasqaDB check for run and event #'s
     protected static boolean _requireFC    = false;                 // require Fiducial cuts using event #'s and pid
+    protected static boolean _requireMC    = false;                 // require momentum corrections for e-, pi+, pi-, p depending on dataset and pass version
     protected static boolean _match        = false;                 // require matching decay in MC (with same parent, specify this._parent if you want a specific parent)
     protected static boolean _combo        = false;                 // use combo of MC::Lund and REC::Particle particles for tuple and kinematics
     protected static boolean _useMC        = false;                 // fill tuple with MC::Lund kinematics instead of REC::Particle
@@ -97,6 +99,7 @@ public class Analysis {
         this._kinematics       = new Kinematics(this._constants, this._decay, this._groups);
         this._qaMethod         = new String("OkForAsymmetry");
         this._fiducialCuts     = new FiducialCuts(this._constants);
+        this._momCorrections   = new MomentumCorrections();
         this._inPath           = new String("");
         this._outPath          = new String("Analysis.root");
         this._tupleNames       = new String("");
@@ -123,6 +126,7 @@ public class Analysis {
         this._kinematics       = new Kinematics(this._constants, this._decay, this._groups);
         this._qaMethod         = new String("OkForAsymmetry");
         this._fiducialCuts     = new FiducialCuts(this._constants);
+        this._momCorrections   = new MomentumCorrections();
         this._inPath           = inPath;
         this._outPath          = outPath;
         this._tupleNames       = new String("");
@@ -153,6 +157,7 @@ public class Analysis {
         this._kinematics       = new Kinematics(this._constants, this._mcdecay, this._groups);
         this._qaMethod         = new String("OkForAsymmetry");
         this._fiducialCuts     = new FiducialCuts(this._constants);
+        this._momCorrections   = new MomentumCorrections();
         this._inPath           = inPath;
         this._outPath          = outPath;
         this._tupleNames       = new String("");
@@ -899,6 +904,27 @@ public class Analysis {
     }
 
     /**
+    * Set boolean for requiring momentum corrections
+    * @param MC
+    */
+    protected void setMC(boolean MC) {
+
+        this._requireMC = MC;
+    }
+
+    /**
+    * Set the dataset ("Fall2018" or "Spring2019") and pass version for momentum corrections
+    * @param dataset
+    * @param pass
+    * @param outbending
+    */
+    protected void setMCVersion(String dataset, int pass, int outbending) {
+
+        this._requireMC = true;
+        this._momCorrections = new MomentumCorrections(dataset,pass,(boolean)(outbending==1));
+    }
+
+    /**
     * Set boolean for requiring matching decay in mc.
     * @param MC
     */
@@ -994,7 +1020,7 @@ public class Analysis {
 
             // Read needed banks only once!
             if (this._requireFC) { this._fiducialCuts.setArrays(reader,event); }
-            Decays decays = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC); // Fiducial cuts implemented in Decays object
+            Decays decays = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC,this._momCorrections,this._requireMC); // Fiducial cuts implemented in Decays object
 
             // Check for event pid tag and filters if requested
             if (this._require_tag) {
@@ -1223,7 +1249,7 @@ public class Analysis {
 
             // Read needed banks only once!
             if (this._requireFC) { this._fiducialCuts.setArrays(reader,event); }
-            Decays decays     = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC); // Fiducial cuts implemented in Decays object
+            Decays decays     = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC,this._momCorrections,this._requireMC); // Fiducial cuts implemented in Decays object
             MCDecays mcdecays = new MCDecays(this._mcdecay,this._parents,this._dpMap,reader,event,this._constants);
 
             // Check for event pid tag and filters if requested
@@ -1344,7 +1370,7 @@ public class Analysis {
 
             // Read needed banks only once!
             if (this._requireFC) { this._fiducialCuts.setArrays(reader,event); }
-            Decays decays     = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC); // Fiducial cuts implemented in Decays object
+            Decays decays     = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC,this._momCorrections,this._requireMC); // Fiducial cuts implemented in Decays object
 
             // Pull full REC::Particle list for MC::Matching
             ArrayList<DecayProduct> fullParticleList = decays.getFullParticleList();
