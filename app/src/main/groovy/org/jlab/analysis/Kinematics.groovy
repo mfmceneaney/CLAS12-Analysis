@@ -165,6 +165,11 @@ public class Kinematics {
         this._cuts      = new HashMap<String,Cut>();
 
         this._configs.put("helicity",this._getHelicity);
+
+        LorentzVector lv_s = new LorentzVector((double)0.0,(double)0.0,(double)0.0,(double)0.0);
+        this._lv_s_up = new LorentzVector(lv_s);
+        this._lv_s_dn = new LorentzVector(lv_s);
+        this._lv_s_dn.invert();
     }
 
     /**
