@@ -36,6 +36,8 @@ public class Decays {
     protected Constants                          _constants;
     protected FiducialCuts                       _FC;
     protected boolean                            _requireFC;
+    protected MomentumCorrections                _MC;
+    protected boolean                            _requireMC;
     protected ArrayList<DecayProduct>            _pidList;        // List of lists for each pid in decay
     protected ArrayList<ArrayList<DecayProduct>> _comboPidList;
     protected ArrayList<DecayProduct>            _chargeList;     // List of lists for each charge in decay
@@ -50,8 +52,10 @@ public class Decays {
     * @param constants
     * @param FC
     * @param requireFC
+    * @param MC
+    * @param requireMC
     */
-    public Decays(ArrayList<Integer> decay, HipoReader reader, Integer runnum, Event event, Constants constants, FiducialCuts FC, boolean requireFC) {
+    public Decays(ArrayList<Integer> decay, HipoReader reader, Integer runnum, Event event, Constants constants, FiducialCuts FC, boolean requireFC, MomentumCorrections MC, boolean requireMC) {
 
         this._decay     = decay;
         this._reader    = reader;
@@ -64,6 +68,8 @@ public class Decays {
         this._constants = constants;
         this._FC        = FC;
         this._requireFC = requireFC;
+        this._MC        = MC;
+        this._requireMC = requireMC;
 
         this._particleList    = new ArrayList<DecayProduct>();
         this._pidList         = new ArrayList<DecayProduct>();
@@ -130,6 +136,7 @@ public class Decays {
             p.sector(sector);
             p.detector_status(detector_status);
             p.detector_chi2ndf(detector_chi2ndf); //TODO: Figure out best way to map to this......
+            if (this._requireMC) p = this._MC.applyMomentumCorrection(p);
             if (!this._requireFC) { this._particleList.add(p); continue; }
             // if (this._sectorCut) //TODO
             if (this._requireFC) { if (!this._FC.applyCuts(this._runnum, i, pid, this._event, this._reader)) continue; }
@@ -201,6 +208,7 @@ public class Decays {
             p.sector(sector);
             p.detector_status(detector_status);
             p.detector_chi2ndf(detector_chi2ndf); //TODO: Figure out best way to map to this......
+            if (this._requireMC) p = this._MC.applyMomentumCorrection(p);
             if (!this._requireFC) { this._particleList.add(p); continue; }
             // if (this._sectorCut) //TODO
             if (this._requireFC) { if (!this._FC.applyCuts(this._runnum, i, pid, this._event, this._reader)) continue; }
@@ -383,6 +391,7 @@ public class Decays {
             p.sector(sector);
             p.detector_status(detector_status);
             p.detector_chi2ndf(detector_chi2ndf); //TODO: Figure out best way to map to this......
+            if (this._requireMC) p = this._MC.applyMomentumCorrection(p);
             if (!this._requireFC) { this._particleList.add(p); continue; }
             // if (this._sectorCut) //TODO
             if (this._requireFC) { if (!this._FC.applyCuts(this._runnum, i, pid, this._event, this._reader)) continue; }
