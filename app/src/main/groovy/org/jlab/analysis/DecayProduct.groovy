@@ -540,7 +540,7 @@ public class DecayProduct {
         double py = p * Math.sin(theta) * Math.sin(phi);
         double pz = p * Math.cos(theta);
 
-        this.setPxPyPzM(px,py,pz,m);
+        this.setPxPyPzM(px,py,pz,mass);
     }
 
     /**
