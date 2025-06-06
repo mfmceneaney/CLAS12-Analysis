@@ -528,6 +528,22 @@ public class DecayProduct {
     }
 
     /**
+    * Set particle's lorentz vector using particle mass instead of energy.
+    * @param px
+    * @param py
+    * @param pz
+    * @param mass
+    */
+    protected void setPThetaPhiM(double p, double theta, double phi, double mass) {
+
+        double px = p * Math.sin(theta) * Math.cos(phi);
+        double py = p * Math.sin(theta) * Math.sin(phi);
+        double pz = p * Math.cos(theta);
+
+        this.setPxPyPzM(px,py,pz,m);
+    }
+
+    /**
     * Set particle's x vertex.
     * @param vx
     */
