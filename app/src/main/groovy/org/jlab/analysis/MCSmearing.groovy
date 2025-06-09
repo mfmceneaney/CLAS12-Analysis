@@ -117,6 +117,8 @@ public class MCSmearing {
     */
     protected void loadJSON(String jsonpath) {
 
+        this._jsonpath = jsonpath;
+
         // Load the JSON data
         File jsonFile = new File(this._jsonpath);
         JsonSlurper jsonSlurper = new JsonSlurper();
