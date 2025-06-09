@@ -136,6 +136,7 @@ public class MCSmearing {
     protected void loadJSON(String jsonpath) {
 
         this._jsonpath = jsonpath;
+        System.out.println("INFO: Loading MC smearing maps from: "+this._jsonpath);
 
         // Load the JSON data
         File jsonFile = new File(this._jsonpath);
@@ -152,7 +153,7 @@ public class MCSmearing {
         // Load bin limits map
         LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>> mombinlims_map = new LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>>();
         if (jsonmap.containsKey(this._mombinlims_key)) {
-            System.out.println("Loading momentum bin limits ('"+this._mombinlims_key+"') map...");
+            System.out.println("INFO: Loading momentum bin limits ('"+this._mombinlims_key+"') map...");
             mombinlims_map = jsonmap.get(this._mombinlims_key);
         }
 
@@ -173,7 +174,7 @@ public class MCSmearing {
 
         // Load MC resolution maps
         if (jsonmap.containsKey(this._resolution_mom_map_key)) {
-            System.out.println("Loading momentum ('"+this._resolution_mom_map_key+"') MC resolution map...");
+            System.out.println("INFO: Loading momentum ('"+this._resolution_mom_map_key+"') MC resolution map...");
             LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>> mc_resolution_mom_map = jsonmap.get(this._resolution_mom_map_key);
 
             // Add entries to map using correct types since JSON only stores keys as strings
@@ -189,7 +190,7 @@ public class MCSmearing {
             }
         }
         if (jsonmap.containsKey(this._resolution_theta_map_key)) {
-            System.out.println("Loading polar angle ('"+this._resolution_theta_map_key+"') MC resolution map...");
+            System.out.println("INFO: Loading polar angle ('"+this._resolution_theta_map_key+"') MC resolution map...");
             LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>> mc_resolution_theta_map = jsonmap.get(this._resolution_theta_map_key);
 
             // Add entries to map using correct types since JSON only stores keys as strings
@@ -205,7 +206,7 @@ public class MCSmearing {
             }
         }
         if (jsonmap.containsKey(this._resolution_phi_map_key)) {
-            System.out.println("Loading azimuthal angle ('"+this._resolution_phi_map_key+"') MC resolution map...");
+            System.out.println("INFO: Loading azimuthal angle ('"+this._resolution_phi_map_key+"') MC resolution map...");
             LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>> mc_resolution_phi_map = jsonmap.get(this._resolution_phi_map_key);
 
             // Add entries to map using correct types since JSON only stores keys as strings
@@ -220,6 +221,7 @@ public class MCSmearing {
                 this._mc_resolution_phi_map.put(pid,smearing_map);
             }
         }
+        System.out.println("INFO: Finished loading MC smearing maps.");
 
         // Create random number generator
         this._rng = new Random();
