@@ -44,6 +44,7 @@ public class MCDecays {
     protected ArrayList<DecayProduct>            _parChargeList;     // List of lists for each charge in parent decay
     protected ArrayList<ArrayList<DecayProduct>> _parComboChargeList;
     protected LinkedHashMap<Integer,Integer>     _recMatchingMap;
+    protected boolean                            _setFullParticleList; // Flag indicating whether full  particle list has been set.
 
     /** 
     * Constructor stub
@@ -89,6 +90,12 @@ public class MCDecays {
     */
     protected void setFullParticleList() {
 
+        // Set flag
+        this._setFullParticleList = true;
+
+        // Reset particle list
+        this._particleList = new ArrayList<DecayProduct>();
+
         this._event.read(this._bank);
         for (int i = 0; i < this._bank.getRows(); i++) {
 
@@ -125,7 +132,7 @@ public class MCDecays {
     */
     protected ArrayList<DecayProduct> getFullParticleList() {
 
-        this.setFullParticleList();
+        if (!this._setFullParticleList) this.setFullParticleList();
 
         return this._particleList;
     }
