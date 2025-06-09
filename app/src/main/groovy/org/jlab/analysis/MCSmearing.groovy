@@ -140,7 +140,8 @@ public class MCSmearing {
         // Load the JSON data
         File jsonFile = new File(this._jsonpath);
         JsonSlurper jsonSlurper = new JsonSlurper();
-        LinkedHashMap<String, Object> jsonmap = (LinkedHashMap<String, Object>)jsonSlurper.parse(jsonFile);
+        Map _jsonmap = (Map)jsonSlurper.parse(jsonFile); //NOTE: groovy.json.JsonSlurper uses the internal class LazyMap so you have to read this as `Map` and then convert to LinkedHashMap since the class hierarchies are not connected.
+        LinkedHashMap<String, LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>>> jsonmap = new LinkedHashMap<String, LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>>>(_jsonmap);
 
         // Initialize maps
         this._bincuts_map = new LinkedHashMap<Integer, LinkedHashMap<Integer,Cut>>();
@@ -152,17 +153,18 @@ public class MCSmearing {
         LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>> mombinlims_map = new LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>>();
         if (jsonmap.containsKey(this._mombinlims_key)) {
             System.out.println("Loading momentum bin limits ('"+this._mombinlims_key+"') map...");
-            mombinlims_map = (LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>>)jsonmap.get(this._mombinlims_key);
+            mombinlims_map = jsonmap.get(this._mombinlims_key);
         }
 
         // Add cuts to bin cuts map
         for (String str_pid : mombinlims_map.keySet()) {
             Integer pid = Integer.parseInt(str_pid);
             LinkedHashMap<Integer,Cut> new_binlim_map = new LinkedHashMap<Integer,Cut>();
-            for (String str_binid : mombinlims_map.get(str_pid).keySet()) {
+            LinkedHashMap<String,ArrayList<Double>> mombinlims_map_pid = new LinkedHashMap<String,ArrayList<Double>>(mombinlims_map.get(str_pid));
+            for (String str_binid : mombinlims_map_pid.keySet()) {
                 Integer binid = Integer.parseInt(str_binid);
-                double xmin = mombinlims_map.get(str_pid).get(str_binid).get(0);
-                double xmax = mombinlims_map.get(str_pid).get(str_binid).get(1);
+                double xmin = mombinlims_map_pid.get(str_binid).get(0);
+                double xmax = mombinlims_map_pid.get(str_binid).get(1);
                 Cut cut = (double x) -> {if(x >= xmin && x<xmax ) {return true;} else {return false;}};
                 new_binlim_map.put(binid,cut);
             }
@@ -178,9 +180,10 @@ public class MCSmearing {
             for (String str_pid : mc_resolution_mom_map.keySet()) {
                 Integer pid = Integer.parseInt(str_pid);
                 LinkedHashMap<Integer,ArrayList<Double>> smearing_map = new LinkedHashMap<Integer,ArrayList<Double>>();
-                for (String str_binid : mc_resolution_mom_map.get(str_pid).keySet()) {
+                LinkedHashMap<String,ArrayList<Double>> mc_resolution_mom_map_pid = new LinkedHashMap<String,ArrayList<Double>>(mc_resolution_mom_map.get(str_pid));
+                for (String str_binid : mc_resolution_mom_map_pid.keySet()) {
                     Integer binid = Integer.parseInt(str_binid);
-                    smearing_map.put(binid,mc_resolution_mom_map.get(str_pid).get(str_binid));
+                    smearing_map.put(binid,mc_resolution_mom_map_pid.get(str_binid));
                 }
                 this._mc_resolution_mom_map.put(pid,smearing_map);
             }
@@ -193,9 +196,10 @@ public class MCSmearing {
             for (String str_pid : mc_resolution_theta_map.keySet()) {
                 Integer pid = Integer.parseInt(str_pid);
                 LinkedHashMap<Integer,ArrayList<Double>> smearing_map = new LinkedHashMap<Integer,ArrayList<Double>>();
-                for (String str_binid : mc_resolution_theta_map.get(str_pid).keySet()) {
+                LinkedHashMap<String,ArrayList<Double>> mc_resolution_theta_map_pid = new LinkedHashMap<String,ArrayList<Double>>(mc_resolution_theta_map.get(str_pid));
+                for (String str_binid : mc_resolution_theta_map_pid.keySet()) {
                     Integer binid = Integer.parseInt(str_binid);
-                    smearing_map.put(binid,mc_resolution_theta_map.get(str_pid).get(str_binid));
+                    smearing_map.put(binid,mc_resolution_theta_map_pid.get(str_binid));
                 }
                 this._mc_resolution_theta_map.put(pid,smearing_map);
             }
@@ -208,9 +212,10 @@ public class MCSmearing {
             for (String str_pid : mc_resolution_phi_map.keySet()) {
                 Integer pid = Integer.parseInt(str_pid);
                 LinkedHashMap<Integer,ArrayList<Double>> smearing_map = new LinkedHashMap<Integer,ArrayList<Double>>();
-                for (String str_binid : mc_resolution_phi_map.get(str_pid).keySet()) {
+                LinkedHashMap<String,ArrayList<Double>> mc_resolution_phi_map_pid = new LinkedHashMap<String,ArrayList<Double>>(mc_resolution_phi_map.get(str_pid));
+                for (String str_binid : mc_resolution_phi_map_pid.keySet()) {
                     Integer binid = Integer.parseInt(str_binid);
-                    smearing_map.put(binid,mc_resolution_phi_map.get(str_pid).get(str_binid));
+                    smearing_map.put(binid,mc_resolution_phi_map_pid.get(str_binid));
                 }
                 this._mc_resolution_phi_map.put(pid,smearing_map);
             }
