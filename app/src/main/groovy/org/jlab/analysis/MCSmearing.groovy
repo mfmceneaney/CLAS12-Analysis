@@ -174,7 +174,7 @@ public class MCSmearing {
         // Load MC resolution maps
         if (jsonmap.containsKey(this._resolution_mom_map_key)) {
             System.out.println("Loading momentum ('"+this._resolution_mom_map_key+"') MC resolution map...");
-            LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>> mc_resolution_mom_map = (LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>>)jsonmap.get(this._resolution_mom_map_key);
+            LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>> mc_resolution_mom_map = jsonmap.get(this._resolution_mom_map_key);
 
             // Add entries to map using correct types since JSON only stores keys as strings
             for (String str_pid : mc_resolution_mom_map.keySet()) {
@@ -190,7 +190,7 @@ public class MCSmearing {
         }
         if (jsonmap.containsKey(this._resolution_theta_map_key)) {
             System.out.println("Loading polar angle ('"+this._resolution_theta_map_key+"') MC resolution map...");
-            LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>> mc_resolution_theta_map = (LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>>)jsonmap.get(this._resolution_theta_map_key);
+            LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>> mc_resolution_theta_map = jsonmap.get(this._resolution_theta_map_key);
 
             // Add entries to map using correct types since JSON only stores keys as strings
             for (String str_pid : mc_resolution_theta_map.keySet()) {
@@ -206,7 +206,7 @@ public class MCSmearing {
         }
         if (jsonmap.containsKey(this._resolution_phi_map_key)) {
             System.out.println("Loading azimuthal angle ('"+this._resolution_phi_map_key+"') MC resolution map...");
-            LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>> mc_resolution_phi_map = (LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>>)jsonmap.get(this._resolution_phi_map_key);
+            LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>> mc_resolution_phi_map = jsonmap.get(this._resolution_phi_map_key);
 
             // Add entries to map using correct types since JSON only stores keys as strings
             for (String str_pid : mc_resolution_phi_map.keySet()) {
