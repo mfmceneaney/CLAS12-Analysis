@@ -256,7 +256,7 @@ public class MCSmearing {
             for (Integer binid : cut_map.keySet()) {
 
                 // Check which bin the MC truth is in
-                if (cut_map.get(binid)(mom_mc)) {
+                if (cut_map.get(binid).cut(mom_mc)) {
                     binid_mc = binid;
                 }
             }
