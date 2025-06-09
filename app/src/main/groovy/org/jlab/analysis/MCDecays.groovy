@@ -44,7 +44,7 @@ public class MCDecays {
     protected ArrayList<DecayProduct>            _parChargeList;     // List of lists for each charge in parent decay
     protected ArrayList<ArrayList<DecayProduct>> _parComboChargeList;
     protected LinkedHashMap<Integer,Integer>     _recMatchingMap;
-    protected boolean                            _setFullParticleList; // Flag indicating whether full  particle list has been set.
+    protected boolean                            _setFullParticleList = false; // Flag indicating whether full  particle list has been set.
 
     /** 
     * Constructor stub

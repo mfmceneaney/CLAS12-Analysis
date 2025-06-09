@@ -42,7 +42,7 @@ public class Decays {
     protected ArrayList<ArrayList<DecayProduct>> _comboPidList;
     protected ArrayList<DecayProduct>            _chargeList;     // List of lists for each charge in decay
     protected ArrayList<ArrayList<DecayProduct>> _comboChargeList;
-    protected boolean                            _setFullParticleList; // Flag indicating whether full  particle list has been set.
+    protected boolean                            _setFullParticleList = false; // Flag indicating whether full  particle list has been set.
 
     /** 
     * Default constructor
