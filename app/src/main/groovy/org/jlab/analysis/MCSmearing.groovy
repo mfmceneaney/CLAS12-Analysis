@@ -305,15 +305,20 @@ public class MCSmearing {
         
     }
 
-    protected ArrayList<DecayProduct> smear(ArrayList<DecayProduct> rclist, ArrayList<DecayProduct> mclist) {
-
-        // Check lengths match
-        if (rclist.size()!=mclist.size()) throw new IllegalArgumentException("List sizes do not match: rclist.size()=" + rclist.size() + ", but mclist.size()=" + mclist.size());
+    /**
+    * Smear a list of reconstructed particles given the list of MC truth particles and a matching map
+    *
+    * @param rclist
+    * @param mclist
+    * @param recMatchingMap
+    */
+    protected ArrayList<DecayProduct> smear(ArrayList<DecayProduct> rclist, ArrayList<DecayProduct> mclist, LinkedHashMap<Integer, Integer> recMatchingMap) {
 
         // Loop lists and smear
         ArrayList<DecayProduct> plist = new ArrayList<DecayProduct>();
-        for (int idx=0; idx<rclist.size(); idx++) {
-            DecayProduct p = this.smear(rclist.get(idx), mclist.get(idx));
+        for (Integer rc_idx : recMatchingMap.keySet()) {
+            Integer mc_idx = recMatchingMap.get(rc_idx);
+            DecayProduct p = this.smear(rclist.get(rc_idx), mclist.get(mc_idx));
             plist.add(p);
         }
 

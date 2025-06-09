@@ -1422,12 +1422,6 @@ public class Analysis {
             MCDecays mcdecays = new MCDecays(this._mcdecay,this._parents,this._dpMap,reader,event,this._constants);
             mcdecays.setMatchingMap(fullParticleList); //NOTE: THIS METHOD WILL AND NEEDS TO SET FULL PARTICLE LIST!
 
-            // Apply the MC smearing algorithm to the reconstructed particles
-            if (this._use_mcsmearing) {
-                ArrayList<DecayProduct> smeared_rec_plist = this._mcsmearing.smear(decays.getFullParticleList(),mcdecays.getFullParticleList());
-                decays.setFullParticleList(smeared_rec_plist);
-            }
-
             // Check for event pid tag if requested
             if (this._require_tag) {
                 boolean found_tag = false;
@@ -1436,10 +1430,18 @@ public class Analysis {
                 if (!this.filter(decays.getFullParticleList())) { continue; }
             }
 
-            // Get combined list of particle combinations from REC::Particle and MC::Lund banks
+            // Initialize lists of particle combinations from REC::Particle and MC::Lund banks
             ArrayList<ArrayList<DecayProduct>> list;
             LinkedHashMap<Integer,Integer> recMatchingMap = mcdecays.getMatchingMap();
             ArrayList<DecayProduct> mcFullParticleList = mcdecays.getFullParticleList();
+
+            // Apply the MC smearing algorithm to the reconstructed particles
+            if (this._use_mcsmearing) {
+                ArrayList<DecayProduct> smeared_rec_plist = this._mcsmearing.smear(decays.getFullParticleList(),mcFullParticleList,recMatchingMap);
+                decays.setFullParticleList(smeared_rec_plist);
+            }
+
+            // Get combined list of particle combinations from REC::Particle and MC::Lund banks
             if (!this._require_pid) { list = decays.mergeComboChargeList(recMatchingMap,mcFullParticleList); }
             if (this._require_pid)  { list = decays.mergeComboPidList(recMatchingMap,mcFullParticleList); } // if (this._parents.size()!=0) { list = decays.mergeComboPidList(mcdecays.getCheckedComboPidList()); }
 
