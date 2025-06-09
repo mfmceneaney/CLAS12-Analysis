@@ -12,8 +12,8 @@ import groovy.transform.CompileStatic;
 
 /**
 * Allows one to smear reconstructed momentum, polar angle, and azimuthal angle values around the MC truth values
-* with differences taken randomly from a Gaussian distribution.  The resolutions (widths) of the Gaussians should be taken
-* from fits to the widths in momentum bins and supplied as json files giving the resolutions and bin limits.
+* with differences taken randomly from a Gaussian distribution.  The resolutions (widths) and offsets (means) of the Gaussians should be taken
+* from fits to the difference of reconstructed - truth in momentum bins and supplied as json files giving the resolutions and bin limits.
 *
 * @version 1.0
 * @author  Matthew McEneaney
@@ -29,19 +29,22 @@ public class MCSmearing {
     double _smearing_phi   = 0.50;
 
     LinkedHashMap<Integer, LinkedHashMap<Integer,Cut>> _bincuts_map;
-    LinkedHashMap<Integer, LinkedHashMap<Integer,Double>> _mc_resolution_mom_map;
-    LinkedHashMap<Integer, LinkedHashMap<Integer,Double>> _mc_resolution_theta_map;
-    LinkedHashMap<Integer, LinkedHashMap<Integer,Double>> _mc_resolution_phi_map;
+    LinkedHashMap<Integer, LinkedHashMap<Integer,ArrayList<Double>>> _mc_resolution_mom_map;
+    LinkedHashMap<Integer, LinkedHashMap<Integer,ArrayList<Double>>> _mc_resolution_theta_map;
+    LinkedHashMap<Integer, LinkedHashMap<Integer,ArrayList<Double>>> _mc_resolution_phi_map;
 
     Random _rng;
 
-    public MCSmearing(String jsonpath, double smearing_p, double smearing_theta, double smearing_phi) {
+    boolean _use_mu = false;
+
+    public MCSmearing(String jsonpath, double smearing_p, double smearing_theta, double smearing_phi, boolean use_mu) {
 
         // Reset paths and smearing values
         this._jsonpath = jsonpath;
         this._smearing_mom = smearing_p;
         this._smearing_theta = smearing_theta;
         this._smearing_phi = smearing_phi;
+        this._use_mu = use_mu
 
         // Load the JSON data
         File jsonFile = new File(this._jsonpath);
@@ -50,9 +53,9 @@ public class MCSmearing {
 
         // Initialize maps
         this._bincuts_map = new LinkedHashMap<Integer, LinkedHashMap<Integer,Cut>>();
-        this._mc_resolution_mom_map = new LinkedHashMap<Integer, LinkedHashMap<Integer,Double>>();
-        this._mc_resolution_theta_map = new LinkedHashMap<Integer, LinkedHashMap<Integer,Double>>();
-        this._mc_resolution_phi_map = new LinkedHashMap<Integer, LinkedHashMap<Integer,Double>>();
+        this._mc_resolution_mom_map = new LinkedHashMap<Integer, LinkedHashMap<Integer,ArrayList<Double>>>();
+        this._mc_resolution_theta_map = new LinkedHashMap<Integer, LinkedHashMap<Integer,ArrayList<Double>>>();
+        this._mc_resolution_phi_map = new LinkedHashMap<Integer, LinkedHashMap<Integer,ArrayList<Double>>>();
 
         // Load bin limits map
         LinkedHashMap<Integer,LinkedHashMap<Integer,ArrayList<Double>>> mombinlims_map = new LinkedHashMap<Integer,LinkedHashMap<Integer,ArrayList<Double>>>();
@@ -76,15 +79,15 @@ public class MCSmearing {
         // Load MC resolution maps
         if (jsonmap.containsKey("mom")) {
             System.out.println("Loading momentum ('mom') MC resolution map...");
-            this._mc_resolution_mom_map = (LinkedHashMap<Integer,LinkedHashMap<Integer,Double>>)jsonmap.get("mom");
+            this._mc_resolution_mom_map = (LinkedHashMap<Integer,LinkedHashMap<Integer,ArrayList<Double>>>)jsonmap.get("mom");
         }
         if (jsonmap.containsKey("theta")) {
             System.out.println("Loading polar angle ('theta') MC resolution map...");
-            this._mc_resolution_theta_map = (LinkedHashMap<Integer,LinkedHashMap<Integer,Double>>)jsonmap.get("theta");
+            this._mc_resolution_theta_map = (LinkedHashMap<Integer,LinkedHashMap<Integer,ArrayList<Double>>>)jsonmap.get("theta");
         }
         if (jsonmap.containsKey("phi")) {
             System.out.println("Loading azimuthal angle ('phi') MC resolution map...");
-            this._mc_resolution_phi_map = (LinkedHashMap<Integer,LinkedHashMap<Integer,Double>>)jsonmap.get("phi");
+            this._mc_resolution_phi_map = (LinkedHashMap<Integer,LinkedHashMap<Integer,ArrayList<Double>>>)jsonmap.get("phi");
         }
 
         // Create random number generator
@@ -129,34 +132,40 @@ public class MCSmearing {
         }
 
         // Get the MC momentum resolution
+        double mu_mom_mc = 0.0;
         double sigma_mom_mc = 0.0;
         if (binid_mc>=0 && this._mc_resolution_mom_map.get(pid_dt).containsKey(binid_mc)) {
-            sigma_mom_mc = this._mc_resolution_mom_map.get(pid_dt).get(binid_mc);
+            mu_mom_mc = this._mc_resolution_mom_map.get(pid_dt).get(binid_mc).get(0);
+            sigma_mom_mc = this._mc_resolution_mom_map.get(pid_dt).get(binid_mc).get(1);
         }
 
         // Smear the momentum
         double sigma_mom = sigma_mom_mc * Math.sqrt((double)(1.0+this._smearing_mom*this._smearing_mom)); // Add in the additional smearing for data
-        double new_mom_dt = mom_mc * (1.0 + this._rng.nextGaussian() * sigma_mom);
+        double new_mom_dt = mom_mc * (1.0 + (this._use_mu ? mu_mom_mc : 0.0) + this._rng.nextGaussian() * sigma_mom); //NOTE: Momentum should be Delta p / p but angles are just raw difference Delta theta, Delta phi.
 
         // Get the MC theta resolution
+        double mu_theta_mc = 0.0;
         double sigma_theta_mc = 0.0;
         if (binid_mc>=0 && this._mc_resolution_theta_map.get(pid_dt).containsKey(binid_mc)) {
-            sigma_theta_mc = this._mc_resolution_theta_map.get(pid_dt).get(binid_mc);
+            mu_theta_mc = this._mc_resolution_theta_map.get(pid_dt).get(binid_mc).get(0);
+            sigma_theta_mc = this._mc_resolution_theta_map.get(pid_dt).get(binid_mc).get(1);
         }
 
         // Smear the theta
         double sigma_theta = sigma_theta_mc * Math.sqrt((double)(1.0+this._smearing_theta*this._smearing_theta)); // Add in the additional smearing for data
-        double new_theta_dt = theta_mc * (1.0 + this._rng.nextGaussian() * sigma_theta);
+        double new_theta_dt = theta_mc + (this._use_mu ? mu_theta_mc : 0.0) + this._rng.nextGaussian() * sigma_theta; //NOTE: Momentum should be Delta p / p but angles are just raw difference Delta theta, Delta phi.
 
         // Get the MC phi resolution
+        double mu_phi_mc = 0.0;
         double sigma_phi_mc = 0.0;
         if (binid_mc>=0 && this._mc_resolution_phi_map.get(pid_dt).containsKey(binid_mc)) {
-            sigma_phi_mc = this._mc_resolution_phi_map.get(pid_dt).get(binid_mc);
+            mu_phi_mc = this._mc_resolution_phi_map.get(pid_dt).get(binid_mc).get(0);
+            sigma_phi_mc = this._mc_resolution_phi_map.get(pid_dt).get(binid_mc).get(1);
         }
 
         // Smear the phi
         double sigma_phi = sigma_phi_mc * Math.sqrt((double)(1.0+this._smearing_phi*this._smearing_phi)); // Add in the additional smearing for data
-        double new_phi_dt = phi_mc * (1.0 + this._rng.nextGaussian() * sigma_phi);
+        double new_phi_dt = phi_mc + (this._use_mu ? mu_phi_mc : 0.0) + this._rng.nextGaussian() * sigma_phi; //NOTE: Momentum should be Delta p / p but angles are just raw difference Delta theta, Delta phi.
 
         // Reset momentum vector
         DecayProduct new_p = p.clone();
