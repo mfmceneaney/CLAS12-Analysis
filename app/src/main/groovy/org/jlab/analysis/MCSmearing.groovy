@@ -37,14 +37,85 @@ public class MCSmearing {
 
     boolean _use_mu = false;
 
-    public MCSmearing(String jsonpath, double smearing_p, double smearing_theta, double smearing_phi, boolean use_mu) {
+    public MCSmearing() {
+
+        // Initialize maps
+        this._bincuts_map = new LinkedHashMap<Integer, LinkedHashMap<Integer,Cut>>();
+        this._mc_resolution_mom_map = new LinkedHashMap<Integer, LinkedHashMap<Integer,ArrayList<Double>>>();
+        this._mc_resolution_theta_map = new LinkedHashMap<Integer, LinkedHashMap<Integer,ArrayList<Double>>>();
+        this._mc_resolution_phi_map = new LinkedHashMap<Integer, LinkedHashMap<Integer,ArrayList<Double>>>();
+
+        // Create random number generator
+        this._rng = new Random();
+    }
+
+    public MCSmearing(double smearing_mom, double smearing_theta, double smearing_phi, boolean use_mu) {
 
         // Reset paths and smearing values
-        this._jsonpath = jsonpath;
-        this._smearing_mom = smearing_p;
+        this._smearing_mom = smearing_mom;
         this._smearing_theta = smearing_theta;
         this._smearing_phi = smearing_phi;
         this._use_mu = use_mu
+
+        // Initialize maps
+        this._bincuts_map = new LinkedHashMap<Integer, LinkedHashMap<Integer,Cut>>();
+        this._mc_resolution_mom_map = new LinkedHashMap<Integer, LinkedHashMap<Integer,ArrayList<Double>>>();
+        this._mc_resolution_theta_map = new LinkedHashMap<Integer, LinkedHashMap<Integer,ArrayList<Double>>>();
+        this._mc_resolution_phi_map = new LinkedHashMap<Integer, LinkedHashMap<Integer,ArrayList<Double>>>();
+
+        // Create random number generator
+        this._rng = new Random();
+    }
+
+    /**
+    * Set data smearing fraction for momentum.
+    * @param smearing_mom
+    */
+    protected void setMomSmearing(double smearing_mom) {
+        this._smearing_mom = smearing_mom;
+    }
+
+    /**
+    * Set data smearing fraction for theta.
+    * @param smearing_theta
+    */
+    protected void setThetaSmearing(double smearing_theta) {
+        this._smearing_theta = smearing_theta;
+    }
+
+    /**
+    * Set data smearing fraction for phi.
+    * @param smearing_phi
+    */
+    protected void setPhiSmearing(double smearing_phi) {
+        this._smearing_phi = smearing_phi;
+    }
+
+    /**
+    * Set data smearing fractions for momentum, theta, and phi.
+    * @param smearing_mom
+    * @param smearing_theta
+    * @param smearing_phi
+    */
+    protected void setSmearing(double smearing_mom, double smearing_theta, double smearing_phi) {
+        this._smearing_mom = smearing_mom;
+        this._smearing_theta = smearing_theta;
+        this._smearing_phi = smearing_phi;
+    }
+
+    /**
+    * Set option to use means of smearing distributions to offset MC truth values.
+    * @param use_mu
+    */
+    protected void setUseMu(boolean use_mu) {
+        this._use_mu = use_mu;
+    }
+
+    /**
+    * Load smearing maps from a JSON file.
+    * @param jsonpath
+    */
+    protected void loadJSON(String jsonpath) {
 
         // Load the JSON data
         File jsonFile = new File(this._jsonpath);
@@ -95,12 +166,12 @@ public class MCSmearing {
     }
 
     /**
-    * Apply MC smearing to a given particle and MC truth particle
+    * Smear the momentum, theta, and phi of a reconstructed particle and an MC truth particle.
     * @param p
     * @param p_mc
     * @return new_p
     */
-    protected DecayProduct applySmearing(DecayProduct p, DecayProduct p_mc) {
+    protected DecayProduct smear(DecayProduct p, DecayProduct p_mc) {
 
         // Set PID, momentum, theta, phi for REC particle
         int pid_dt      = p.pid();
@@ -172,6 +243,21 @@ public class MCSmearing {
         new_p.setPThetaPhiM(new_mom_dt, new_theta_dt, new_phi_dt, p.m());
         return new_p;
         
+    }
+
+    protected ArrayList<DecayProduct> smear(ArrayList<DecayProduct> rclist, ArrayList<DecayProduct> mclist) {
+
+        // Check lengths match
+        if (rclist.size()!=mclist.size()) throw new IllegalArgumentException("List sizes do not match: rclist.size()=" + rclist.size() + ", but mclist.size()=" + mclist.size());
+
+        // Loop lists and smear
+        ArrayList<DecayProduct> plist = new ArrayList<DecayProduct>();
+        for (int idx=0; idx<rclist.size(); idx++) {
+            DecayProduct p = this.smear(rclist.get(idx), mclist.get(idx));
+            plist.add(p);
+        }
+
+        return plist;
     }
 
 } // public class MCSmearing {
