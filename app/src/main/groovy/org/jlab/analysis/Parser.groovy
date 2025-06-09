@@ -98,10 +98,10 @@ public class Parser {
         System.out.println("\t                           * outbending (0 : false, 1 : true)");
         System.out.println("\t-mcsmear [string, double, double, double, bool] : Use MC smearing. Parameters:");
         System.out.println("\t                           * path to JSON file containing:");
-        System.out.println("\t                               - 'mombinlims' : Map of PIDs to bin ids to bin limits");
-        System.out.println("\t                               - 'mombinlims' : Map of PIDs to bin ids to bin limits");
-        System.out.println("\t                               - 'mombinlims' : Map of PIDs to bin ids to bin limits");
-        System.out.println("\t                               - 'mombinlims' : Map of PIDs to bin ids to bin limits");
+        System.out.println("\t                               - 'mombinlims' : Map of PIDs to bin ids to momentum bin limits");
+        System.out.println("\t                               - 'mom'        : Map of PIDs to bin ids to delta p / p means and widths");
+        System.out.println("\t                               - 'theta'      : Map of PIDs to bin ids to delta theta means and widths");
+        System.out.println("\t                               - 'phi'        : Map of PIDs to bin ids to delta phi means and widths");
         System.out.println("\t                           * Momentum additional data smearing fraction");
         System.out.println("\t                           * Theta additional data smearing fraction");
         System.out.println("\t                           * Phi additional data smearing fraction");
