@@ -22,20 +22,25 @@ import groovy.transform.CompileStatic;
 @CompileStatic
 public class MCSmearing {
 
-    public String  _jsonpath;
+    protected String  _jsonpath;
 
-    double _smearing_mom   = 0.50;
-    double _smearing_theta = 0.50;
-    double _smearing_phi   = 0.50;
+    protected double _smearing_mom   = 0.50;
+    protected double _smearing_theta = 0.50;
+    protected double _smearing_phi   = 0.50;
 
-    LinkedHashMap<Integer, LinkedHashMap<Integer,Cut>> _bincuts_map;
-    LinkedHashMap<Integer, LinkedHashMap<Integer,ArrayList<Double>>> _mc_resolution_mom_map;
-    LinkedHashMap<Integer, LinkedHashMap<Integer,ArrayList<Double>>> _mc_resolution_theta_map;
-    LinkedHashMap<Integer, LinkedHashMap<Integer,ArrayList<Double>>> _mc_resolution_phi_map;
+    protected String _mombinlims_key           = "mombinlims";
+    protected String _resolution_mom_map_key   = "mom";
+    protected String _resolution_theta_map_key = "theta";
+    protected String _resolution_phi_map_key   = "phi";
 
-    Random _rng;
+    protected LinkedHashMap<Integer, LinkedHashMap<Integer,Cut>> _bincuts_map;
+    protected LinkedHashMap<Integer, LinkedHashMap<Integer,ArrayList<Double>>> _mc_resolution_mom_map;
+    protected LinkedHashMap<Integer, LinkedHashMap<Integer,ArrayList<Double>>> _mc_resolution_theta_map;
+    protected LinkedHashMap<Integer, LinkedHashMap<Integer,ArrayList<Double>>> _mc_resolution_phi_map;
 
-    boolean _use_mu = false;
+    protected Random _rng;
+
+    protected boolean _use_mu = false;
 
     public MCSmearing() {
 
@@ -112,6 +117,19 @@ public class MCSmearing {
     }
 
     /**
+    * @param mombinlims_key
+    * @param resolution_mom_map_key
+    * @param resolution_theta_map_key
+    * @param resolution_phi_map_key
+    */
+    protected void setJSONKeys(String mombinlims_key, String resolution_mom_map_key, String resolution_theta_map_key, String resolution_phi_map_key) {
+        this._mombinlims_key           = mombinlims_key;
+        this._resolution_mom_map_key   = resolution_mom_map_key;
+        this._resolution_theta_map_key = resolution_theta_map_key;
+        this._resolution_phi_map_key   = resolution_phi_map_key;
+    }
+
+    /**
     * Load smearing maps from a JSON file.
     * @param jsonpath
     */
@@ -131,18 +149,20 @@ public class MCSmearing {
         this._mc_resolution_phi_map = new LinkedHashMap<Integer, LinkedHashMap<Integer,ArrayList<Double>>>();
 
         // Load bin limits map
-        LinkedHashMap<Integer,LinkedHashMap<Integer,ArrayList<Double>>> mombinlims_map = new LinkedHashMap<Integer,LinkedHashMap<Integer,ArrayList<Double>>>();
-        if (jsonmap.containsKey("mombinlims")) {
-            System.out.println("Loading momentum bin limits ('mombinlims') map...");
-            mombinlims_map = (LinkedHashMap<Integer,LinkedHashMap<Integer,ArrayList<Double>>>)jsonmap.get("mobinlims");
+        LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>> mombinlims_map = new LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>>();
+        if (jsonmap.containsKey(this._mombinlims_key)) {
+            System.out.println("Loading momentum bin limits ('"+this._mombinlims_key+"') map...");
+            mombinlims_map = (LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>>)jsonmap.get(this._mombinlims_key);
         }
 
         // Add cuts to bin cuts map
-        for (Integer pid : mombinlims_map.keySet()) {
+        for (String str_pid : mombinlims_map.keySet()) {
+            Integer pid = Integer.parseInt(str_pid);
             LinkedHashMap<Integer,Cut> new_binlim_map = new LinkedHashMap<Integer,Cut>();
-            for (Integer binid : mombinlims_map.get(pid).keySet()) {
-                double xmin = mombinlims_map.get(pid).get(binid).get(0);
-                double xmax = mombinlims_map.get(pid).get(binid).get(1);
+            for (String str_binid : mombinlims_map.get(str_pid).keySet()) {
+                Integer binid = Integer.parseInt(str_binid);
+                double xmin = mombinlims_map.get(str_pid).get(str_binid).get(0);
+                double xmax = mombinlims_map.get(str_pid).get(str_binid).get(1);
                 Cut cut = (double x) -> {if(x >= xmin && x<xmax ) {return true;} else {return false;}};
                 new_binlim_map.put(binid,cut);
             }
@@ -150,17 +170,50 @@ public class MCSmearing {
         }
 
         // Load MC resolution maps
-        if (jsonmap.containsKey("mom")) {
-            System.out.println("Loading momentum ('mom') MC resolution map...");
-            this._mc_resolution_mom_map = (LinkedHashMap<Integer,LinkedHashMap<Integer,ArrayList<Double>>>)jsonmap.get("mom");
+        if (jsonmap.containsKey(this._resolution_mom_map_key)) {
+            System.out.println("Loading momentum ('"+this._resolution_mom_map_key+"') MC resolution map...");
+            LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>> mc_resolution_mom_map = (LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>>)jsonmap.get(this._resolution_mom_map_key);
+
+            // Add entries to map using correct types since JSON only stores keys as strings
+            for (String str_pid : mc_resolution_mom_map.keySet()) {
+                Integer pid = Integer.parseInt(str_pid);
+                LinkedHashMap<Integer,ArrayList<Double>> smearing_map = new LinkedHashMap<Integer,ArrayList<Double>>();
+                for (String str_binid : mc_resolution_mom_map.get(str_pid).keySet()) {
+                    Integer binid = Integer.parseInt(str_binid);
+                    smearing_map.put(binid,mc_resolution_mom_map.get(str_pid).get(str_binid));
+                }
+                this._mc_resolution_mom_map.put(pid,smearing_map);
+            }
         }
-        if (jsonmap.containsKey("theta")) {
-            System.out.println("Loading polar angle ('theta') MC resolution map...");
-            this._mc_resolution_theta_map = (LinkedHashMap<Integer,LinkedHashMap<Integer,ArrayList<Double>>>)jsonmap.get("theta");
+        if (jsonmap.containsKey(this._resolution_theta_map_key)) {
+            System.out.println("Loading polar angle ('"+this._resolution_theta_map_key+"') MC resolution map...");
+            LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>> mc_resolution_theta_map = (LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>>)jsonmap.get(this._resolution_theta_map_key);
+
+            // Add entries to map using correct types since JSON only stores keys as strings
+            for (String str_pid : mc_resolution_theta_map.keySet()) {
+                Integer pid = Integer.parseInt(str_pid);
+                LinkedHashMap<Integer,ArrayList<Double>> smearing_map = new LinkedHashMap<Integer,ArrayList<Double>>();
+                for (String str_binid : mc_resolution_theta_map.get(str_pid).keySet()) {
+                    Integer binid = Integer.parseInt(str_binid);
+                    smearing_map.put(binid,mc_resolution_theta_map.get(str_pid).get(str_binid));
+                }
+                this._mc_resolution_theta_map.put(pid,smearing_map);
+            }
         }
-        if (jsonmap.containsKey("phi")) {
-            System.out.println("Loading azimuthal angle ('phi') MC resolution map...");
-            this._mc_resolution_phi_map = (LinkedHashMap<Integer,LinkedHashMap<Integer,ArrayList<Double>>>)jsonmap.get("phi");
+        if (jsonmap.containsKey(this._resolution_phi_map_key)) {
+            System.out.println("Loading azimuthal angle ('"+this._resolution_phi_map_key+"') MC resolution map...");
+            LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>> mc_resolution_phi_map = (LinkedHashMap<String,LinkedHashMap<String,ArrayList<Double>>>)jsonmap.get(this._resolution_phi_map_key);
+
+            // Add entries to map using correct types since JSON only stores keys as strings
+            for (String str_pid : mc_resolution_phi_map.keySet()) {
+                Integer pid = Integer.parseInt(str_pid);
+                LinkedHashMap<Integer,ArrayList<Double>> smearing_map = new LinkedHashMap<Integer,ArrayList<Double>>();
+                for (String str_binid : mc_resolution_phi_map.get(str_pid).keySet()) {
+                    Integer binid = Integer.parseInt(str_binid);
+                    smearing_map.put(binid,mc_resolution_phi_map.get(str_pid).get(str_binid));
+                }
+                this._mc_resolution_phi_map.put(pid,smearing_map);
+            }
         }
 
         // Create random number generator
