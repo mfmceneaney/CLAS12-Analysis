@@ -87,6 +87,15 @@ public class Decays {
 
     /**
     * Set full list of particles in event. (Used for pid tagging events.)
+    * @param fplist
+    */
+    protected void setFullParticleList(ArrayList<DecayProduct> fplist) {
+
+        this._particleList = fplist;
+    }
+
+    /**
+    * Set full list of particles in event. (Used for pid tagging events.)
     */
     protected void setFullParticleList() {
 

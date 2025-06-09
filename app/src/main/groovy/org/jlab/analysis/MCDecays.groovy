@@ -85,6 +85,15 @@ public class MCDecays {
         Collections.sort(this._parCharges); //IMPORTANT: Must be sorted otherwise algorithm won't work.
     }
 
+    /**
+    * Set full list of particles in event. (Used for pid tagging events.)
+    * @param fplist
+    */
+    protected void setFullParticleList(ArrayList<DecayProduct> fplist) {
+
+        this._particleList = fplist;
+    }
+
    /**
     * Set full list of particles in event. (Used for pid tagging events.)
     */
