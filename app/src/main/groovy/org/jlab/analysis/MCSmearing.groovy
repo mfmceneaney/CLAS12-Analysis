@@ -318,7 +318,7 @@ public class MCSmearing {
         ArrayList<DecayProduct> plist = new ArrayList<DecayProduct>();
         for (Integer rc_idx : recMatchingMap.keySet()) {
             Integer mc_idx = recMatchingMap.get(rc_idx);
-            DecayProduct p = this.smear(rclist.get(rc_idx), mclist.get(mc_idx));
+            DecayProduct p = (mc_idx>=0) ? this.smear(rclist.get(rc_idx), mclist.get(mc_idx)) : rclist.get(rc_idx);
             plist.add(p);
         }
 
