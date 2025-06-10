@@ -249,7 +249,7 @@ public class MCSmearing {
 
         // Check the momentum bin
         int binid_mc = -1;
-        if (this._bincuts_map.containsKey(pid_dt)) {
+        if (this._bincuts_map.size()>0 && this._bincuts_map.containsKey(pid_dt)) {
 
             // Get cut map for pid
             LinkedHashMap<Integer, Cut> cut_map = this._bincuts_map.get(pid_dt);
@@ -268,7 +268,7 @@ public class MCSmearing {
         double mu_mom_mc = 0.0;
         double sigma_mom_mc = 0.0;
         double new_mom_dt = mom_dt; //NOTE: Default to reconstructed value.
-        if (binid_mc>=0 && this._mc_resolution_mom_map.get(pid_dt).containsKey(binid_mc)) {
+        if (this._mc_resolution_mom_map.size()>0 && binid_mc>=0 && this._mc_resolution_mom_map.get(pid_dt).containsKey(binid_mc)) {
             mu_mom_mc = this._mc_resolution_mom_map.get(pid_dt).get(binid_mc).get(0);
             sigma_mom_mc = this._mc_resolution_mom_map.get(pid_dt).get(binid_mc).get(1);
 
@@ -281,7 +281,7 @@ public class MCSmearing {
         double mu_theta_mc = 0.0;
         double sigma_theta_mc = 0.0;
         double new_theta_dt = theta_dt; //NOTE: Default to reconstructed value.
-        if (binid_mc>=0 && this._mc_resolution_theta_map.get(pid_dt).containsKey(binid_mc)) {
+        if (this._mc_resolution_theta_map.size()>0 && binid_mc>=0 && this._mc_resolution_theta_map.get(pid_dt).containsKey(binid_mc)) {
             mu_theta_mc = this._mc_resolution_theta_map.get(pid_dt).get(binid_mc).get(0);
             sigma_theta_mc = this._mc_resolution_theta_map.get(pid_dt).get(binid_mc).get(1);
 
@@ -294,7 +294,7 @@ public class MCSmearing {
         double mu_phi_mc = 0.0;
         double sigma_phi_mc = 0.0;
         double new_phi_dt = phi_dt; //NOTE: Default to reconstructed value.
-        if (binid_mc>=0 && this._mc_resolution_phi_map.get(pid_dt).containsKey(binid_mc)) {
+        if (this._mc_resolution_phi_map.size()>0 && binid_mc>=0 && this._mc_resolution_phi_map.get(pid_dt).containsKey(binid_mc)) {
             mu_phi_mc = this._mc_resolution_phi_map.get(pid_dt).get(binid_mc).get(0);
             sigma_phi_mc = this._mc_resolution_phi_map.get(pid_dt).get(binid_mc).get(1);
 
