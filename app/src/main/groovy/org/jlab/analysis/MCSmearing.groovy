@@ -267,38 +267,41 @@ public class MCSmearing {
         // Get the MC momentum resolution
         double mu_mom_mc = 0.0;
         double sigma_mom_mc = 0.0;
+        double new_mom_dt = mom_dt; //NOTE: Default to reconstructed value.
         if (binid_mc>=0 && this._mc_resolution_mom_map.get(pid_dt).containsKey(binid_mc)) {
             mu_mom_mc = this._mc_resolution_mom_map.get(pid_dt).get(binid_mc).get(0);
             sigma_mom_mc = this._mc_resolution_mom_map.get(pid_dt).get(binid_mc).get(1);
-        }
 
-        // Smear the momentum
-        double sigma_mom = sigma_mom_mc * Math.sqrt((double)(1.0+this._smearing_mom*this._smearing_mom)); // Add in the additional smearing for data
-        double new_mom_dt = mom_mc * (1.0 + (this._use_mu ? mu_mom_mc : 0.0) + this._rng.nextGaussian() * sigma_mom); //NOTE: Momentum should be Delta p / p but angles are just raw difference Delta theta, Delta phi.
+            // Smear the momentum
+            double sigma_mom = sigma_mom_mc * Math.sqrt((double)(1.0+this._smearing_mom*this._smearing_mom)); // Add in the additional smearing for data
+            new_mom_dt = mom_mc * (1.0 + (this._use_mu ? mu_mom_mc : 0.0) + this._rng.nextGaussian() * sigma_mom); //NOTE: Momentum should be Delta p / p but angles are just raw difference Delta theta, Delta phi.
+        }
 
         // Get the MC theta resolution
         double mu_theta_mc = 0.0;
         double sigma_theta_mc = 0.0;
+        double new_theta_dt = theta_dt; //NOTE: Default to reconstructed value.
         if (binid_mc>=0 && this._mc_resolution_theta_map.get(pid_dt).containsKey(binid_mc)) {
             mu_theta_mc = this._mc_resolution_theta_map.get(pid_dt).get(binid_mc).get(0);
             sigma_theta_mc = this._mc_resolution_theta_map.get(pid_dt).get(binid_mc).get(1);
-        }
 
-        // Smear the theta
-        double sigma_theta = sigma_theta_mc * Math.sqrt((double)(1.0+this._smearing_theta*this._smearing_theta)); // Add in the additional smearing for data
-        double new_theta_dt = theta_mc + (this._use_mu ? mu_theta_mc : 0.0) + this._rng.nextGaussian() * sigma_theta; //NOTE: Momentum should be Delta p / p but angles are just raw difference Delta theta, Delta phi.
+            // Smear the theta
+            double sigma_theta = sigma_theta_mc * Math.sqrt((double)(1.0+this._smearing_theta*this._smearing_theta)); // Add in the additional smearing for data
+            new_theta_dt = theta_mc + (this._use_mu ? mu_theta_mc : 0.0) + this._rng.nextGaussian() * sigma_theta; //NOTE: Momentum should be Delta p / p but angles are just raw difference Delta theta, Delta phi.
+        }
 
         // Get the MC phi resolution
         double mu_phi_mc = 0.0;
         double sigma_phi_mc = 0.0;
+        double new_phi_dt = phi_dt; //NOTE: Default to reconstructed value.
         if (binid_mc>=0 && this._mc_resolution_phi_map.get(pid_dt).containsKey(binid_mc)) {
             mu_phi_mc = this._mc_resolution_phi_map.get(pid_dt).get(binid_mc).get(0);
             sigma_phi_mc = this._mc_resolution_phi_map.get(pid_dt).get(binid_mc).get(1);
-        }
 
-        // Smear the phi
-        double sigma_phi = sigma_phi_mc * Math.sqrt((double)(1.0+this._smearing_phi*this._smearing_phi)); // Add in the additional smearing for data
-        double new_phi_dt = phi_mc + (this._use_mu ? mu_phi_mc : 0.0) + this._rng.nextGaussian() * sigma_phi; //NOTE: Momentum should be Delta p / p but angles are just raw difference Delta theta, Delta phi.
+            // Smear the phi
+            double sigma_phi = sigma_phi_mc * Math.sqrt((double)(1.0+this._smearing_phi*this._smearing_phi)); // Add in the additional smearing for data
+            new_phi_dt = phi_mc + (this._use_mu ? mu_phi_mc : 0.0) + this._rng.nextGaussian() * sigma_phi; //NOTE: Momentum should be Delta p / p but angles are just raw difference Delta theta, Delta phi.
+        }
 
         // Reset momentum vector
         DecayProduct new_p = p.clone();
