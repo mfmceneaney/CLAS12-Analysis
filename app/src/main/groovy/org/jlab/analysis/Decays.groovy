@@ -42,6 +42,7 @@ public class Decays {
     protected ArrayList<ArrayList<DecayProduct>> _comboPidList;
     protected ArrayList<DecayProduct>            _chargeList;     // List of lists for each charge in decay
     protected ArrayList<ArrayList<DecayProduct>> _comboChargeList;
+    protected boolean                            _setFullParticleList = false; // Flag indicating whether full  particle list has been set.
 
     /** 
     * Default constructor
@@ -86,8 +87,23 @@ public class Decays {
 
     /**
     * Set full list of particles in event. (Used for pid tagging events.)
+    * @param fplist
+    */
+    protected void setFullParticleList(ArrayList<DecayProduct> fplist) {
+
+        this._particleList = fplist;
+    }
+
+    /**
+    * Set full list of particles in event. (Used for pid tagging events.)
     */
     protected void setFullParticleList() {
+
+        // Set flag
+        this._setFullParticleList = true;
+
+        // Reset particle list
+        this._particleList = new ArrayList<DecayProduct>();
 
         this._event.read(this._bank);
         for (int i = 0; i < this._bank.getRows(); i++) {
@@ -150,7 +166,7 @@ public class Decays {
     */
     protected ArrayList<DecayProduct> getFullParticleList() {
 
-        this.setFullParticleList();
+        if (!this._setFullParticleList) this.setFullParticleList();
 
         return this._particleList;
     }

@@ -96,6 +96,16 @@ public class Parser {
         System.out.println("\t                           * dataset (Fall2018 or Spring2019)");
         System.out.println("\t                           * pass version (1,2,3,...)");
         System.out.println("\t                           * outbending (0 : false, 1 : true)");
+        System.out.println("\t-mcsmear [string, double, double, double, bool] : Use MC smearing. Parameters:");
+        System.out.println("\t                           * path to JSON file containing:");
+        System.out.println("\t                               - 'mombinlims' : Map of PIDs to bin ids to momentum bin limits");
+        System.out.println("\t                               - 'mom'        : Map of PIDs to bin ids to delta p / p means and widths");
+        System.out.println("\t                               - 'theta'      : Map of PIDs to bin ids to delta theta means and widths");
+        System.out.println("\t                               - 'phi'        : Map of PIDs to bin ids to delta phi means and widths");
+        System.out.println("\t                           * Momentum additional data smearing fraction");
+        System.out.println("\t                           * Theta additional data smearing fraction");
+        System.out.println("\t                           * Phi additional data smearing fraction");
+        System.out.println("\t                           * Option to offset by means (mus) of smearing distributions");
         System.out.println("\t-xF   [float]  : Minimum xF cut for events          (def: none)");
         System.out.println("\t-m    [float]  : Maximum mass cut for events        (def: none)");
         System.out.println("\t-'[var]>(<)[float]' : Cut kinematic variable");
@@ -379,6 +389,16 @@ public class Parser {
                 case "-momc":
                     if (args.length>2) { try { analysis.setMCVersion(args[i+1],Integer.parseInt(args[i+2]),Integer.parseInt(args[i+3])); valid_opt = true; break; }
                     catch (Exception exception) { System.out.println(" WARNING: Using Momentum Correction version for dataset: Fall2018, pass: 1."); } }
+
+                // Momentum corrections option
+                case "-mcsmear":
+                    if (args.length>2) { try {
+                        analysis.setMCSmearing(true);
+                        analysis.loadMCSmearingJSON(args[i+1]);
+                        analysis.setMCSmearing(Double.parseDouble(args[i+2]),Double.parseDouble(args[i+3]),Double.parseDouble(args[i+4]));
+                        analysis.setMCSmearingUseMu(Boolean.parseBoolean(args[i+5]));
+                        valid_opt = true; break;
+                    } catch (Exception exception) { return this.help(); } }
 
                 // PID tag option
                 case "-tag":

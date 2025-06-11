@@ -44,6 +44,7 @@ public class Analysis {
     protected String                         _qaMethod;
     protected FiducialCuts                   _fiducialCuts;
     protected MomentumCorrections            _momCorrections;
+    protected MCSmearing                     _mcsmearing;
     protected String                         _inPath;
     protected String                         _outPath;
     protected ROOTFile                       _outFile;
@@ -79,6 +80,7 @@ public class Analysis {
     protected static int     _notify       = 0;                     // notify how many events have been added out of total read so far after given number of events, does nothing if zero
     protected static boolean _addVertices  = false;                 // Add vertices to tree
     protected static boolean _addAngles    = false;                 // Add angles (in degrees) to tree
+    protected static boolean _use_mcsmearing = false;               // Option to smear reconstructed momentum, theta, phi, values using MC truth values and fitted resolutions and means.
 
     // Tagging options
     protected static ArrayList<Integer>       _tag_pids   = new ArrayList<Integer>();        // List of pid tags for event, just checks that at least one is present in event
@@ -100,6 +102,7 @@ public class Analysis {
         this._qaMethod         = new String("OkForAsymmetry");
         this._fiducialCuts     = new FiducialCuts(this._constants);
         this._momCorrections   = new MomentumCorrections();
+        this._mcsmearing       = new MCSmearing();
         this._inPath           = new String("");
         this._outPath          = new String("Analysis.root");
         this._tupleNames       = new String("");
@@ -127,6 +130,7 @@ public class Analysis {
         this._qaMethod         = new String("OkForAsymmetry");
         this._fiducialCuts     = new FiducialCuts(this._constants);
         this._momCorrections   = new MomentumCorrections();
+        this._mcsmearing       = new MCSmearing();
         this._inPath           = inPath;
         this._outPath          = outPath;
         this._tupleNames       = new String("");
@@ -158,6 +162,7 @@ public class Analysis {
         this._qaMethod         = new String("OkForAsymmetry");
         this._fiducialCuts     = new FiducialCuts(this._constants);
         this._momCorrections   = new MomentumCorrections();
+        this._mcsmearing       = new MCSmearing();
         this._inPath           = inPath;
         this._outPath          = outPath;
         this._tupleNames       = new String("");
@@ -925,6 +930,44 @@ public class Analysis {
     }
 
     /**
+    * Set the option to use MC smearing.
+    * @param use_mcsmearing
+    */
+    protected void setMCSmearing(boolean use_mcsmearing) {
+
+        this._use_mcsmearing = use_mcsmearing;
+    }
+
+    /**
+    * Set data smearing fractions.
+    * @param smearing_mom
+    * @param smearing_theta
+    * @param smearing_phi
+    */
+    protected void setMCSmearing(double smearing_mom, double smearing_theta, double smearing_phi) {
+
+        this._mcsmearing.setSmearing(smearing_mom, smearing_theta, smearing_phi);
+    }
+
+    /**
+    * Set the option to offset MC smeared values as well.
+    * @param use_mu
+    */
+    protected void setMCSmearingUseMu(boolean use_mu) {
+
+        this._mcsmearing.setUseMu(use_mu);
+    }
+
+    /**
+    * Load JSON path for MC smearing.
+    * @param mcsmearing_jsonpath
+    */
+    protected void loadMCSmearingJSON(String jsonpath) {
+
+        this._mcsmearing.loadJSON(jsonpath);
+    }
+
+    /**
     * Set boolean for requiring matching decay in mc.
     * @param MC
     */
@@ -1387,10 +1430,18 @@ public class Analysis {
                 if (!this.filter(decays.getFullParticleList())) { continue; }
             }
 
-            // Get combined list of particle combinations from REC::Particle and MC::Lund banks
+            // Initialize lists of particle combinations from REC::Particle and MC::Lund banks
             ArrayList<ArrayList<DecayProduct>> list;
             LinkedHashMap<Integer,Integer> recMatchingMap = mcdecays.getMatchingMap();
             ArrayList<DecayProduct> mcFullParticleList = mcdecays.getFullParticleList();
+
+            // Apply the MC smearing algorithm to the reconstructed particles
+            if (this._use_mcsmearing) {
+                ArrayList<DecayProduct> smeared_rec_plist = this._mcsmearing.smear(decays.getFullParticleList(),mcFullParticleList,recMatchingMap);
+                decays.setFullParticleList(smeared_rec_plist);
+            }
+
+            // Get combined list of particle combinations from REC::Particle and MC::Lund banks
             if (!this._require_pid) { list = decays.mergeComboChargeList(recMatchingMap,mcFullParticleList); }
             if (this._require_pid)  { list = decays.mergeComboPidList(recMatchingMap,mcFullParticleList); } // if (this._parents.size()!=0) { list = decays.mergeComboPidList(mcdecays.getCheckedComboPidList()); }
 
