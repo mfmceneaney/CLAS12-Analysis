@@ -113,6 +113,9 @@ public class Parser {
         System.out.println("\t-tag  [int...]       : Require pid tag(s) in event");
         System.out.println("\t-filter [int,int...] : Filter events by pid counts <=count if filter>0");
         System.out.println("\t                       or >count if filter<0 (delimiter ':')");
+        System.out.println("\t-mlclient  [hostname, port] : Connect to ML model server (default localhost,5000)");
+        System.out.println("\t-mlclient_banks  [input bank names] : ML model server input bank names (delimiter ',', default REC::Particle)");
+        System.out.println("\t-mlclient_task  [task] : ML model server task (default 'classification')");
         System.out.println("\n * Channel/Bank Options");
         System.out.println("\t-ch   [int...] : Specify Lund pids to look for in REC::Particle bank");
         System.out.println("\t                  (delimiter ':', default 2212:-211).");
@@ -433,6 +436,45 @@ public class Parser {
                         }
                         if (pids.size()==0) { return this.help(); }
                         analysis.setPidFilter(pids,filters);
+                        valid_opt = true; break;
+                    }
+                    catch (Exception exception) { return this.help(); } }
+
+                // ML Client host and port option
+                case "-mlclient":
+                    if (args.length>2) { try {
+                        String host = "localhost";
+                        int port = 5000;
+                        if (args[i+1].contains(',')) {
+                            host = args[i+1].split(',')[0];
+                            port = Integer.parseInt(args[i+1].split(',')[1]);
+                        } else {
+                            host = args[i+1];
+                        }
+                        analysis.setMLClient(host,port);
+                        valid_opt = true; break;
+                    }
+                    catch (Exception exception) { return this.help(); } }
+
+                // ML Client input bank names option
+                case "-mlclient_banks":
+                    if (args.length>2) { try {
+                        ArrayList<String> banks = new ArrayList<String>();
+                        if (args[i+1].contains(',')) {
+                            String[] arr = args[i+1].split(',');
+                            for (String entry : arr) { banks.add(entry); }
+                        } else { banks.add(args[i+1]); }
+                        if (banks.size()==0) { return this.help(); }
+                        analysis.setMLClientInputBanks(banks);
+                        valid_opt = true; break;
+                    }
+                    catch (Exception exception) { return this.help(); } }
+
+                // ML Client task option
+                case "-mlclient_nscores":
+                    if (args.length>2) { try {
+                        Integer nScores = Integer.parseInt(args[i+1]);
+                        analysis.setMLClientNScores(nScores);
                         valid_opt = true; break;
                     }
                     catch (Exception exception) { return this.help(); } }
