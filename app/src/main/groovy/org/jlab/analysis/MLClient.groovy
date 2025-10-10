@@ -167,7 +167,7 @@ class MLClient {
     * @return A list of classification scores.
     */
     List<Double> classify(Event event) {
-        String jsonInput = createJsonInput(banks);
-        return classify(jsonInput);
+        String jsonInput = this.createJsonInput(event);
+        return this.classify(jsonInput);
     }
 }
