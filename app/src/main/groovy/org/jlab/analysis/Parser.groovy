@@ -114,8 +114,8 @@ public class Parser {
         System.out.println("\t-filter [int,int...] : Filter events by pid counts <=count if filter>0");
         System.out.println("\t                       or >count if filter<0 (delimiter ':')");
         System.out.println("\t-mlclient  [hostname, port] : Connect to ML model server (default localhost,5000)");
-        System.out.println("\t-mlclient_banks  [input bank names] : ML model server input bank names (delimiter ',', default REC::Particle)");
-        System.out.println("\t-mlclient_task  [task] : ML model server task (default 'classification')");
+        System.out.println("\t-mlclient_banks  [input bank names] : ML model server input bank names (delimiter ',', default '')");
+        System.out.println("\t-mlclient_nscores  [int] : ML model server number of output scores (default 2)");
         System.out.println("\n * Channel/Bank Options");
         System.out.println("\t-ch   [int...] : Specify Lund pids to look for in REC::Particle bank");
         System.out.println("\t                  (delimiter ':', default 2212:-211).");
