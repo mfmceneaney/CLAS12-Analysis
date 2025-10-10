@@ -24,7 +24,7 @@ import org.jlab.jnp.hipo4.data.*;
 
 
 @CompileStatic
-class MLModelClient {
+class MLClient {
 
     private final String _host
     private final int _port
@@ -34,7 +34,7 @@ class MLModelClient {
     protected ArrayList<Bank> _banks = new ArrayList<Bank>();
     protected ArrayList<String> _bankNames = new ArrayList<String>();
 
-    MLModelClient(String host, int port) {
+    MLClient(String host, int port) {
         this._host = host;
         this.port = port;
     }
