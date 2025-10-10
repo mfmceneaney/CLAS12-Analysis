@@ -45,6 +45,7 @@ public class Analysis {
     protected FiducialCuts                   _fiducialCuts;
     protected MomentumCorrections            _momCorrections;
     protected MCSmearing                     _mcsmearing;
+    protected MLClient                       _mlclient;
     protected String                         _inPath;
     protected String                         _outPath;
     protected ROOTFile                       _outFile;
@@ -81,6 +82,7 @@ public class Analysis {
     protected static boolean _addVertices  = false;                 // Add vertices to tree
     protected static boolean _addAngles    = false;                 // Add angles (in degrees) to tree
     protected static boolean _use_mcsmearing = false;               // Option to smear reconstructed momentum, theta, phi, values using MC truth values and fitted resolutions and means.
+    protected static boolean _use_mlclient   = false;               // Option to connect to ML model server for classification
 
     // Tagging options
     protected static ArrayList<Integer>       _tag_pids   = new ArrayList<Integer>();        // List of pid tags for event, just checks that at least one is present in event
@@ -103,6 +105,7 @@ public class Analysis {
         this._fiducialCuts     = new FiducialCuts(this._constants);
         this._momCorrections   = new MomentumCorrections();
         this._mcsmearing       = new MCSmearing();
+        this._mlclient         = new MLClient(this._mlclient_hostname, this._mlclient_port);
         this._inPath           = new String("");
         this._outPath          = new String("Analysis.root");
         this._tupleNames       = new String("");
@@ -968,6 +971,39 @@ public class Analysis {
     }
 
     /**
+    * Set ML client host and port for event classification.
+    * @param host
+    * @param port
+    */
+    protected void setMLClient(String host, int port) {
+
+            this._mlclient = new MLModelClient(host, port);
+            this._addML = true;
+    }
+
+    /**
+    * Set ML client input bank names.
+    * @param inputBanks
+    */
+    protected void setMLClientInputBanks(List<String> inputBanks) {
+
+        if (this._mlclient != null) {
+            this._mlclient.setInputBanks(inputBanks);
+        }
+    }
+
+    /**
+    * Set ML client number of output scores per event.
+    * @param nScores
+    */
+    protected void setMLClientNScores(int nScores) {
+
+        if (this._mlclient != null) {
+            this._mlclient.setNScores(nScores);
+        }
+    }
+
+    /**
     * Set boolean for requiring matching decay in mc.
     * @param MC
     */
@@ -1061,6 +1097,14 @@ public class Analysis {
 
             this._event_counter += 1;
 
+            // Get classification array from ML client if requested
+            ArrayList<Double> ml_preds = new ArrayList<Double>(this._mlclient.getNScores());
+            if (this._addML && this._mlclient!=null) {
+                this._mlclient.createInputBanks(reader);
+                ArrayList<Double> _ml_preds = this._mlclient.classifyEvent(event);
+                if (_ml_preds.size()==this._mlclient.getNScores()) { ml_preds = _ml_preds; }
+            }
+
             // Read needed banks only once!
             if (this._requireFC) { this._fiducialCuts.setArrays(reader,event); }
             Decays decays = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC,this._momCorrections,this._requireMC); // Fiducial cuts implemented in Decays object
@@ -1089,6 +1133,7 @@ public class Analysis {
                 HashMap<String, Double> kinematics = this._kinematics.processEvent(reader, event, l, beam);
                 if (kinematics.size()==0) { continue; } else { addedEvent = true; }
                 ArrayList<Double> data = new ArrayList<Double>();   
+                if (this._addML) { for (Double val : ml_preds) { data.add(val); } } // Add ML predictions if requested 
                 if (this._require_e) {
                     for (String key : this._kinematics.keySet()) { data.add(kinematics.get(key)); } 
                     data.add(beam.px());
@@ -1180,6 +1225,14 @@ public class Analysis {
             // Update counter
             this._event_counter += 1;
 
+            // Get classification array from ML client if requested
+            ArrayList<Double> ml_preds = new ArrayList<Double>(this._mlclient.getNScores());
+            if (this._addML && this._mlclient!=null) {
+                this._mlclient.createInputBanks(reader);
+                ArrayList<Double> _ml_preds = this._mlclient.classifyEvent(event);
+                if (_ml_preds.size()==this._mlclient.getNScores()) { ml_preds = _ml_preds; }
+            }
+
             // Read needed banks only once!
             MCDecays decays = new MCDecays(this._decay,this._parents,this._dpMap,reader,event,this._constants);
 
@@ -1207,6 +1260,7 @@ public class Analysis {
                 HashMap<String, Double> kinematics = this._kinematics.processMCEvent(reader, event, l, decays.getParents(), decays.getParticleList());
                 if (kinematics.size()==0) { continue; } else { addedEvent = true; }
                 ArrayList<Double> data = new ArrayList<Double>();
+                if (this._addML) { for (Double val : ml_preds) { data.add(val); } } // Add ML predictions if requested 
                 if (this._require_e) {
                     for (String key : this._kinematics.mcKeySet()) { data.add(kinematics.get(key)); }
                     data.add(beam.px());
@@ -1290,6 +1344,14 @@ public class Analysis {
             int runnum = bank.getInt('run',0);
             int evnum  = bank.getInt('event',0);
 
+            // Get classification array from ML client if requested
+            ArrayList<Double> ml_preds = new ArrayList<Double>(this._mlclient.getNScores());
+            if (this._addML && this._mlclient!=null) {
+                this._mlclient.createInputBanks(reader);
+                ArrayList<Double> _ml_preds = this._mlclient.classifyEvent(event);
+                if (_ml_preds.size()==this._mlclient.getNScores()) { ml_preds = _ml_preds; }
+            }
+
             // Read needed banks only once!
             if (this._requireFC) { this._fiducialCuts.setArrays(reader,event); }
             Decays decays     = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC,this._momCorrections,this._requireMC); // Fiducial cuts implemented in Decays object
@@ -1323,6 +1385,7 @@ public class Analysis {
                 else             { kinematics = this._kinematics.processEvent(reader, event, l, beam); }
                 if (kinematics.size()==0) { continue; } else { addedEvent = true; }
                 ArrayList<Double> data = new ArrayList<Double>();
+                if (this._addML) { for (Double val : ml_preds) { data.add(val); } } // Add ML predictions if requested 
                 if (this._require_e) {
                     for (String key : this._kinematics.keySet()) { data.add(kinematics.get(key)); }
                     data.add(beam.px());
@@ -1411,6 +1474,14 @@ public class Analysis {
             int runnum = bank.getInt('run',0);
             int evnum  = bank.getInt('event',0);
 
+            // Get classification array from ML client if requested
+            ArrayList<Double> ml_preds = new ArrayList<Double>(this._mlclient.getNScores());
+            if (this._addML && this._mlclient!=null) {
+                this._mlclient.createInputBanks(reader);
+                ArrayList<Double> _ml_preds = this._mlclient.classifyEvent(event);
+                if (_ml_preds.size()==this._mlclient.getNScores()) { ml_preds = _ml_preds; }
+            }
+
             // Read needed banks only once!
             if (this._requireFC) { this._fiducialCuts.setArrays(reader,event); }
             Decays decays     = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC,this._momCorrections,this._requireMC); // Fiducial cuts implemented in Decays object
@@ -1458,6 +1529,7 @@ public class Analysis {
                 HashMap<String, Double> mckinematics = this._kinematics.processMCEvent(reader, event, (ArrayList<DecayProduct>)l.subList(this._decay.size(),this._decay.size()*2), mcdecays.getParents(), mcdecays.getParticleList());
                 if (kinematics.size()==0 || mckinematics.size()==0) { continue; } else { addedEvent = true; }
                 ArrayList<Double> data = new ArrayList<Double>();
+                if (this._addML) { for (Double val : ml_preds) { data.add(val); } } // Add ML predictions if requested 
                 if (this._require_e) { //TODO: Evaluate if this requirement makes sense for all kinematics?  Always should see scattered electron though...
                     for (String key : this._kinematics.keySet()) { data.add(kinematics.get(key)); }
                     for (String key : this._kinematics.mcKeySet()) { data.add(mckinematics.get(key)); }
@@ -1591,6 +1663,7 @@ public class Analysis {
 
         // Add NTuple: "this._treeName" : Kinematics/Custom Variables, Scattered Beam, Decay products
         this._tupleNames = new String("");
+        if (this._addML) { for (int i=0; i<this._mlclient.getNScores(); i++) { this._tupleNames += "ml_score_"+(i+1)+":"; } } // Add ML scores if requested
         if (this._require_e) {
             for (String kin : this._kinematics.keySet()) { this._tupleNames += kin + ":"; }
             if (this._match) {//NOTE: Double kinematics if matching REC/MC banks
