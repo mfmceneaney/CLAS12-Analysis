@@ -977,7 +977,7 @@ public class Analysis {
     */
     protected void setMLClient(String host, int port) {
 
-            this._mlclient = new MLModelClient(host, port);
+            this._mlclient = new MLClient(host, port);
             this._addML = true;
     }
 
