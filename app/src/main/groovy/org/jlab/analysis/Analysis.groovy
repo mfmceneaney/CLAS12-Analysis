@@ -984,7 +984,7 @@ public class Analysis {
     * Set ML client input bank names.
     * @param inputBanks
     */
-    protected void setMLClientInputBanks(List<String> inputBanks) {
+    protected void setMLClientInputBanks(ArrayList<String> inputBanks) {
 
         if (this._mlclient != null) {
             this._mlclient.setInputBankNames(inputBanks);
