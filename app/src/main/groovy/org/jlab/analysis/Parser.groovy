@@ -113,6 +113,7 @@ public class Parser {
         System.out.println("\t-tag  [int...]       : Require pid tag(s) in event");
         System.out.println("\t-filter [int,int...] : Filter events by pid counts <=count if filter>0");
         System.out.println("\t                       or >count if filter<0 (delimiter ':')");
+        System.out.println("\n * ML Client Options");
         System.out.println("\t-mlclient  [hostname, port] : Connect to ML model server (default localhost,5000)");
         System.out.println("\t-mlclient_banks  [input bank names] : ML model server input bank names (delimiter ',', default '')");
         System.out.println("\t-mlclient_nscores  [int] : ML model server number of output scores (default 2)");
