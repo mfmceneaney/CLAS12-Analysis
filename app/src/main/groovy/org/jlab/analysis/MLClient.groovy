@@ -14,6 +14,7 @@ import groovy.transform.CompileStatic;
 
 // CLAS Physics Imports
 import org.jlab.jnp.hipo4.data.*;
+import org.jlab.jnp.hipo4.io.HipoReader;
 
 /**
 * Connects to a remote machine learning model server to classify input data.
