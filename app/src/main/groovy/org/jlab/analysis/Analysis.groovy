@@ -105,7 +105,6 @@ public class Analysis {
         this._fiducialCuts     = new FiducialCuts(this._constants);
         this._momCorrections   = new MomentumCorrections();
         this._mcsmearing       = new MCSmearing();
-        this._mlclient         = new MLClient(this._mlclient_hostname, this._mlclient_port);
         this._inPath           = new String("");
         this._outPath          = new String("Analysis.root");
         this._tupleNames       = new String("");
@@ -988,7 +987,7 @@ public class Analysis {
     protected void setMLClientInputBanks(List<String> inputBanks) {
 
         if (this._mlclient != null) {
-            this._mlclient.setInputBanks(inputBanks);
+            this._mlclient.setInputBankNames(inputBanks);
         }
     }
 

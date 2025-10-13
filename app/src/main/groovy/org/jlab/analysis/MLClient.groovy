@@ -36,7 +36,7 @@ class MLClient {
 
     MLClient(String host, int port) {
         this._host = host;
-        this.port = port;
+        this._port = port;
     }
 
     /**
@@ -67,7 +67,7 @@ class MLClient {
     * Initialize the input banks to read from each event.
     * @param reader The HIPO reader to get schemas from.
     */
-    void createInputBanks(Reader reader) {
+    void createInputBanks(HipoReader reader) {
         this._banks.clear();
 
         for (String bankName : this._bankNames) {
@@ -113,7 +113,7 @@ class MLClient {
     * @param jsonInput The JSON string representing the input data.
     * @return A list of classification scores.
     */
-    List<Double> classify(String jsonInput) {
+    ArrayList<Double> classify(String jsonInput) {
         String urlString = "http://${this._host}:${this._port}${this._endpoint}"
         URL url = new URL(urlString)
         HttpURLConnection connection = (HttpURLConnection) url.openConnection()
@@ -148,8 +148,8 @@ class MLClient {
             throw new RuntimeException("Invalid response format: 'predictions' not found or not a list.")
         }
 
-        List rawPredictions = (List) predictionsObj
-        List<Double> predictions = new ArrayList<>()
+        ArrayList<Object> rawPredictions = (ArrayList) predictionsObj
+        ArrayList<Double> predictions = new ArrayList<>()
         for (Object val : rawPredictions) {
             if (val instanceof Number) {
                 predictions.add(((Number) val).doubleValue())
@@ -166,7 +166,7 @@ class MLClient {
     * @param event The event to classify.
     * @return A list of classification scores.
     */
-    List<Double> classify(Event event) {
+    ArrayList<Double> classify(Event event) {
         String jsonInput = this.createJsonInput(event);
         return this.classify(jsonInput);
     }
