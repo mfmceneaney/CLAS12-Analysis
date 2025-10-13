@@ -25,7 +25,7 @@ import org.jlab.jnp.hipo4.io.HipoReader;
 
 
 @CompileStatic
-class MLClient {
+public class MLClient {
 
     private final String _host
     private final int _port
@@ -87,22 +87,47 @@ class MLClient {
     * @return A JSON string representing the event data.
     */
     String createJsonInput(Event event) {
-        Map<String, Object> inputMap = new HashMap<>()
+        Map<String, Object> inputMap = new HashMap<>();
+
         for (Bank bank : this._banks) {
             event.read(bank);
-            List<Map<String, Object>> rows = new ArrayList<>()
+            List<Map<String, Object>> rows = new ArrayList<>();
             int rowCount = bank.getRows();
-            int colCount = bank.getColumns();
-            for (int i = 0; i < rowCount; i++) {
-                Map<String, Object> rowMap = new HashMap<>()
-                for (int j = 0; j < colCount; j++) {
-                    String colName = bank.getColumnName(j);
-                    Object value = bank.getValue(i, j);
-                    rowMap.put(colName, value);
+            Schema schema = bank.getSchema();
+            ArrayList<String> entryArray = (ArrayList<String>)schema.getEntryList();
+            for (String entry : entryArray) {
+                Map<String, Object> rowMap = new HashMap<>();
+                Integer entry_type = schema.getType(entry);
+                for (int i = 0; i < rowCount; i++) {
+                    Object value;
+                    switch (entry_type) {
+                        case 1: // byte
+                            value = bank.getByte(entry, i);
+                            break;
+                        case 2: // short
+                            value = bank.getShort(entry, i);
+                            break;
+                        case 3: // int
+                            value = bank.getInt(entry, i);
+                            break;
+                        case 4: // float
+                            value = bank.getFloat(entry, i);
+                            break;
+                        case 5: // double
+                            value = bank.getDouble(entry, i);
+                            break;
+                        case 8: // long
+                            value = bank.getLong(entry, i);
+                            break;
+                        default:
+                            throw new RuntimeException("Unsupported entry type: ${entry_type} for entry: ${entry}");
+                            break;
+                    }
+                    rowMap.put(entry, value);
                 }
                 rows.add(rowMap);
             }
-            inputMap.put(bank.getName(), rows);
+            inputMap.put(schema.getName(), rows);
         }
 
         JsonBuilder jsonBuilder = new JsonBuilder(inputMap);
@@ -171,4 +196,4 @@ class MLClient {
         String jsonInput = this.createJsonInput(event);
         return this.classify(jsonInput);
     }
-}
+} // public class MLClient {
