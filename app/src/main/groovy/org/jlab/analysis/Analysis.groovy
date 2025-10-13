@@ -1100,7 +1100,7 @@ public class Analysis {
             ArrayList<Double> ml_preds = new ArrayList<Double>(this._mlclient.getNScores());
             if (this._addML && this._mlclient!=null) {
                 this._mlclient.createInputBanks(reader);
-                ArrayList<Double> _ml_preds = this._mlclient.classifyEvent(event);
+                ArrayList<Double> _ml_preds = this._mlclient.classify(event);
                 if (_ml_preds.size()==this._mlclient.getNScores()) { ml_preds = _ml_preds; }
             }
 
@@ -1228,7 +1228,7 @@ public class Analysis {
             ArrayList<Double> ml_preds = new ArrayList<Double>(this._mlclient.getNScores());
             if (this._addML && this._mlclient!=null) {
                 this._mlclient.createInputBanks(reader);
-                ArrayList<Double> _ml_preds = this._mlclient.classifyEvent(event);
+                ArrayList<Double> _ml_preds = this._mlclient.classify(event);
                 if (_ml_preds.size()==this._mlclient.getNScores()) { ml_preds = _ml_preds; }
             }
 
@@ -1347,7 +1347,7 @@ public class Analysis {
             ArrayList<Double> ml_preds = new ArrayList<Double>(this._mlclient.getNScores());
             if (this._addML && this._mlclient!=null) {
                 this._mlclient.createInputBanks(reader);
-                ArrayList<Double> _ml_preds = this._mlclient.classifyEvent(event);
+                ArrayList<Double> _ml_preds = this._mlclient.classify(event);
                 if (_ml_preds.size()==this._mlclient.getNScores()) { ml_preds = _ml_preds; }
             }
 
@@ -1477,7 +1477,7 @@ public class Analysis {
             ArrayList<Double> ml_preds = new ArrayList<Double>(this._mlclient.getNScores());
             if (this._addML && this._mlclient!=null) {
                 this._mlclient.createInputBanks(reader);
-                ArrayList<Double> _ml_preds = this._mlclient.classifyEvent(event);
+                ArrayList<Double> _ml_preds = this._mlclient.classify(event);
                 if (_ml_preds.size()==this._mlclient.getNScores()) { ml_preds = _ml_preds; }
             }
 
