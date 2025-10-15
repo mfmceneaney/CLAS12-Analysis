@@ -96,10 +96,12 @@ public class MLClient {
             Schema schema = bank.getSchema();
             ArrayList<String> entryArray = (ArrayList<String>)schema.getEntryList();
             // System.out.println("Processing bank: ${schema.getName()} with ${rowCount} rows and entries: ${entryArray}");
-            for (String entry : entryArray) {
+
+            for (int i = 0; i < rowCount; i++) {
                 ArrayList<Object> row_array = new ArrayList<>();
-                Integer entry_type = schema.getType(entry);
-                for (int i = 0; i < rowCount; i++) {
+                for (String entry : entryArray) {
+                    Integer entry_type = schema.getType(entry);
+
                     Object value;
                     switch (entry_type) {
                         case 1: // byte
