@@ -1096,14 +1096,6 @@ public class Analysis {
 
             this._event_counter += 1;
 
-            // Get classification array from ML client if requested
-            ArrayList<Double> ml_preds = new ArrayList<Double>(this._mlclient.getNScores());
-            if (this._addML && this._mlclient!=null) {
-                this._mlclient.createInputBanks(reader);
-                ArrayList<Double> _ml_preds = this._mlclient.classify(event);
-                if (_ml_preds.size()==this._mlclient.getNScores()) { ml_preds = _ml_preds; }
-            }
-
             // Read needed banks only once!
             if (this._requireFC) { this._fiducialCuts.setArrays(reader,event); }
             Decays decays = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC,this._momCorrections,this._requireMC); // Fiducial cuts implemented in Decays object
@@ -1124,6 +1116,14 @@ public class Analysis {
             // Check for scattered electron if requested
             DecayProduct beam = decays.getScatteredBeam(); //NOTE: quicker since already have particle list, also implemented for MC;)
             if (this._require_e && beam.p()==0.0) { continue; } // IMPORTANT! Scattered beam pid and p are set to zero if no scattered electron is found
+
+            // Get classification array from ML client if requested
+            ArrayList<Double> ml_preds = new ArrayList<Double>(this._mlclient.getNScores());
+            if (this._addML && this._mlclient!=null && list.size()>0) { // Only need to do this if there are combinations to analyze
+                this._mlclient.createInputBanks(reader);
+                ArrayList<Double> _ml_preds = this._mlclient.classify(event);
+                if (_ml_preds.size()==this._mlclient.getNScores()) { ml_preds = _ml_preds; }
+            }
 
             // Loop through combinations
             boolean addedEvent = false;
@@ -1224,14 +1224,6 @@ public class Analysis {
             // Update counter
             this._event_counter += 1;
 
-            // Get classification array from ML client if requested
-            ArrayList<Double> ml_preds = new ArrayList<Double>(this._mlclient.getNScores());
-            if (this._addML && this._mlclient!=null) {
-                this._mlclient.createInputBanks(reader);
-                ArrayList<Double> _ml_preds = this._mlclient.classify(event);
-                if (_ml_preds.size()==this._mlclient.getNScores()) { ml_preds = _ml_preds; }
-            }
-
             // Read needed banks only once!
             MCDecays decays = new MCDecays(this._decay,this._parents,this._dpMap,reader,event,this._constants);
 
@@ -1251,6 +1243,14 @@ public class Analysis {
             // Check for scattered electron if requested
             DecayProduct beam = decays.getScatteredBeam(); // quicker since already have particle list, also implemented for MC;)
             if (this._require_e && beam.p()==0.0) { continue; } // IMPORTANT! Scattered beam pid and p are set to zero if no scattered electron is found
+
+            // Get classification array from ML client if requested
+            ArrayList<Double> ml_preds = new ArrayList<Double>(this._mlclient.getNScores());
+            if (this._addML && this._mlclient!=null && list.size()>0) { // Only need to do this if there are combinations to analyze
+                this._mlclient.createInputBanks(reader);
+                ArrayList<Double> _ml_preds = this._mlclient.classify(event);
+                if (_ml_preds.size()==this._mlclient.getNScores()) { ml_preds = _ml_preds; }
+            }
 
             // Loop through combinations
             boolean addedEvent = false;
@@ -1343,14 +1343,6 @@ public class Analysis {
             int runnum = bank.getInt('run',0);
             int evnum  = bank.getInt('event',0);
 
-            // Get classification array from ML client if requested
-            ArrayList<Double> ml_preds = new ArrayList<Double>(this._mlclient.getNScores());
-            if (this._addML && this._mlclient!=null) {
-                this._mlclient.createInputBanks(reader);
-                ArrayList<Double> _ml_preds = this._mlclient.classify(event);
-                if (_ml_preds.size()==this._mlclient.getNScores()) { ml_preds = _ml_preds; }
-            }
-
             // Read needed banks only once!
             if (this._requireFC) { this._fiducialCuts.setArrays(reader,event); }
             Decays decays     = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC,this._momCorrections,this._requireMC); // Fiducial cuts implemented in Decays object
@@ -1374,6 +1366,14 @@ public class Analysis {
             if (this._useMC) { beam = mcdecays.getScatteredBeam(); } //NOTE: quicker since already have particle list, also implemented for MC;)
             else             { beam = decays.getScatteredBeam(); }
             if (this._require_e && beam.p()==0.0) { continue; } // IMPORTANT! Scattered beam pid and p are set to zero if no scattered electron is found
+
+            // Get classification array from ML client if requested
+            ArrayList<Double> ml_preds = new ArrayList<Double>(this._mlclient.getNScores());
+            if (this._addML && this._mlclient!=null && list.size()>0) { // Only need to do this if there are combinations to analyze
+                this._mlclient.createInputBanks(reader);
+                ArrayList<Double> _ml_preds = this._mlclient.classify(event);
+                if (_ml_preds.size()==this._mlclient.getNScores()) { ml_preds = _ml_preds; }
+            }
 
             // Loop through combinations
             boolean addedEvent = false;
@@ -1473,14 +1473,6 @@ public class Analysis {
             int runnum = bank.getInt('run',0);
             int evnum  = bank.getInt('event',0);
 
-            // Get classification array from ML client if requested
-            ArrayList<Double> ml_preds = new ArrayList<Double>(this._mlclient.getNScores());
-            if (this._addML && this._mlclient!=null) {
-                this._mlclient.createInputBanks(reader);
-                ArrayList<Double> _ml_preds = this._mlclient.classify(event);
-                if (_ml_preds.size()==this._mlclient.getNScores()) { ml_preds = _ml_preds; }
-            }
-
             // Read needed banks only once!
             if (this._requireFC) { this._fiducialCuts.setArrays(reader,event); }
             Decays decays     = new Decays(this._decay,reader,runnum,event,this._constants,this._fiducialCuts,this._requireFC,this._momCorrections,this._requireMC); // Fiducial cuts implemented in Decays object
@@ -1519,6 +1511,14 @@ public class Analysis {
             DecayProduct beam   = decays.getScatteredBeam();
             DecayProduct mcbeam = mcdecays.getScatteredBeam();
             if (this._require_e && beam.p()==0.0 || mcbeam.p()==0.0) { continue; } // IMPORTANT! Scattered beam pid and p are set to zero if no scattered electron is found
+
+            // Get classification array from ML client if requested
+            ArrayList<Double> ml_preds = new ArrayList<Double>(this._mlclient.getNScores());
+            if (this._addML && this._mlclient!=null && list.size()>0) { // Only need to do this if there are combinations to analyze
+                this._mlclient.createInputBanks(reader);
+                ArrayList<Double> _ml_preds = this._mlclient.classify(event);
+                if (_ml_preds.size()==this._mlclient.getNScores()) { ml_preds = _ml_preds; }
+            }
 
             // Loop through combinations
             boolean addedEvent = false;
