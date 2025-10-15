@@ -1243,6 +1243,7 @@ public class Analysis {
                     data.add((double)p.parent()); //TODO:DEBUGGING parent index (for matching)
                     data.add((double)p.ppid()); //TODO:DEBUGGING parent pid
                     data.add((double)p.gppid()); //TODO:DEBUGGING grandparent pid
+                    data.add((double)p.ggppid()); //TODO:DEBUGGING great grandparent pid
                 }
 		
                 // Fill TNTuple
@@ -1552,6 +1553,7 @@ public class Analysis {
                     data.add((double)p.parent()); //TODO:DEBUGGING parent index (for matching)
                     data.add((double)p.ppid()); //TODO:DEBUGGING parent pid
                     data.add((double)p.gppid()); //TODO:DEBUGGING grandparent pid
+                    data.add((double)p.ggppid()); //TODO:DEBUGGING great grandparent pid
                 }
 		
                 // Fill TNTuple
@@ -1603,10 +1605,10 @@ public class Analysis {
         if (!this._useMC || this._combo || this._match) { names += [":chi2pid_",":status_"]; }
         if (!this._require_pid || this._match) {names += [":pid_"]; } //NOTE: Just a groovy capability // use .addAll() for java
         if (this._use_rectrack && !this._useMC) { names += [":detector_",":sector_",":detector_status_",":detector_chi2ndf_"]; }
-        if (this._useMC && !this._combo && !this._match) { names += [":pidx_",":ppid_",":gppid_"]; } //NOTE: Add parent index and pid for MC only events
+        if (this._useMC && !this._combo && !this._match) { names += [":pidx_",":ppid_",":gppid_",":ggppid_"]; } //NOTE: Add parent index and pid for MC only events
         String pname = this._constants.getName(this._constants.getBeamPID());
         if (this._require_e) {
-            for (String name : names) { if (name==":pid_" || name==":pidx_" || name==":ppid_" || name==":gppid_") continue; /*NOTE: ADDED 6/15/22*/ this._tupleNames += name + pname; } //NOTE: This skips pid for !this._require_pid events too.  Will have to fix this at some point maybe. 2/27/24.
+            for (String name : names) { if (name==":pid_" || name==":pidx_" || name==":ppid_" || name==":gppid_" || name==":ggppid_") continue; /*NOTE: ADDED 6/15/22*/ this._tupleNames += name + pname; } //NOTE: This skips pid for !this._require_pid events too.  Will have to fix this at some point maybe. 2/27/24.
             this._tupleNames += ":";
             if (this._match) {//NOTE: Double entries for matching MC/REC banks
                 for (String name : names) {
@@ -1650,7 +1652,7 @@ public class Analysis {
         if (this._addVertices) { names += [":vx_",":vy_",":vz_",":vt_"]; } //NOTE: Just a groovy capability, MC::Lund does not have vt entry
         if (this._addAngles) { names += [":theta_",":phi_"]; } //NOTE: Just a groovy capability
         if (!this._require_pid || this._match) {names += [":pid_"]; } //NOTE: Just a groovy capability // use .addAll() for java
-        names += [":pidx_",":ppid_",":gppid_"]; //NOTE:  Add parent index and pid //TODO:DEBUGGING
+        names += [":pidx_",":ppid_",":gppid_",":ggppid_"]; //NOTE:  Add parent index and pid //TODO:DEBUGGING
 
         // Double entries if requiring MC::Lund and REC::Particle (matching option)
         if (this._match) {
