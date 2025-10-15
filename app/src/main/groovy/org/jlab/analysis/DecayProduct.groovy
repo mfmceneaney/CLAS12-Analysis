@@ -24,6 +24,7 @@ public class DecayProduct {
     int       _daughter;
     int       _ppid; //NOTE: ADDED
     int       _gppid; //NOTE: ADDED
+    int       _ggppid; //NOTE: ADDED
     int       _charge;
     double    _px;
     double    _py;
@@ -57,11 +58,12 @@ public class DecayProduct {
         this._beta = beta;
     } //NOTE: ADDED
 
-    public DecayProduct(int pid, double px, double py, double pz, double beta, double vx, double vy, double vz, int index, int parent, int daughter, int ppid, int gppid) {
+    public DecayProduct(int pid, double px, double py, double pz, double beta, double vx, double vy, double vz, int index, int parent, int daughter, int ppid, int gppid, int ggppid) {
         this.setVector(pid,px,py,pz,vx,vy,vz);
         this.setIndices(index,parent,daughter);
         this.ppid(ppid);
         this.gppid(gppid);
+        this.ggppid(ggppid);
         this._beta = beta;
     }
 
@@ -110,6 +112,7 @@ public class DecayProduct {
         this.setIndices(p.index(),p.parent(),p.daughter());//NOTE: ADDED
         this.ppid(p.ppid());//NOTE: ADDED
         this.gppid(p.gppid());//NOTE: ADDED
+        this.ggppid(p.ggppid());//NOTE: ADDED
         this.m(p.m());
     }
 
@@ -131,6 +134,7 @@ public class DecayProduct {
         this.setIndices(p.index(),p.parent(),p.daughter());//NOTE: ADDED
         this.ppid(p.ppid());//NOTE: ADDED
         this.gppid(p.gppid());//NOTE: ADDED
+        this.ggppid(p.ggppid());//NOTE: ADDED
         this.m(p.m());
     }
 
@@ -271,6 +275,24 @@ public class DecayProduct {
     protected int gppid() {
 
         return this._gppid;
+    }
+
+    /**
+    * Set particle's great grandparent pid.
+    * @param ggppid
+    */
+    protected void ggppid(int ggppid) {
+
+        this._ggppid = ggppid;
+    }
+
+    /**
+    * Access particle's great grandparent pid.
+    * @return _ggppid
+    */
+    protected int ggppid() {
+
+        return this._ggppid;
     }
 
     /**
