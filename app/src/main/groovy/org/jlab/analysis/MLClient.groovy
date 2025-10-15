@@ -91,12 +91,13 @@ public class MLClient {
 
         for (Bank bank : this._banks) {
             event.read(bank);
-            List<Map<String, Object>> rows = new ArrayList<>();
+            ArrayList<ArrayList<Object>> rows = new ArrayList<>();
             int rowCount = bank.getRows();
             Schema schema = bank.getSchema();
             ArrayList<String> entryArray = (ArrayList<String>)schema.getEntryList();
+            // System.out.println("Processing bank: ${schema.getName()} with ${rowCount} rows and entries: ${entryArray}");
             for (String entry : entryArray) {
-                Map<String, Object> rowMap = new HashMap<>();
+                ArrayList<Object> row_array = new ArrayList<>();
                 Integer entry_type = schema.getType(entry);
                 for (int i = 0; i < rowCount; i++) {
                     Object value;
@@ -123,9 +124,9 @@ public class MLClient {
                             throw new RuntimeException("Unsupported entry type: ${entry_type} for entry: ${entry}");
                             break;
                     }
-                    rowMap.put(entry, value);
+                    row_array.add(value);
                 }
-                rows.add(rowMap);
+                rows.add(row_array);
             }
             inputMap.put(schema.getName(), rows);
         }
