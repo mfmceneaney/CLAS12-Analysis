@@ -62,93 +62,129 @@ public class Kinematics {
     protected static boolean _addAffKin     = false;    // include Affinity partonic variables for MC matched events
 
     // built in lambdas
-    protected ConfigVar _getEventNum = (ConfigVar)(HipoReader reader, Event event) -> {
-        Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
-        Bank bank     = new Bank(schema);
-        event.read(bank);
-		double num = bank.getInt("event",0);
-		return num; };
+    protected ConfigVar _getEventNum = new ConfigVar() {
+        double get(HipoReader reader, Event event) {
+            Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
+            Bank bank     = new Bank(schema);
+            event.read(bank);
+            double num = bank.getInt("event",0);
+            return num;
+        }
+    };
 
-    protected ConfigVar _getRunNum = (ConfigVar)(HipoReader reader, Event event) -> {
-        Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
-        Bank bank     = new Bank(schema);
-        event.read(bank);
-		double num = bank.getInt("run",0);
-		return num; };
+    protected ConfigVar _getRunNum = new ConfigVar() {
+        double get(HipoReader reader, Event event) {
+            Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
+            Bank bank     = new Bank(schema);
+            event.read(bank);
+            double num = bank.getInt("run",0);
+            return num;
+        }
+    };
 
-    protected ConfigVar _getTorus = (ConfigVar)(HipoReader reader, Event event) -> {
-        Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
-        Bank bank     = new Bank(schema);
-        event.read(bank);
-		double torus = (double) bank.getFloat("torus",0);
-		return torus; };
+    protected ConfigVar _getTorus = new ConfigVar() {
+        double get(HipoReader reader, Event event) {
+            Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
+            Bank bank     = new Bank(schema);
+            event.read(bank);
+            double torus = (double) bank.getFloat("torus",0);
+            return torus;
+        }
+    };
 
-    protected ConfigVar _getHelicity = (ConfigVar)(HipoReader reader, Event event) -> {
-        double helicity  = 0.0;
-		Schema schema = reader.getSchemaFactory().getSchema("REC::Event");
-        Bank bank     = new Bank(schema);
-        event.read(bank);
-		helicity = (double) bank.getByte("helicity",0);
-		return helicity; };
+    protected ConfigVar _getHelicity = new ConfigVar() {
+        double get(HipoReader reader, Event event) {
+            double helicity  = 0.0;
+            Schema schema = reader.getSchemaFactory().getSchema("REC::Event");
+            Bank bank     = new Bank(schema);
+            event.read(bank);
+            helicity = (double) bank.getByte("helicity",0);
+            return helicity;
+        }
+    };
 
-    protected ConfigVar _getMLPred = (ConfigVar)(HipoReader reader, Event event) -> {
-        double pred  = 0.0;
-		Schema schema = reader.getSchemaFactory().getSchema("ML::pred");
-        Bank bank     = new Bank(schema);
-        event.read(bank);
-		pred = (double) bank.getDouble("pred",0);
-		return pred; };
+    protected ConfigVar _getMLPred = new ConfigVar() {
+        double get(HipoReader reader, Event event) {
+            double pred  = 0.0;
+            Schema schema = reader.getSchemaFactory().getSchema("ML::pred");
+            Bank bank     = new Bank(schema);
+            event.read(bank);
+            pred = (double) bank.getDouble("pred",0);
+            return pred;
+        }
+    };
 
-    protected ConfigVar _getMLLabel = (ConfigVar)(HipoReader reader, Event event) -> {
-        double label  = 0.0;
-		Schema schema = reader.getSchemaFactory().getSchema("ML::pred");
-        Bank bank     = new Bank(schema);
-        event.read(bank);
-		label = (double) bank.getInt("label",0);
-		return label; };
+    protected ConfigVar _getMLLabel = new ConfigVar() {
+        double get(HipoReader reader, Event event) {
+            double label  = 0.0;
+            Schema schema = reader.getSchemaFactory().getSchema("ML::pred");
+            Bank bank     = new Bank(schema);
+            event.read(bank);
+            label = (double) bank.getInt("label",0);
+            return label;
+        }
+    };
 
-    protected ConfigVar _getHelicityMC = (ConfigVar)(HipoReader reader, Event event) -> {
-        double helicity  = 0.0;
-        Schema schema = reader.getSchemaFactory().getSchema("MC::Header");
-        Bank bank     = new Bank(schema);
-        event.read(bank);
-        helicity = (double) bank.getFloat("helicity",0);
-        return helicity; };
+    protected ConfigVar _getHelicityMC = new ConfigVar() {
+        double get(HipoReader reader, Event event) {
+            double helicity  = 0.0;
+            Schema schema = reader.getSchemaFactory().getSchema("MC::Header");
+            Bank bank     = new Bank(schema);
+            event.read(bank);
+            helicity = (double) bank.getFloat("helicity",0);
+            return helicity;
+        }
+    };
 
-    protected ConfigVar _getBeamCharge = (ConfigVar)(HipoReader reader, Event event) -> {
-        double bc = 9999;
-		Schema schema = reader.getSchemaFactory().getSchema("REC::Event");
-        Bank bank     = new Bank(schema);
-        event.read(bank);
-		bc = (double) bank.getFloat("beamCharge",0);
-		return bc; };
+    protected ConfigVar _getBeamCharge = new ConfigVar() {
+        double get(HipoReader reader, Event event) {
+            double bc = 9999;
+            Schema schema = reader.getSchemaFactory().getSchema("REC::Event");
+            Bank bank     = new Bank(schema);
+            event.read(bank);
+            bc = (double) bank.getFloat("beamCharge",0);
+            return bc;
+        }
+    };
 
-    protected ConfigVar _getLiveTime = (ConfigVar)(HipoReader reader, Event event) -> {
-        double liveTime = 9999;
-		Schema schema = reader.getSchemaFactory().getSchema("REC::Event");
-        Bank bank     = new Bank(schema);
-        event.read(bank);
-		liveTime = (double) bank.getFloat("liveTime",0);
-		return liveTime; };
+    protected ConfigVar _getLiveTime = new ConfigVar() {
+        double get(HipoReader reader, Event event) {
+            double liveTime = 9999;
+            Schema schema = reader.getSchemaFactory().getSchema("REC::Event");
+            Bank bank     = new Bank(schema);
+            event.read(bank);
+            liveTime = (double) bank.getFloat("liveTime",0);
+            return liveTime;
+        }
+    };
 
-    protected ConfigVar _getStartTime = (ConfigVar)(HipoReader reader, Event event) -> {
-        double startTime = 9999;
-		Schema schema = reader.getSchemaFactory().getSchema("REC::Event");
-        Bank bank     = new Bank(schema);
-        event.read(bank);
-		startTime = (double) bank.getFloat("startTime",0);
-		return startTime; };
+    protected ConfigVar _getStartTime = new ConfigVar() {
+        double get(HipoReader reader, Event event) {
+            double startTime = 9999;
+            Schema schema = reader.getSchemaFactory().getSchema("REC::Event");
+            Bank bank     = new Bank(schema);
+            event.read(bank);
+            startTime = (double) bank.getFloat("startTime",0);
+            return startTime;
+        }
+    };
 
-    protected ConfigVar _getRFTime = (ConfigVar)(HipoReader reader, Event event) -> {
-        double RFTime = 9999;
-		Schema schema = reader.getSchemaFactory().getSchema("REC::Event");
-        Bank bank     = new Bank(schema);
-        event.read(bank);
-		RFTime = (double) bank.getFloat("RFTime",0);
-		return RFTime; };
+    protected ConfigVar _getRFTime = new ConfigVar() {
+        double get(HipoReader reader, Event event) {
+            double RFTime = 9999;
+            Schema schema = reader.getSchemaFactory().getSchema("REC::Event");
+            Bank bank     = new Bank(schema);
+            event.read(bank);
+            RFTime = (double) bank.getFloat("RFTime",0);
+            return RFTime;
+        }
+    };
 
-    protected ConfigVar _getTSpinSign = (ConfigVar)(HipoReader reader, Event event) -> {
-		return (double)this._tspin_sign; };
+    protected ConfigVar _getTSpinSign = new ConfigVar() {
+        double get(HipoReader reader, Event event) {
+            return (double)Kinematics.this._tspin_sign;
+        }
+    };
 
     /**
     * Constructor stub
