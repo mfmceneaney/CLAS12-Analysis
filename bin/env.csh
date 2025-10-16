@@ -1,5 +1,6 @@
 #!/bin/csh
 setenv C12ANALYSIS $PWD
+setenv C12ANALYSIS_INSTALL_DIR $C12ANALYSIS/app/build/libs
 setenv GCPATH $C12ANALYSIS/app/build/libs/app.jar:$C12ANALYSIS/app/classes/main/groovy/:$C12ANALYSIS/app/src/main/groovy/:$C12ANALYSIS/j2root/target/classes/:$C12ANALYSIS/clasqaDB/clasqa.jar
 
 # J2ROOT Setup
