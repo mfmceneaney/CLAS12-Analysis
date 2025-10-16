@@ -1118,7 +1118,7 @@ public class Analysis {
             if (this._require_e && beam.p()==0.0) { continue; } // IMPORTANT! Scattered beam pid and p are set to zero if no scattered electron is found
 
             // Get classification array from ML client if requested
-            ArrayList<Double> ml_preds = new ArrayList<Double>(this._mlclient.getNScores());
+            ArrayList<Double> ml_preds = new ArrayList<Double>();
             if (this._addML && this._mlclient!=null && list.size()>0) { // Only need to do this if there are combinations to analyze
                 this._mlclient.createInputBanks(reader);
                 ArrayList<Double> _ml_preds = this._mlclient.classify(event);
@@ -1245,7 +1245,7 @@ public class Analysis {
             if (this._require_e && beam.p()==0.0) { continue; } // IMPORTANT! Scattered beam pid and p are set to zero if no scattered electron is found
 
             // Get classification array from ML client if requested
-            ArrayList<Double> ml_preds = new ArrayList<Double>(this._mlclient.getNScores());
+            ArrayList<Double> ml_preds = new ArrayList<Double>();
             if (this._addML && this._mlclient!=null && list.size()>0) { // Only need to do this if there are combinations to analyze
                 this._mlclient.createInputBanks(reader);
                 ArrayList<Double> _ml_preds = this._mlclient.classify(event);
@@ -1369,7 +1369,7 @@ public class Analysis {
             if (this._require_e && beam.p()==0.0) { continue; } // IMPORTANT! Scattered beam pid and p are set to zero if no scattered electron is found
 
             // Get classification array from ML client if requested
-            ArrayList<Double> ml_preds = new ArrayList<Double>(this._mlclient.getNScores());
+            ArrayList<Double> ml_preds = new ArrayList<Double>();
             if (this._addML && this._mlclient!=null && list.size()>0) { // Only need to do this if there are combinations to analyze
                 this._mlclient.createInputBanks(reader);
                 ArrayList<Double> _ml_preds = this._mlclient.classify(event);
@@ -1514,7 +1514,7 @@ public class Analysis {
             if (this._require_e && beam.p()==0.0 || mcbeam.p()==0.0) { continue; } // IMPORTANT! Scattered beam pid and p are set to zero if no scattered electron is found
 
             // Get classification array from ML client if requested
-            ArrayList<Double> ml_preds = new ArrayList<Double>(this._mlclient.getNScores());
+            ArrayList<Double> ml_preds = new ArrayList<Double>();
             if (this._addML && this._mlclient!=null && list.size()>0) { // Only need to do this if there are combinations to analyze
                 this._mlclient.createInputBanks(reader);
                 ArrayList<Double> _ml_preds = this._mlclient.classify(event);
@@ -1664,7 +1664,7 @@ public class Analysis {
 
         // Add NTuple: "this._treeName" : Kinematics/Custom Variables, Scattered Beam, Decay products
         this._tupleNames = new String("");
-        if (this._addML) { for (int i=0; i<this._mlclient.getNScores(); i++) { this._tupleNames += "ml_score_"+(i+1)+":"; } } // Add ML scores if requested
+        if (this._addML && !this._mlclient==null) { for (int i=0; i<this._mlclient.getNScores(); i++) { this._tupleNames += "ml_score_"+(i+1)+":"; } } // Add ML scores if requested
         if (this._require_e) {
             for (String kin : this._kinematics.keySet()) { this._tupleNames += kin + ":"; }
             if (this._match) {//NOTE: Double kinematics if matching REC/MC banks
