@@ -13,8 +13,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - with:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
         submodules: recursive
+
     - name: Build the Docker image
-      run: docker build . -f docker/Dockerfile --tag clas12-analysis:$(date +%s)
+      run: |
+        docker build . -f docker/Dockerfile --tag clas12-analysis:$(date +%s)
