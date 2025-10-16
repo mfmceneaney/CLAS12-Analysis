@@ -29,7 +29,7 @@ ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 ENV PATH=$JAVA_HOME/bin:$PATH
 
 # Define Groovy version
-ENV GROOVY_VERSION=4.0.13
+ENV GROOVY_VERSION=4.0.3
 
 # Download Groovy binary distribution
 RUN wget https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/apache-groovy-binary-${GROOVY_VERSION}.zip \
@@ -48,14 +48,14 @@ RUN java -version
 
 # Create workdir and copy source. Set C12ANALYSIS env so bin/run.sh uses correct path
 WORKDIR /usr/src/clas12-analysis
-ENV C12ANALYSIS=/usr/src/clas12-analysis
 COPY . /usr/src/clas12-analysis
 
 # Build project from setup scripts
-RUN bash -c "cd /usr/src/clas12-analysis && ./bin/setup.sh"
+RUN bash -c "cd /usr/src/clas12-analysis && ./bin/setup.sh && mkdir -p /opt/clas12-analysis && mv app/build/libs/*.jar /opt/clas12-analysis/"
+ENV C12ANALYSIS_INSTALL_DIR=/opt/clas12-analysis/
 
 # Ensure run.sh is executable
 RUN chmod +x /usr/src/clas12-analysis/bin/run.sh || true
 
 # Expose a default entrypoint which runs the groovy runner script
-ENTRYPOINT ["/bin/bash", "-c", "/usr/src/clas12-analysis/bin/env.sh && exec bash"]
+ENTRYPOINT ["/bin/bash", "-c", "source /usr/src/clas12-analysis/bin/env.sh && exec bash"]
