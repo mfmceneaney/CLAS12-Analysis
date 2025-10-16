@@ -1,0 +1,65 @@
+Bootstrap: docker
+From: docker.io/rootproject/root:6.36.00-ubuntu25.04
+
+%labels
+    Author Matthew McNeaney
+    Version 1.0
+
+%environment
+    export DEBIAN_FRONTEND=noninteractive
+    export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+    export PATH=${JAVA_HOME}/bin:${PATH}
+    export GROOVY_VERSION=4.0.3
+    export GROOVY_HOME=/opt/groovy-${GROOVY_VERSION}
+    export PATH=${GROOVY_HOME}/bin:${PATH}
+    export C12ANALYSIS_INSTALL_DIR=/opt/clas12-analysis/
+
+%post
+    set -e
+    apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+        cmake \
+        git \
+        wget \
+        curl \
+        unzip \
+        zip \
+        gnupg \
+        software-properties-common \
+        openjdk-17-jdk \
+        maven \
+        python3 \
+        python3-pip \
+        scons \
+        ca-certificates \
+        locales \
+        && rm -rf /var/lib/apt/lists/*
+
+    # Ensure JAVA_HOME is set for this shell
+    export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+    export PATH=${JAVA_HOME}/bin:${PATH}
+    export GROOVY_VERSION=4.0.3
+
+    # Download and install Groovy binary distribution
+    wget -q https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/apache-groovy-binary-${GROOVY_VERSION}.zip -O /tmp/groovy.zip
+    unzip -q /tmp/groovy.zip -d /opt
+    rm -f /tmp/groovy.zip
+
+    # Create application directory and copy repository files (builder should run from repo root)
+    mkdir -p /usr/src/clas12-analysis
+
+%files
+    ./ /usr/src/clas12-analysis
+
+%post
+    # second post section runs after %files copy; run setup and move build artifacts
+    set -e
+    cd /usr/src/clas12-analysis
+    # run project setup (may build jars); ignore failures if optional components unavailable
+    bash -c "./bin/setup.sh" || true
+    mkdir -p /opt/clas12-analysis
+    mv app/build/libs/*.jar /opt/clas12-analysis/ 2>/dev/null || true
+    chmod +x /usr/src/clas12-analysis/bin/run.sh || true
+
+%runscript
+    exec /bin/bash -lc "source /usr/src/clas12-analysis/bin/env.sh >/dev/null 2>&1 || true; exec bash"

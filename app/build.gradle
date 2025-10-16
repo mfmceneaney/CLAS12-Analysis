@@ -11,6 +11,9 @@ plugins {
 
     // Apply the application plugin to add support for building a CLI application in Java.
     id 'application'
+
+    // Build a fat jar
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 repositories {
@@ -76,4 +79,16 @@ tasks.distZip {
 }
 tasks.distTar {
    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+jar {
+    manifest {
+        attributes(
+            'Main-Class': application.mainClass.get()
+        )
+    }
+}
+shadowJar {
+    archiveBaseName.set('app-all')
+    archiveClassifier.set('')
+    archiveVersion.set('1.0')
 }

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export C12ANALYSIS=$PWD
+export C12ANALYSIS_INSTALL_DIR=$C12ANALYSIS/app/build/libs
 env | grep C12ANALYSIS --color=auto
 
 # Setup j2root
@@ -21,3 +22,4 @@ cd $C12ANALYSIS
 
 # Build groovy library
 ./gradlew build
+./gradlew --stop

@@ -1,3 +1,10 @@
 #!/bin/bash
 
-groovy -cp $CLASSPATH\:$GCPATH $C12ANALYSIS/app/src/main/groovy/org/jlab/analysis/Main.groovy $@
+# Check if environment variable is set
+if [ -z "$C12ANALYSIS_INSTALL_DIR" ]; then
+    java -jar $C12ANALYSIS/app/build/libs/app-all-1.0.jar $@
+    exit $?
+else
+    java -jar $C12ANALYSIS_INSTALL_DIR/app-all-1.0.jar $@
+    exit $?
+fi
