@@ -15,4 +15,4 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . -f docker/Dockerfile --tag clas12-analysis:ci:$(date +%s)
+      run: docker build . -f docker/Dockerfile --tag clas12-analysis:$(date +%s)
