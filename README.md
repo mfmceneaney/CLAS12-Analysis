@@ -38,6 +38,43 @@ pushd /path/to/CLAS12-Analysis >> /dev/null
 source env.sh
 popd >> /dev/null
 ``` 
+
+## Container install and run
+
+If you prefer to use a container, two examples are provided: a Dockerfile (`docker/Dockerfile`) and
+a Singularity definition (`singularity/CLAS12-Analysis.def`). Below are minimal build and run examples that
+bind a host directory (for input HIPO files or output) into the container so you can read/write data from your host.
+
+Docker build & run
+
+```bash
+# build the image (from repository root)
+docker build -t clas12-analysis:latest -f docker/Dockerfile .
+
+# run the container and bind a host folder (e.g. /data) into /data in the container
+# -v <host_dir>:<container_dir>
+docker run --rm -it -v /path/on/host:/data clas12-analysis:latest
+
+# inside the container you can then run the analysis pointing to /data
+# example: ./bin/run.sh -i /data/input.hipo -o /data/out.root
+```
+
+Singularity build & run
+
+```bash
+# build the image (run from repository root so %files copies local files)
+singularity build CLAS12-Analysis.sif singularity/CLAS12-Analysis.def
+
+# run the container and bind a host folder (singularity binds $PWD by default; use -B to bind other paths)
+singularity exec -B /path/on/host:/data CLAS12-Analysis.sif /usr/src/clas12-analysis/bin/run.sh -i /data/input.hipo -o /data/out.root
+```
+
+Notes:
+- Replace `/path/on/host` with the directory on your machine containing HIPO input files and where you want outputs.
+- The entrypoint in the images sources the repository `env.sh` so `$C12ANALYSIS` and `$CLASSPATH` should be set.
+- If you prefer a shell inside the image to run commands interactively, run `docker run --rm -it --entrypoint /bin/bash ...` or
+    `singularity shell CLAS12-Analysis.sif`.
+
 ### Notes for installing on ifarm
 
 Currently the default scons version 2.5 on ifarm does not support python 2.3, so just run the following before sourcing the setup script to get around this.
