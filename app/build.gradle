@@ -20,11 +20,23 @@ repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
     mavenLocal()
-    maven {
-    	  url = "https://clasweb.jlab.org/clas12maven"
+    ivy {
+        url = uri('https://clasweb.jlab.org/clas12maven')
+        patternLayout {
+            artifact "[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]"
+        }
+        metadataSources {
+            artifact()
+        }
     }
-    maven {
-    	  url = "https://clasweb.jlab.org/jhep/maven"
+    ivy {
+        url = uri('https://clasweb.jlab.org/jhep/maven')
+        patternLayout {
+            artifact "[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]"
+        }
+        metadataSources {
+            artifact()
+        }
     }
     flatDir {
         dirs '../clasqaDB'
@@ -49,11 +61,11 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // CLAS12 libraries
-    implementation 'org.jlab.coat:coat-libs:6.3.1-SNAPSHOT' // from https://clasweb.jlab.org/clas12maven/
-    implementation 'org.jlab.jnp:jnp-hipo4:4.1-SNAPSHOT'     // From mavenLocal()
-    implementation 'org.jlab.jnp:jnp-utils:2.0-SNAPSHOT'     // From mavenLocal()
+    implementation 'org.jlab.coat:coat-libs:11.1.1-SNAPSHOT@jar' // from https://clasweb.jlab.org/clas12maven/
+    implementation 'org.jlab.jnp:jnp-hipo4:4.1-SNAPSHOT@jar'     // From mavenLocal()
+    implementation 'org.jlab.jnp:jnp-utils:2.0-SNAPSHOT@jar'     // From mavenLocal()
     implementation 'target:JRoot-1.0'                        // Set manually path to j2root installation since not available online
-    implementation 'org.jlab.jnp:jnp-physics:1.0-SNAPSHOT'   // From https://clasweb.jlab.org/jhep/maven
+    implementation 'org.jlab.jnp:jnp-physics:1.0-SNAPSHOT@jar'   // From https://clasweb.jlab.org/jhep/maven
     implementation 'clasqaDB:clasqa'                         // from https://github.com/JeffersonLab/clasqaDB
 }
 
