@@ -80,3 +80,7 @@ From: docker.io/rootproject/root:6.36.00-ubuntu25.04
 
 %runscript
     exec /bin/bash -lc "source /usr/src/clas12-analysis/bin/env.sh >/dev/null 2>&1 || true; exec bash"
+
+%startscript
+    # Non-interactive start script for instances: source environment and run default application
+    /bin/bash -lc "source /usr/src/clas12-analysis/bin/env.sh >/dev/null 2>&1 || true; exec /usr/src/clas12-analysis/bin/run.sh $@"
