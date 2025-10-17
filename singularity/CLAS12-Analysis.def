@@ -7,11 +7,12 @@ From: docker.io/rootproject/root:6.36.00-ubuntu25.04
 
 %environment
     export DEBIAN_FRONTEND=noninteractive
-    export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+    export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
     export PATH=${JAVA_HOME}/bin:${PATH}
-    export GROOVY_VERSION=4.0.3
+    export GROOVY_VERSION=5.0.0
     export GROOVY_HOME=/opt/groovy-${GROOVY_VERSION}
     export PATH=${GROOVY_HOME}/bin:${PATH}
+    export C12ANALYSIS=/usr/src/clas12-analysis
     export C12ANALYSIS_INSTALL_DIR=/opt/clas12-analysis/
 
 %post
@@ -26,7 +27,7 @@ From: docker.io/rootproject/root:6.36.00-ubuntu25.04
         zip \
         gnupg \
         software-properties-common \
-        openjdk-17-jdk \
+        openjdk-21-jdk \
         maven \
         python3 \
         python3-pip \
@@ -36,30 +37,50 @@ From: docker.io/rootproject/root:6.36.00-ubuntu25.04
         && rm -rf /var/lib/apt/lists/*
 
     # Ensure JAVA_HOME is set for this shell
-    export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+    export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
     export PATH=${JAVA_HOME}/bin:${PATH}
-    export GROOVY_VERSION=4.0.3
 
     # Download and install Groovy binary distribution
     wget -q https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/apache-groovy-binary-${GROOVY_VERSION}.zip -O /tmp/groovy.zip
     unzip -q /tmp/groovy.zip -d /opt
     rm -f /tmp/groovy.zip
 
-    # Create application directory and copy repository files (builder should run from repo root)
+    # Create application directory (will be populated by %files)
     mkdir -p /usr/src/clas12-analysis
 
 %files
     ./ /usr/src/clas12-analysis
 
 %post
-    # second post section runs after %files copy; run setup and move build artifacts
     set -e
     cd /usr/src/clas12-analysis
-    # run project setup (may build jars); ignore failures if optional components unavailable
-    bash -c "./bin/setup.sh" || true
+
+    # Run build scripts to reproduce Dockerfile behavior
+    # Build j2root project
+    if [ -x ./bin/build_j2root.sh ]; then
+        bash -c "./bin/build_j2root.sh"
+    fi
+
+    # Build clasqaDB project
+    if [ -x ./bin/build_clasqaDB.sh ]; then
+        bash -c "./bin/build_clasqaDB.sh"
+    fi
+
+    # Build gradle project
+    if [ -x ./bin/build_gradle.sh ]; then
+        bash -c "./bin/build_gradle.sh"
+    fi
+
+    # Create install directory and move jars if present
     mkdir -p /opt/clas12-analysis
     mv app/build/libs/*.jar /opt/clas12-analysis/ 2>/dev/null || true
+
+    # Ensure run.sh is executable
     chmod +x /usr/src/clas12-analysis/bin/run.sh || true
 
 %runscript
     exec /bin/bash -lc "source /usr/src/clas12-analysis/bin/env.sh >/dev/null 2>&1 || true; exec bash"
+
+%startscript
+    # Non-interactive start script for instances: source environment and run default application
+    /bin/bash -lc "source /usr/src/clas12-analysis/bin/env.sh >/dev/null 2>&1 || true; exec /usr/src/clas12-analysis/bin/run.sh $@"

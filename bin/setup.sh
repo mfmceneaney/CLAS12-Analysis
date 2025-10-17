@@ -4,22 +4,11 @@ export C12ANALYSIS=$PWD
 export C12ANALYSIS_INSTALL_DIR=$C12ANALYSIS/app/build/libs
 env | grep C12ANALYSIS --color=auto
 
-# Setup j2root
-cd j2root
-javac -h build/native src/main/java/org/jlab/jroot/JRootJNI.java
-sed -i.bak 's;^env.JavaH;#env.JavaH;g' sconscript
-scons
-mvn package
-sed -i.bak 's;^set sourced;set sourced=\(\"source\" \"j2root/setup.csh\"\)#set sourced ; g' setup.csh
-cd $C12ANALYSIS
+# Build j2root
+$C12ANALYSIS/bin/build_j2root.sh
 
-# Setup clasqaDB
-cd clasqaDB/src
-jar -c -f clasqa.jar clasqa/*.groovy
-# jar cf clasqa.jar clasqa/*.groovy # Depending on your jar version you might need this line instead
-mv clasqa.jar ..
-cd $C12ANALYSIS
+# Build clasqaDB
+$C12ANALYSIS/bin/build_clasqaDB.sh
 
 # Build groovy library
-./gradlew build
-./gradlew --stop
+$C12ANALYSIS/bin/build_gradle.sh
