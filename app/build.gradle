@@ -14,35 +14,67 @@ plugins {
 
     // Build a fat jar
     id 'com.github.johnrengelman.shadow' version '8.1.1'
+
+    // Plugin to download and unpack coatjava
+    id 'de.undercouch.download' version '5.4.0'
+}
+
+def coatjavaVersion = '13.4.0'
+def coatjavaFile = "coatjava-${coatjavaVersion}.tar.gz"
+def coatjavaUrl = "https://github.com/JeffersonLab/coatjava/releases/download/${coatjavaVersion}/${coatjavaFile}"
+def unpackDir = file("$buildDir")
+
+import de.undercouch.gradle.tasks.download.Download
+
+tasks.register('downloadCoatJava', Download) {
+    src coatjavaUrl
+    dest "$buildDir/${coatjavaFile}"
+    overwrite false
+    onlyIfModified true
+    doFirst {
+        println("INFO: Downloading coatjava from $coatjavaUrl to $dest")
+    }
+    doLast {
+        println("DONE: Downloaded coatjava to $dest")
+    }
+}
+
+tasks.register('unpackCoatJava', Copy) {
+    dependsOn 'downloadCoatJava'
+    from tarTree(resources.gzip(file("$buildDir/${coatjavaFile}")))
+    into unpackDir
+    doFirst {
+        println("INFO: Unpacking coatjava to $unpackDir")
+    }
+    doLast {
+        println("DONE: Unpacked coatjava to $unpackDir")
+    }
+}
+
+tasks.named('compileJava') {
+    dependsOn 'unpackCoatJava'
+}
+tasks.named('compileGroovy') {
+    dependsOn 'unpackCoatJava'
+}
+tasks.named('classes') {
+    dependsOn 'unpackCoatJava'
+}
+tasks.named('shadowJar') {
+    dependsOn 'unpackCoatJava'
 }
 
 repositories {
-    // Use Maven Central for resolving dependencies.
     mavenCentral()
     mavenLocal()
-    ivy {
-        url = uri('https://clasweb.jlab.org/clas12maven')
-				patternLayout {
-            artifact "[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]"
-        }
-        metadataSources {
-            artifact()
-        }
-    }
-    ivy {
-        url = uri('https://clasweb.jlab.org/jhep/maven')
-        patternLayout {
-            artifact "[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]"
-        }
-        metadataSources {
-            artifact()
-        }
+    flatDir {
+        dirs "${unpackDir}/lib/clas"
     }
     flatDir {
-        dirs '../clasqaDB'
+        dirs "${rootDir}/clasqaDB"
     }
     flatDir {
-        dirs '../j2root/target'
+        dirs "${rootDir}/j2root/target"
     }
 }
 
@@ -61,19 +93,9 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // CLAS12 libraries
-    implementation 'org/jlab/coat:coat-libs:11.1.1-SNAPSHOT@jar' // from https://clasweb.jlab.org/clas12maven/
-    implementation 'org/jlab/jnp:jnp-hipo4:4.1-SNAPSHOT@jar'     // From mavenLocal()
-    implementation 'org/jlab/jnp:jnp-utils:2.0-SNAPSHOT@jar'     // From mavenLocal()
-    implementation 'target:JRoot-1.0'                        // Set manually path to j2root installation since not available online
-    implementation 'org/jlab/jnp:jnp-physics:1.0-SNAPSHOT@jar'   // From https://clasweb.jlab.org/jhep/maven
-    implementation 'clasqaDB:clasqa'                         // from https://github.com/JeffersonLab/clasqaDB
-}
-
-// Apply a specific Java toolchain to ease working on different environments.
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
+    implementation files("$buildDir/coatjava-${coatjavaVersion}/lib/clas/coat-libs-${coatjavaVersion}.jar")
+    implementation 'target:JRoot-1.0' // from https://github.com/drewkenjo/j2root
+    implementation 'clasqaDB:clasqa'  // from https://github.com/JeffersonLab/clasqaDB
 }
 
 application {
@@ -89,9 +111,11 @@ tasks.named('test') {
 tasks.distZip {
    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
+
 tasks.distTar {
    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
+
 jar {
     manifest {
         attributes(
@@ -99,6 +123,7 @@ jar {
         )
     }
 }
+
 shadowJar {
     archiveBaseName.set('app-all')
     archiveClassifier.set('')

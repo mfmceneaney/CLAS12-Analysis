@@ -10,7 +10,7 @@ import java.util.LinkedHashMap;
 
 // CLAS Physics Imports
 import org.jlab.jnp.hipo4.data.*;
-import org.jlab.jnp.hipo4.io.*;
+import org.jlab.jnp.hipo4.io.HipoReader;
 import org.jlab.jnp.physics.*;
 
 /**

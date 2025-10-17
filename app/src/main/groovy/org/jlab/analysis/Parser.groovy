@@ -7,7 +7,7 @@ import groovy.transform.CompileStatic;
 import java.io.*;
 import java.util.*;
 import java.text.*;
-import org.jlab.jnp.physics.LorentzVector;
+import org.jlab.clas.physics.LorentzVector;
 
 /**
 * Encapsulates most of the command line parsing and messaging for the Analysis class.

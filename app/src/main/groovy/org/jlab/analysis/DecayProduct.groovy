@@ -4,7 +4,7 @@ package org.jlab.analysis;
 import groovy.transform.CompileStatic;
 
 // CLAS Physics Imports
-import org.jlab.jnp.physics.*;
+import org.jlab.clas.physics.*;
 
 /**
 * Adds (essentially) time vertex, chi2pid, and status attributes

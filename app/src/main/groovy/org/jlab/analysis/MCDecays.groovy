@@ -10,8 +10,8 @@ import java.util.LinkedHashMap;
 
 // CLAS Physics Imports
 import org.jlab.jnp.hipo4.data.*;
-import org.jlab.jnp.hipo4.io.*;
-import org.jlab.jnp.physics.*;
+import org.jlab.jnp.hipo4.io.HipoReader;
+import org.jlab.clas.physics.*;
 
 /**
 * Searches a hipo event for all unique MC::Lund decays for a given set of Lund pids.
