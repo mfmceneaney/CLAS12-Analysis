@@ -15,22 +15,23 @@ This tool only reads HIPO files (see [CLAS12-Offline-Software](https://github.co
 * [CLASQADB](https://github.com/JeffersonLab/clasqaDB)
 * [J2ROOT](https://github.com/drewkenjo/j2root)
 
-## Pre-requisites
-To build the project you will need the following additional tools:
-* jdk==17.0.*
-* groovy==4.0.*
-* gradle==8.12
-* scons>=4.5.2
-* maven==3.9.9
-
-Note that this project is under active development and has only been tested for jdk/17.0.2 and groovy 4.0.3.  On ifarm you may need to module load this java version.  You may also need to update the library versions in `gradle/libs.versions.toml` and the java version in `app/build.gradle`.
-
 ## Installation
 Begin by cloning the repository and running the setup script
 ```bash
 git clone --recurse-submodules https://github.com/mfmceneaney/CLAS12-Analysis.git
+```
+
+### Manual Installation
+If you wish to install manually you will need the following tools
+* jdk==21.0.8
+* groovy==5.0.0
+* scons>=4.8.1
+* maven==3.9.9
+
+On ifarm you may need to module load this java version.  You may also need to update the library versions in `gradle/libs.versions.toml` and the java version in `app/build.gradle`.
+```bash
 cd CLAS12-Analysis
-source bin/setup.sh
+bin/setup.sh
 ```
 
 Then source the environment script from your startup script:
@@ -41,8 +42,7 @@ source env.sh
 popd >> /dev/null
 ``` 
 
-## Container install and run
-
+### Containerized Installation
 If you prefer to use a container, two examples are provided: a Dockerfile (`docker/Dockerfile`) and
 a Singularity definition (`singularity/CLAS12-Analysis.def`). Below are minimal build and run examples that
 bind a host directory (for input HIPO files or output) into the container so you can read/write data from your host.
