@@ -46,7 +46,7 @@ jobs:
           run: |
             # Use the singularity/Apptainer definition to build an image
             # The build requires running from the repo root so %files maps correctly
-            apptainer build clas12-analysis.sif singularity/CLAS12-Analysis.def || true
+            apptainer build --fakeroot clas12-analysis.sif singularity/CLAS12-Analysis.def || true
 
         - name: Upload SIF artifact
           if: always()
