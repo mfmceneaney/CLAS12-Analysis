@@ -17,10 +17,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Groovydoc inside container
-        container:
+        uses: addnab/docker-run-action@v3
+        with:
           image: ghcr.io/mfmceneaney/clas12-analysis:latest
-        run: ./gradlew generateGroovydoc --no-daemon
-        working-directory: ${{ github.workspace }}
+          options: -v ${{ github.workspace }}:/usr/src -w /usr/src
+          run: ./gradlew generateGroovydoc --no-daemon
 
       - name: Commit and push docs
         run: |
@@ -30,4 +31,3 @@ jobs:
           git add docs/_static
           git diff --cached --quiet || git commit -m "Update Groovydoc after PR merge"
           git push
-        working-directory: ${{ github.workspace }}
