@@ -44,7 +44,7 @@ jobs:
 
         - name: Build SIF with remote builder
           run: |
-            apptainer remote login -p ${{ secrets.SYLABS_TOKEN }}
+            echo "${{ secrets.SYLABS_TOKEN }}" | apptainer remote login
             apptainer build --remote clas12-analysis.sif singularity/clas12-analysis.def
 
         - name: Upload SIF artifact
