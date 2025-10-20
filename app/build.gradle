@@ -94,8 +94,14 @@ dependencies {
 
     // CLAS12 libraries
     implementation files("$buildDir/coatjava-${coatjavaVersion}/lib/clas/coat-libs-${coatjavaVersion}.jar")
-    implementation 'target:JRoot-1.0' // from https://github.com/drewkenjo/j2root
-    implementation 'clasqaDB:clasqa'  // from https://github.com/JeffersonLab/clasqaDB
+    def clasqajar = file("$rootDir/clasqaDB/clasqaDB.jar")
+    def jrootjar = file("$rootDir/j2root/target/JRoot-1.0.jar")
+    if (clasqajar.exists() && jrootjar.exists()) {
+        implementation 'target:JRoot-1.0' // from https://github.com/drewkenjo/j2root
+        implementation 'clasqaDB:clasqa'  // from https://github.com/JeffersonLab/clasqaDB
+    } else {
+        implementation files('/opt/clas12-analysis/all.jar')
+    }
 }
 
 application {
@@ -139,12 +145,3 @@ task generateGroovydoc(type: Groovydoc) {
     use = true
     windowTitle = 'Groovy API'
 }
-
-tasks.named('generateGroovydoc') {
-    doFirst {
-        // Add all jars in /opt/clas12-analysis matching pattern
-        def jars = fileTree(dir: '/opt/clas12-analysis', include: ['*.jar']).files
-        classpath += files(jars)
-    }
-}
-
