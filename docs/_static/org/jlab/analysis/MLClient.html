@@ -140,7 +140,7 @@ extends java.lang.Object</pre>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>protected&nbsp;java.util.ArrayList&lt;Bank&gt;</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>protected&nbsp;java.util.ArrayList&lt;org.jlab.jnp.hipo4.data.Bank&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#_banks">_banks</a></code></td>
                             <td class="colLast"></td>
                         </tr>
@@ -233,19 +233,19 @@ extends java.lang.Object</pre>
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.util.ArrayList&lt;java.lang.Double&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#classify(org.jlab.jnp.hipo4.data.Event)">classify</a></strong>(<a href='../../../org.jlab.jnp.hipo4.data.Event.html'>Event</a> event)</code><br>Classify an event using the configured input banks.</td>
+                            <td class="colLast"><code><strong><a href="#classify(org.jlab.jnp.hipo4.data.Event)">classify</a></strong>(org.jlab.jnp.hipo4.data.Event event)</code><br>Classify an event using the configured input banks.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#createInputBanks(org.jlab.jnp.hipo4.io.HipoReader)">createInputBanks</a></strong>(<a href='../../../org.jlab.jnp.hipo4.io.HipoReader.html'>HipoReader</a> reader)</code><br>Initialize the input banks to read from each event.</td>
+                            <td class="colLast"><code><strong><a href="#createInputBanks(org.jlab.jnp.hipo4.io.HipoReader)">createInputBanks</a></strong>(org.jlab.jnp.hipo4.io.HipoReader reader)</code><br>Initialize the input banks to read from each event.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.lang.String</code></td>
-                            <td class="colLast"><code><strong><a href="#createJsonInput(org.jlab.jnp.hipo4.data.Event)">createJsonInput</a></strong>(<a href='../../../org.jlab.jnp.hipo4.data.Event.html'>Event</a> event)</code><br>Create JSON input from the event and configured banks.</td>
+                            <td class="colLast"><code><strong><a href="#createJsonInput(org.jlab.jnp.hipo4.data.Event)">createJsonInput</a></strong>(org.jlab.jnp.hipo4.data.Event event)</code><br>Create JSON input from the event and configured banks.</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -318,7 +318,7 @@ extends java.lang.Object</pre>
                         <a name="_banks"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;java.util.ArrayList&lt;Bank&gt; <strong>_banks</strong></h4>
+                                <h4>protected&nbsp;java.util.ArrayList&lt;org.jlab.jnp.hipo4.data.Bank&gt; <strong>_banks</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -397,7 +397,7 @@ extends java.lang.Object</pre>
                         <a name="classify(org.jlab.jnp.hipo4.data.Event)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.ArrayList&lt;java.lang.Double&gt; <strong>classify</strong>(<a href='../../../org.jlab.jnp.hipo4.data.Event.html'>Event</a> event)</h4>
+                                <h4>java.util.ArrayList&lt;java.lang.Double&gt; <strong>classify</strong>(org.jlab.jnp.hipo4.data.Event event)</h4>
                                 <p> Classify an event using the configured input banks. <DL><DT><B>Parameters:</B></DT><DD><code>event</code> -  The event to classify.</DD></DL><DL><DT><B>Returns:</B></DT><DD>A list of classification scores.</DD></DL></p>
                             </li>
                         </ul>
@@ -405,7 +405,7 @@ extends java.lang.Object</pre>
                         <a name="createInputBanks(org.jlab.jnp.hipo4.io.HipoReader)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>createInputBanks</strong>(<a href='../../../org.jlab.jnp.hipo4.io.HipoReader.html'>HipoReader</a> reader)</h4>
+                                <h4>void <strong>createInputBanks</strong>(org.jlab.jnp.hipo4.io.HipoReader reader)</h4>
                                 <p> Initialize the input banks to read from each event. <DL><DT><B>Parameters:</B></DT><DD><code>reader</code> -  The HIPO reader to get schemas from.</DD></DL></p>
                             </li>
                         </ul>
@@ -413,7 +413,7 @@ extends java.lang.Object</pre>
                         <a name="createJsonInput(org.jlab.jnp.hipo4.data.Event)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.String <strong>createJsonInput</strong>(<a href='../../../org.jlab.jnp.hipo4.data.Event.html'>Event</a> event)</h4>
+                                <h4>java.lang.String <strong>createJsonInput</strong>(org.jlab.jnp.hipo4.data.Event event)</h4>
                                 <p> Create JSON input from the event and configured banks. <DL><DT><B>Parameters:</B></DT><DD><code>event</code> -  The event to convert to JSON.</DD></DL><DL><DT><B>Returns:</B></DT><DD>A JSON string representing the event data.</DD></DL></p>
                             </li>
                         </ul>
