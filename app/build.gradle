@@ -139,3 +139,12 @@ task generateGroovydoc(type: Groovydoc) {
     use = true
     windowTitle = 'Groovy API'
 }
+
+tasks.named('generateGroovydoc') {
+    doFirst {
+        // Add all jars in /opt/clas12-analysis matching pattern
+        def jars = fileTree(dir: '/opt/clas12-analysis', include: ['*.jar']).files
+        classpath += files(jars)
+    }
+}
+
