@@ -9,9 +9,6 @@ jobs:
   generate-docs:
     runs-on: ubuntu-latest
 
-    container:
-      image: ghcr.io/mfmceneaney/clas12-analysis:latest  # or from Docker Hub
-
     permissions:
       contents: write  # needed to push changes back to repo
 
@@ -20,19 +17,17 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Groovydoc inside container
-        working-directory: /github/workspace
-        run: |
-          ./gradlew generateGroovydoc --no-daemon
+        container:
+          image: ghcr.io/mfmceneaney/clas12-analysis:latest
+        run: ./gradlew generateGroovydoc --no-daemon
+        working-directory: ${{ github.workspace }}
 
       - name: Commit and push docs
-        working-directory: /github/workspace
         run: |
-          pwd
-          ls -la
-          ls -la .git
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           git add docs/_static
           git diff --cached --quiet || git commit -m "Update Groovydoc after PR merge"
           git push
+        working-directory: ${{ github.workspace }}
