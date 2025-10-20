@@ -50,25 +50,6 @@ RUN java -version
 WORKDIR /usr/src/clas12-analysis
 COPY . /usr/src/clas12-analysis
 
-# # Set up j2root
-# RUN cd /usr/src/clas12-analysis/j2root  && \
-#     javac -h build/native src/main/java/org/jlab/jroot/JRootJNI.java  && \
-#     sed -i.bak 's;^env.JavaH;#env.JavaH;g' sconscript  && \
-#     scons  && \
-#     mvn package  && \
-#     sed -i.bak 's;^set sourced;set sourced=\(\"source\" \"j2root/setup.csh\"\)#set sourced ; g' setup.csh  && \
-#     cd /usr/src/clas12-analysis
-
-# # Set up clasqaDB
-# RUN cd /usr/src/clas12-analysis/clasqaDB/src && \
-#     jar -c -f clasqa.jar clasqa/*.groovy && \
-#     mv clasqa.jar ..  && \
-#     cd /usr/src/clas12-analysis && \
-#     ls -lrth clasqaDB/clasqa.jar
-
-# # Download dependencies, including the tar.gz JAR
-# RUN ./gradlew downloadCoatJava unpackCoatJava
-
 ENV C12ANALYSIS=/usr/src/clas12-analysis
 
 # Build j2root project
