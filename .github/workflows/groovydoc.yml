@@ -19,17 +19,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'  # or whatever version you require
-
-      - name: Grant execute permission to gradlew
-        run: chmod +x gradlew
-
-      - name: Generate Groovydoc
-        run: ./gradlew generateGroovydoc
+      - name: Run Groovydoc inside container
+        run: |
+          export GRADLE_OPTS="-classpath /opt/clas12-analysis/app-all-1.0.jar"
+          ./gradlew generateGroovydoc
 
       - name: Commit and push docs
         run: |
