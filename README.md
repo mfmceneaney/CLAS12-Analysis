@@ -1,6 +1,6 @@
-# CLAS12-Analysis
-![Docker Build](https://github.com/mfmceneaney/CLAS12-Analysis/actions/workflows/docker-image.yml/badge.svg)
-![Singularity Build](https://github.com/mfmceneaney/CLAS12-Analysis/actions/workflows/singularity-image.yml/badge.svg)
+# clas12-analysis
+![Docker Build](https://github.com/mfmceneaney/clas12-analysis/actions/workflows/docker-image.yml/badge.svg)
+![Singularity Build](https://github.com/mfmceneaney/clas12-analysis/actions/workflows/singularity-image.yml/badge.svg)
 
 This is a generic analysis application for CLAS12 in groovy to read HIPO events selecting all unique final state particle combinations corresponding to a given topology,
 compute generic event-level kinematics commonly used for SIDIS analyses, and output the selected combinations and their respective kinematics to ROOT TNTuples.
@@ -19,7 +19,7 @@ This tool only reads HIPO files (see [CLAS12-Offline-Software](https://github.co
 ## Installation
 Begin by cloning the repository and running the setup script
 ```bash
-git clone --recurse-submodules https://github.com/mfmceneaney/CLAS12-Analysis.git
+git clone --recurse-submodules https://github.com/mfmceneaney/clas12-analysis.git
 ```
 
 ### Manual Installation
@@ -31,13 +31,13 @@ If you wish to install manually you will need the following tools
 
 On ifarm you may need to module load this java version.  You may also need to update the library versions in `gradle/libs.versions.toml` and the java version in `app/build.gradle`.
 ```bash
-cd CLAS12-Analysis
+cd clas12-analysis
 bin/setup.sh
 ```
 
 Then source the environment script from your startup script:
 ```bash
-pushd /path/to/CLAS12-Analysis >> /dev/null
+pushd /path/to/clas12-analysis >> /dev/null
 #Uncomment this line if using csh: cd j2root; source setup.csh; cd ..;
 source env.sh
 popd >> /dev/null
@@ -45,7 +45,7 @@ popd >> /dev/null
 
 ### Containerized Installation
 If you prefer to use a container, two examples are provided: a Dockerfile (`docker/Dockerfile`) and
-a Singularity definition (`singularity/CLAS12-Analysis.def`). Below are minimal build and run examples that
+a Singularity definition (`singularity/clas12-analysis.def`). Below are minimal build and run examples that
 bind a host directory (for input HIPO files or output) into the container so you can read/write data from your host.
 
 Docker build & run
@@ -66,17 +66,17 @@ Singularity build & run
 
 ```bash
 # build the image (run from repository root so %files copies local files)
-singularity build CLAS12-Analysis.sif singularity/CLAS12-Analysis.def
+singularity build clas12-analysis.sif singularity/clas12-analysis.def
 
 # run the container and bind a host folder (singularity binds $PWD by default; use -B to bind other paths)
-singularity exec -B /path/on/host:/data CLAS12-Analysis.sif /usr/src/clas12-analysis/bin/run.sh -i /data/input.hipo -o /data/out.root
+singularity exec -B /path/on/host:/data clas12-analysis.sif /usr/src/clas12-analysis/bin/run.sh -i /data/input.hipo -o /data/out.root
 ```
 
 Notes:
 - Replace `/path/on/host` with the directory on your machine containing HIPO input files and where you want outputs.
 - The entrypoint in the images sources the repository `env.sh` so `$C12ANALYSIS` and `$CLASSPATH` should be set.
 - If you prefer a shell inside the image to run commands interactively, run `docker run --rm -it --entrypoint /bin/bash ...` or
-    `singularity shell CLAS12-Analysis.sif`.
+    `singularity shell clas12-analysis.sif`.
 
 ### Notes for installing on ifarm
 
