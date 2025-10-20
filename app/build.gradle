@@ -94,7 +94,7 @@ dependencies {
 
     // CLAS12 libraries
     implementation files("$buildDir/coatjava-${coatjavaVersion}/lib/clas/coat-libs-${coatjavaVersion}.jar")
-    def clasqajar = file("$rootDir/clasqaDB/clasqaDB.jar")
+    def clasqajar = file("$rootDir/clasqaDB/clasqa.jar")
     def jrootjar = file("$rootDir/j2root/target")
     if (clasqajar.exists() && jrootjar.exists()) {
         implementation 'target:JRoot-1.0' // from https://github.com/drewkenjo/j2root
