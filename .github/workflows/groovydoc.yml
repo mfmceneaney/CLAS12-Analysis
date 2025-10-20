@@ -21,7 +21,6 @@ jobs:
 
       - name: Run Groovydoc inside container
         run: |
-          export JAVA_TOOL_OPTIONS="-cp /opt/clas12-analysis/app-all-1.0.jar"
           ./gradlew generateGroovydoc --no-daemon
 
       - name: Commit and push docs
