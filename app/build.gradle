@@ -100,7 +100,7 @@ dependencies {
         implementation 'target:JRoot-1.0' // from https://github.com/drewkenjo/j2root
         implementation 'clasqaDB:clasqa'  // from https://github.com/JeffersonLab/clasqaDB
     } else {
-        implementation files('/opt/clas12-analysis/all.jar')
+        implementation files('/opt/clas12-analysis/app-all-1.0.jar')
     }
 }
 
