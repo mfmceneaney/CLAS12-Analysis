@@ -42,12 +42,6 @@ jobs:
         - name: Verify apptainer install
           run: apptainer --version
 
-        - name: Build Singularity image (SIF)
-          run: |
-            # Use the singularity/Apptainer definition to build an image
-            # The build requires running from the repo root so %files maps correctly
-            apptainer build --fakeroot clas12-analysis.sif singularity/clas12-analysis.def || true
-
         - name: Build SIF with remote builder
           run: |
             apptainer remote login --token ${{ secrets.SYLABS_TOKEN }}
