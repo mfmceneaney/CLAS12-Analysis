@@ -9,6 +9,9 @@ jobs:
   generate-docs:
     runs-on: ubuntu-latest
 
+    container:
+      image: ghcr.io/mfmceneaney/clas12-analysis:latest  # or from Docker Hub
+
     permissions:
       contents: write  # needed to push changes back to repo
 
