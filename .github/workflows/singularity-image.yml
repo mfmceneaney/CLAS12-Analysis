@@ -21,8 +21,6 @@ jobs:
 
       - name: Check out code for the container builds
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Build Singularity Image
         run: |
@@ -43,7 +41,7 @@ jobs:
           GHCR_USERNAME: ${{ github.repository_owner }}
           tag: latest
         run: |
-          echo $GHCR_TOKEN | oras login ghcr.io -u $GHCR_USERNAME --password-stdin
+          echo ${{ secrets.GITHUB_TOKEN }} | oras login ghcr.io -u ${{ github.repository_owner }} --password-stdin
           oras push ghcr.io/${{ github.repository }}-singularity:latest \
             --annotation "org.opencontainers.image.title=clas12-analysis.sif" \
             clas12-analysis.sif:application/vnd.sylabs.sif.layer.v1.sif

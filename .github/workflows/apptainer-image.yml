@@ -22,8 +22,6 @@ jobs:
 
       - name: Check out code for the container builds
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Build Apptainer Image
         run: |
