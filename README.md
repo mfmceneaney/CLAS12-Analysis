@@ -28,35 +28,43 @@ If you prefer to use a container, two examples are provided: a Dockerfile (`dock
 a Singularity/Apptainer definition (`singularity/clas12-analysis.def`). Below are minimal build and run examples that
 bind a host directory (for input HIPO files or output) into the container so you can read/write data from your host.
 
-Docker build & run
+#### Docker
 
+Build the image from source:
 ```bash
-# build the image (from repository root)
 docker build -t clas12-analysis:latest -f docker/Dockerfile .
-
-# run the container and bind a host folder (e.g. /data) into /data in the container
-# -v <host_dir>:<container_dir>
-docker run --rm -it -v /path/on/host:/data clas12-analysis:latest
-
-# inside the container you can then run the analysis pointing to /data
-# example: ./bin/run.sh -i /data/input.hipo -o /data/out.root
 ```
-
-Singularity/apptainer build & run
-
+Or, pull a prebuilt image
 ```bash
-# build the image (run from repository root so %files copies local files)
-singularity build clas12-analysis.sif singularity/clas12-analysis.def
-
-# run the container and bind a host folder (singularity binds $PWD by default; use -B to bind other paths)
-singularity exec -B /path/on/host:/data clas12-analysis.sif /usr/src/clas12-analysis/bin/run.sh -i /data/input.hipo -o /data/out.root
+docker pull docker://ghcr.io/mfmceneaney/clas12-analysis:latest
 ```
 
-Notes:
-- Replace `/path/on/host` with the directory on your machine containing HIPO input files and where you want outputs.
-- The entrypoint in the images sources the repository `env.sh` so `$C12ANALYSIS` and `$CLASSPATH` should be set.
-- If you prefer a shell inside the image to run commands interactively, run `docker run --rm -it --entrypoint /bin/bash ...` or
-    `singularity shell clas12-analysis.sif`.
+Then, run the container and bind a host folder (e.g. /data) into /data
+in the container with the option `-v <host_dir>:<container_dir>`
+```bash
+docker run --rm -it -v /path/on/host:/data clas12-analysis:latest /usr/src/clas12-analysis/bin/run.sh --help
+```
+
+#### Apptainer/Singularity
+
+Similarly, you may also use apptainer/singularity to build and run the container.
+Currently, apptainer and singularity have not diverged much and so they are interchangeable in the following commands.
+However, this is not guaranteed to last.
+
+Build the image from source:
+```bash
+apptainer build clas12-analysis.sif singularity/clas12-analysis.def
+```
+Or, pull a prebuilt image:
+```bash
+apptainer pull clas12-analysis.sif oras://ghcr.io/mfmceneaney/clas12-analysis:latest
+```
+
+Then, run the container and bind a host folder (e.g. /data) into /data
+in the container with the option `-v <host_dir>:<container_dir>`:
+```bash
+singularity exec -B /path/on/host:/data clas12-analysis.sif /usr/src/clas12-analysis/bin/run.sh --help
+```
 
 ### Manual Installation
 If you wish to install manually you will need the following tools
