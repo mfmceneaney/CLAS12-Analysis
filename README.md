@@ -15,7 +15,7 @@ This tool only reads HIPO files (see [CLAS12-Offline-Software](https://github.co
 ## Dependencies
 * [CLAS12-Offline-Software](https://github.com/JeffersonLab/clas12-offline-software)
 * [CLASQADB](https://github.com/JeffersonLab/clasqaDB)
-* [J2ROOT](https://github.com/drewkenjo/j2root)
+* [J2ROOT](https://github.com/mfmceneaney/j2root)
 
 ## Containerized Installation
 If you prefer to use a container, two examples are provided: a Dockerfile (`docker/Dockerfile`) and
