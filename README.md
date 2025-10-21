@@ -17,21 +17,17 @@ This tool only reads HIPO files (see [CLAS12-Offline-Software](https://github.co
 * [CLASQADB](https://github.com/JeffersonLab/clasqaDB)
 * [J2ROOT](https://github.com/drewkenjo/j2root)
 
-## Installation
-Begin by cloning the repository and running the setup script
-```bash
-git clone --recurse-submodules https://github.com/mfmceneaney/clas12-analysis.git
-```
-
-### Containerized Installation
+## Containerized Installation
 If you prefer to use a container, two examples are provided: a Dockerfile (`docker/Dockerfile`) and
 a Singularity/Apptainer definition (`singularity/clas12-analysis.def`). Below are minimal build and run examples that
-bind a host directory (for input HIPO files or output) into the container so you can read/write data from your host.
+bind a host directory (for input and output) into the container so you can read/write data between the container and host.
 
-#### Docker
+### Docker
 
 Build the image from source:
 ```bash
+git clone --recurse-submodules https://github.com/mfmceneaney/clas12-analysis.git
+cd clas12-analysis
 docker build -t clas12-analysis:latest -f docker/Dockerfile .
 ```
 Or, pull a prebuilt image
@@ -42,10 +38,15 @@ docker pull docker://ghcr.io/mfmceneaney/clas12-analysis:latest
 Then, run the container and bind a host folder (e.g. /data) into /data
 in the container with the option `-v <host_dir>:<container_dir>`
 ```bash
+docker run --rm -it -v /path/on/host:/data clas12-analysis:latest
+```
+
+You may run the project from the container like so:
+```bash
 docker run --rm -it -v /path/on/host:/data clas12-analysis:latest /usr/src/clas12-analysis/bin/run.sh --help
 ```
 
-#### Apptainer/Singularity
+### Apptainer/Singularity
 
 Similarly, you may also use apptainer/singularity to build and run the container.
 Currently, apptainer and singularity have not diverged much and so they are interchangeable in the following commands.
@@ -53,6 +54,8 @@ However, this is not guaranteed to last.
 
 Build the image from source:
 ```bash
+git clone --recurse-submodules https://github.com/mfmceneaney/clas12-analysis.git
+cd clas12-analysis
 apptainer build clas12-analysis.sif singularity/clas12-analysis.def
 ```
 Or, pull a prebuilt image:
@@ -60,13 +63,13 @@ Or, pull a prebuilt image:
 apptainer pull clas12-analysis.sif oras://ghcr.io/mfmceneaney/clas12-analysis:latest
 ```
 
-Then, run the container and bind a host folder (e.g. /data) into /data
+Then, run the project from the container and bind a host folder (e.g. /data) into /data
 in the container with the option `-v <host_dir>:<container_dir>`:
 ```bash
 singularity exec -B /path/on/host:/data clas12-analysis.sif /usr/src/clas12-analysis/bin/run.sh --help
 ```
 
-### Manual Installation
+## Manual Installation
 If you wish to install manually you will need the following tools
 * jdk==21.0.8
 * groovy==5.0.0
@@ -74,16 +77,19 @@ If you wish to install manually you will need the following tools
 * maven==3.9.9
 
 On ifarm you may need to module load this java version.  You may also need to update the library versions in `gradle/libs.versions.toml` and the java version in `app/build.gradle`.
+
+Begin by cloning the repository and running the setup script
 ```bash
+git clone --recurse-submodules https://github.com/mfmceneaney/clas12-analysis.git
 cd clas12-analysis
 bin/setup.sh
 ```
 
-Then source the environment script from your startup script:
+Then, source the environment script in your startup script:
 ```bash
 pushd /path/to/clas12-analysis >> /dev/null
-#Uncomment this line if using csh: cd j2root; source setup.csh; cd ..;
-source env.sh
+# cd j2root; source setup.csh; cd ..; #NOTE: Use this line for csh.
+source env.sh #NOTE: Use this line for bash. 
 popd >> /dev/null
 ``` 
 
