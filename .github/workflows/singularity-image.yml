@@ -31,7 +31,7 @@ jobs:
 
         - name: Download and install Apptainer
           run: |
-            export VERSION=1.1.7
+            export VERSION=1.4.3
             wget https://github.com/apptainer/apptainer/releases/download/v${VERSION}/apptainer-${VERSION}.tar.gz
             tar -xzf apptainer-${VERSION}.tar.gz
             cd apptainer-${VERSION}
