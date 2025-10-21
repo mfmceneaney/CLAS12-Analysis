@@ -16,6 +16,15 @@ From: docker.io/rootproject/root:6.36.00-ubuntu25.04
     export C12ANALYSIS_INSTALL_DIR=/opt/clas12-analysis/
 
 %post
+    export DEBIAN_FRONTEND=noninteractive
+    export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+    export PATH=${JAVA_HOME}/bin:${PATH}
+    export GROOVY_VERSION=5.0.0
+    export GROOVY_HOME=/opt/groovy-${GROOVY_VERSION}
+    export PATH=${GROOVY_HOME}/bin:${PATH}
+    export C12ANALYSIS=/usr/src/clas12-analysis
+    export C12ANALYSIS_INSTALL_DIR=/opt/clas12-analysis/
+
     set -e
     apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
@@ -35,10 +44,6 @@ From: docker.io/rootproject/root:6.36.00-ubuntu25.04
         ca-certificates \
         locales \
         && rm -rf /var/lib/apt/lists/*
-
-    # Ensure JAVA_HOME is set for this shell
-    export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
-    export PATH=${JAVA_HOME}/bin:${PATH}
 
     # Download and install Groovy binary distribution
     wget -q https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/apache-groovy-binary-${GROOVY_VERSION}.zip -O /tmp/groovy.zip

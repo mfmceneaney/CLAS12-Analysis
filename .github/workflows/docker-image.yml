@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Docker Image
 
 on:
   push:
@@ -28,8 +28,8 @@ jobs:
 
     - name: Build the Docker image
       run: |
-        docker build . -f docker/Dockerfile --tag ghcr.io/mfmceneaney/clas12-analysis:latest
+        docker build . -f docker/Dockerfile --tag ghcr.io/${{ github.repository }}-docker:latest
 
     - name: Push image to GHCR
       run: |
-        docker push ghcr.io/mfmceneaney/clas12-analysis:latest
+        docker push ghcr.io/${{ github.repository }}-docker:latest

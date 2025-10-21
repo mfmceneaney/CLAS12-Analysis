@@ -1,4 +1,4 @@
-name: Singularity Image CI
+name: Singularity Image
 
 on:
   push:
@@ -7,48 +7,41 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-singularity:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v4
-          with:
-            submodules: recursive
+  build-test-container:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
-        - name: Install dependencies for Apptainer
-          run: |
-            sudo apt-get update
-            sudo apt-get install -y build-essential \
-                                    libseccomp-dev \
-                                    pkg-config \
-                                    squashfs-tools \
-                                    cryptsetup
-            
-        - name: Install Go (required for apptainer)
-          uses: actions/setup-go@v4
-          with:
-            go-version: '1.23.6'
+    container:
+      image: quay.io/singularity/singularity:v4.3.1
+      options: --privileged
 
-        - name: Download and install Apptainer
-          run: |
-            export VERSION=1.4.3
-            wget https://github.com/apptainer/apptainer/releases/download/v${VERSION}/apptainer-${VERSION}.tar.gz
-            tar -xzf apptainer-${VERSION}.tar.gz
-            cd apptainer-${VERSION}
-            ./mconfig
-            make -C builddir
-            sudo make -C builddir install
+    name: Build Container
+    steps:
 
-        - name: Verify apptainer install
-          run: apptainer --version
+      - name: Check out code for the container builds
+        uses: actions/checkout@v4
 
-        - name: Build SIF with remote builder
-          run: |
-            apptainer build --fakeroot --sandbox clas12-analysis.sif singularity/clas12-analysis.def
+      - name: Build Singularity Image
+        run: |
+           singularity build clas12-analysis.sif singularity/clas12-analysis.def
 
-        - name: Upload SIF artifact
-          if: always()
-          uses: actions/upload-artifact@v4
-          with:
-            name: singularity-sif
-            path: clas12-analysis.sif
+      - name: Install curl (Alpine)
+        run: apk add --no-cache curl
+
+      - name: Install ORAS CLI
+        run: |
+          curl -LO https://github.com/oras-project/oras/releases/download/v1.3.0/oras_1.3.0_linux_amd64.tar.gz
+          tar -xvf oras_1.3.0_linux_amd64.tar.gz
+          sudo mv oras /usr/local/bin/
+
+      - name: Push SIF to GHCR using ORAS
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHCR_USERNAME: ${{ github.repository_owner }}
+          tag: latest
+        run: |
+          echo $GHCR_TOKEN | oras login ghcr.io -u $GHCR_USERNAME --password-stdin
+          oras push ghcr.io/${{ github.repository }}-singularity:latest \
+            --annotation "org.opencontainers.image.title=clas12-analysis.sif" \
+            clas12-analysis.sif:application/vnd.sylabs.sif.layer.v1.sif
