@@ -25,23 +25,3 @@ jobs:
       - name: Build Singularity Image
         run: |
            singularity build clas12-analysis.sif singularity/clas12-analysis.def
-
-      - name: Install curl (Alpine)
-        run: apk add --no-cache curl
-
-      - name: Install ORAS CLI
-        run: |
-          curl -LO https://github.com/oras-project/oras/releases/download/v1.3.0/oras_1.3.0_linux_amd64.tar.gz
-          tar -xvf oras_1.3.0_linux_amd64.tar.gz
-          sudo mv oras /usr/local/bin/
-
-      - name: Push SIF to GHCR using ORAS
-        env:
-          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GHCR_USERNAME: ${{ github.repository_owner }}
-          tag: latest
-        run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | oras login ghcr.io -u ${{ github.repository_owner }} --password-stdin
-          oras push ghcr.io/${{ github.repository }}-singularity:latest \
-            --annotation "org.opencontainers.image.title=clas12-analysis.sif" \
-            clas12-analysis.sif:application/vnd.sylabs.sif.layer.v1.sif
