@@ -17,7 +17,7 @@ jobs:
       contents: read
 
     steps:
-    - name: Checkout
+    - name: Checkout code for the container builds
       uses: actions/checkout@v4
       with:
         submodules: recursive
