@@ -72,4 +72,4 @@ ENV C12ANALYSIS_INSTALL_DIR=/opt/clas12-analysis/
 RUN chmod +x /usr/src/clas12-analysis/bin/run.sh || true
 
 # Expose a default entrypoint which runs the groovy runner script
-ENTRYPOINT ["/bin/bash", "-c", "source /usr/src/clas12-analysis/bin/env.sh && exec bash"]
+ENTRYPOINT ["/bin/bash", "-c", "source /usr/src/clas12-analysis/bin/env.sh && export C12ANALYSIS_INSTALL_DIR=/opt/clas12-analysis && exec bash"]

@@ -13,6 +13,7 @@ From: docker.io/rootproject/root:6.36.00-ubuntu25.04
     export GROOVY_HOME=/opt/groovy-${GROOVY_VERSION}
     export PATH=${GROOVY_HOME}/bin:${PATH}
     export C12ANALYSIS=/usr/src/clas12-analysis
+    cd $C12ANALYSIS && source $C12ANALYSIS/bin/env.sh
     export C12ANALYSIS_INSTALL_DIR=/opt/clas12-analysis/
 
 %post
@@ -84,8 +85,8 @@ From: docker.io/rootproject/root:6.36.00-ubuntu25.04
     chmod +x /usr/src/clas12-analysis/bin/run.sh || true
 
 %runscript
-    exec /bin/bash -lc "source /usr/src/clas12-analysis/bin/env.sh >/dev/null 2>&1 || true; exec bash"
+    exec /bin/bash -lc "exec bash"
 
 %startscript
     # Non-interactive start script for instances: source environment and run default application
-    /bin/bash -lc "source /usr/src/clas12-analysis/bin/env.sh >/dev/null 2>&1 || true; exec /usr/src/clas12-analysis/bin/run.sh $@"
+    /bin/bash -lc "exec /usr/src/clas12-analysis/bin/run.sh $@"
