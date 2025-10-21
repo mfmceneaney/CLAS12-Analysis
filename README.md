@@ -1,6 +1,7 @@
 # clas12-analysis
-![Docker Build](https://github.com/mfmceneaney/clas12-analysis/actions/workflows/docker-image.yml/badge.svg)
-![Singularity Build](https://github.com/mfmceneaney/clas12-analysis/actions/workflows/singularity-image.yml/badge.svg)
+![Docker Image](https://github.com/mfmceneaney/clas12-analysis/actions/workflows/docker-image.yml/badge.svg)
+![Apptainer Image](https://github.com/mfmceneaney/clas12-analysis/actions/workflows/apptainer-image.yml/badge.svg)
+![Singularity Image](https://github.com/mfmceneaney/clas12-analysis/actions/workflows/singularity-image.yml/badge.svg)
 
 This is a generic analysis application for CLAS12 in groovy to read HIPO events selecting all unique final state particle combinations corresponding to a given topology,
 compute generic event-level kinematics commonly used for SIDIS analyses, and output the selected combinations and their respective kinematics to ROOT TNTuples.
@@ -22,6 +23,41 @@ Begin by cloning the repository and running the setup script
 git clone --recurse-submodules https://github.com/mfmceneaney/clas12-analysis.git
 ```
 
+### Containerized Installation
+If you prefer to use a container, two examples are provided: a Dockerfile (`docker/Dockerfile`) and
+a Singularity/Apptainer definition (`singularity/clas12-analysis.def`). Below are minimal build and run examples that
+bind a host directory (for input HIPO files or output) into the container so you can read/write data from your host.
+
+Docker build & run
+
+```bash
+# build the image (from repository root)
+docker build -t clas12-analysis:latest -f docker/Dockerfile .
+
+# run the container and bind a host folder (e.g. /data) into /data in the container
+# -v <host_dir>:<container_dir>
+docker run --rm -it -v /path/on/host:/data clas12-analysis:latest
+
+# inside the container you can then run the analysis pointing to /data
+# example: ./bin/run.sh -i /data/input.hipo -o /data/out.root
+```
+
+Singularity/apptainer build & run
+
+```bash
+# build the image (run from repository root so %files copies local files)
+singularity build clas12-analysis.sif singularity/clas12-analysis.def
+
+# run the container and bind a host folder (singularity binds $PWD by default; use -B to bind other paths)
+singularity exec -B /path/on/host:/data clas12-analysis.sif /usr/src/clas12-analysis/bin/run.sh -i /data/input.hipo -o /data/out.root
+```
+
+Notes:
+- Replace `/path/on/host` with the directory on your machine containing HIPO input files and where you want outputs.
+- The entrypoint in the images sources the repository `env.sh` so `$C12ANALYSIS` and `$CLASSPATH` should be set.
+- If you prefer a shell inside the image to run commands interactively, run `docker run --rm -it --entrypoint /bin/bash ...` or
+    `singularity shell clas12-analysis.sif`.
+
 ### Manual Installation
 If you wish to install manually you will need the following tools
 * jdk==21.0.8
@@ -42,41 +78,6 @@ pushd /path/to/clas12-analysis >> /dev/null
 source env.sh
 popd >> /dev/null
 ``` 
-
-### Containerized Installation
-If you prefer to use a container, two examples are provided: a Dockerfile (`docker/Dockerfile`) and
-a Singularity definition (`singularity/clas12-analysis.def`). Below are minimal build and run examples that
-bind a host directory (for input HIPO files or output) into the container so you can read/write data from your host.
-
-Docker build & run
-
-```bash
-# build the image (from repository root)
-docker build -t clas12-analysis:latest -f docker/Dockerfile .
-
-# run the container and bind a host folder (e.g. /data) into /data in the container
-# -v <host_dir>:<container_dir>
-docker run --rm -it -v /path/on/host:/data clas12-analysis:latest
-
-# inside the container you can then run the analysis pointing to /data
-# example: ./bin/run.sh -i /data/input.hipo -o /data/out.root
-```
-
-Singularity build & run
-
-```bash
-# build the image (run from repository root so %files copies local files)
-singularity build clas12-analysis.sif singularity/clas12-analysis.def
-
-# run the container and bind a host folder (singularity binds $PWD by default; use -B to bind other paths)
-singularity exec -B /path/on/host:/data clas12-analysis.sif /usr/src/clas12-analysis/bin/run.sh -i /data/input.hipo -o /data/out.root
-```
-
-Notes:
-- Replace `/path/on/host` with the directory on your machine containing HIPO input files and where you want outputs.
-- The entrypoint in the images sources the repository `env.sh` so `$C12ANALYSIS` and `$CLASSPATH` should be set.
-- If you prefer a shell inside the image to run commands interactively, run `docker run --rm -it --entrypoint /bin/bash ...` or
-    `singularity shell clas12-analysis.sif`.
 
 ### Notes for installing on ifarm
 
@@ -130,11 +131,10 @@ and run from `$C12ANALYSIS/bin/run.sh`.
 Assuming your `$CLASSPATH` is configured correctly, you can proceed without further setup.
 
 ## Getting Started
-You should now be able to run the application with `$C12ANALYSIS/bin/run.sh` which runs directly from groovy.
-Some version info will pop up if you do not supply any arguments.
+After installing the project, you should be able to run the application with `$C12ANALYSIS/bin/run.sh` which runs directly from java.
 Use the `-h` or  `--help` option to see a detailed list of all available command line options and arguments.
 
-As a legacy option, you may also run the application with `$C12ANALYSIS/bin/an-groovy`, which will automatically use the correct `$CLASSPATH`.  However, you can run into thread permissions errors running gradle from this script in SLURM jobs so it is better to just set your `$CLASSPATH` manually and use `$C12ANALYSIS/bin/run.sh` instead.
+As a legacy option, you may also run the application with `$C12ANALYSIS/bin/an-groovy`.  However, you can run into thread permissions errors running gradle from this script in SLURM jobs so it is better to just set your `$CLASSPATH` manually and use `$C12ANALYSIS/bin/run.sh` instead.
 
 Although this tool is primarily intended to have a generic application and primarily be used via execution of `$C12ANALYSIS/bin/run.sh` from the command line, you may also configure and run an analysis with more direct control over the configuration process by using a groovy script.  See the `examples` folder for, well, examples!
 
