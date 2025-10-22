@@ -85,8 +85,8 @@ From: docker.io/rootproject/root:6.36.00-ubuntu25.04
     chmod +x /usr/src/clas12-analysis/bin/run.sh || true
 
 %runscript
-    exec /bin/bash -lc "exec bash"
+    /bin/bash -lc "cd /usr/src/clas12-analysis && source /usr/src/clas12-analysis/bin/env.sh"
 
 %startscript
     # Non-interactive start script for instances: source environment and run default application
-    /bin/bash -lc "exec /usr/src/clas12-analysis/bin/run.sh $@"
+    /bin/bash -lc "cd /usr/src/clas12-analysis && source /usr/src/clas12-analysis/bin/env.sh && exec /usr/src/clas12-analysis/bin/run.sh $@"
