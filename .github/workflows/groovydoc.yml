@@ -19,7 +19,7 @@ jobs:
       - name: Run Groovydoc inside container
         uses: addnab/docker-run-action@v3
         with:
-          image: ghcr.io/mfmceneaney/clas12-analysis:latest
+          image: ghcr.io/mfmceneaney/clas12-analysis-docker:latest
           options: -v ${{ github.workspace }}:/usr/src -w /usr/src
           run: ./gradlew generateGroovydoc --no-daemon
 
