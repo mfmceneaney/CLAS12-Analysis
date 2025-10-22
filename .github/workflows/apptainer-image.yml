@@ -20,6 +20,12 @@ jobs:
     name: Build Container
     steps:
 
+      - name: Install Git
+        run: |
+          apt-get update
+          apt-get install -y git
+          git --version
+
       - name: Check out code for the container builds
         uses: actions/checkout@v4
         with:
