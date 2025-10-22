@@ -66,7 +66,7 @@ apptainer pull clas12-analysis.sif oras://ghcr.io/mfmceneaney/clas12-analysis-ap
 Then, run the project from the container and bind a host folder (e.g. /data) into /data
 in the container with the option `-v <host_dir>:<container_dir>`:
 ```bash
-singularity exec -B /path/on/host:/data clas12-analysis.sif /usr/src/clas12-analysis/bin/run.sh --help
+apptainer exec -B /path/on/host:/data clas12-analysis.sif /usr/src/clas12-analysis/bin/run.sh --help
 ```
 
 ## Manual Installation
