@@ -32,7 +32,7 @@ docker build -t clas12-analysis:latest -f docker/Dockerfile .
 ```
 Or, pull a prebuilt image
 ```bash
-docker pull docker://ghcr.io/mfmceneaney/clas12-analysis:latest
+docker pull docker://ghcr.io/mfmceneaney/clas12-analysis-docker:latest
 ```
 
 Then, run the container and bind a host folder (e.g. /data) into /data
@@ -60,7 +60,7 @@ apptainer build clas12-analysis.sif singularity/clas12-analysis.def
 ```
 Or, pull a prebuilt image:
 ```bash
-apptainer pull clas12-analysis.sif oras://ghcr.io/mfmceneaney/clas12-analysis:latest
+apptainer pull clas12-analysis.sif oras://ghcr.io/mfmceneaney/clas12-analysis-apptainer:latest
 ```
 
 Then, run the project from the container and bind a host folder (e.g. /data) into /data
