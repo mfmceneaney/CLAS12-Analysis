@@ -13,8 +13,9 @@ From: docker.io/rootproject/root:6.36.00-ubuntu25.04
     export GROOVY_HOME=/opt/groovy-${GROOVY_VERSION}
     export PATH=${GROOVY_HOME}/bin:${PATH}
     export C12ANALYSIS=/usr/src/clas12-analysis
-    cd $C12ANALYSIS && source $C12ANALYSIS/bin/env.sh
     export C12ANALYSIS_INSTALL_DIR=/opt/clas12-analysis/
+    export J2ROOT=$C12ANALYSIS/j2root
+    export JAVA_OPTS=-Djava.library.path=$J2ROOT/build
 
 %post
     export DEBIAN_FRONTEND=noninteractive
@@ -25,6 +26,8 @@ From: docker.io/rootproject/root:6.36.00-ubuntu25.04
     export PATH=${GROOVY_HOME}/bin:${PATH}
     export C12ANALYSIS=/usr/src/clas12-analysis
     export C12ANALYSIS_INSTALL_DIR=/opt/clas12-analysis/
+    export J2ROOT=$C12ANALYSIS/j2root
+    export JAVA_OPTS=-Djava.library.path=$J2ROOT/build
 
     set -e
     apt-get update && apt-get install -y --no-install-recommends \
@@ -85,8 +88,7 @@ From: docker.io/rootproject/root:6.36.00-ubuntu25.04
     chmod +x /usr/src/clas12-analysis/bin/run.sh || true
 
 %runscript
-    /bin/bash -lc "cd /usr/src/clas12-analysis && source /usr/src/clas12-analysis/bin/env.sh"
+    exec $C12ANALYSIS/bin/run.sh "@"
 
 %startscript
-    # Non-interactive start script for instances: source environment and run default application
-    /bin/bash -lc "cd /usr/src/clas12-analysis && source /usr/src/clas12-analysis/bin/env.sh && exec /usr/src/clas12-analysis/bin/run.sh $@"
+    exec $C12ANALYSIS/bin/run.sh "@"
