@@ -125,14 +125,13 @@ public class MCDecays {
 
             // Get mother pid and status
             int mother_pid = this._bank.getInt("pid", mother_idx-1);
-            int mother_sta = this._bank.getInt("status", mother_idx-1);
 
             // Check mother pid and status
             if (this.isQuark(mother_pid)) return 1;
             if (this.isDiQuark(mother_pid)) return 0;
 
             // Reset mother index
-            mother_idx = this._bank.getInt("parent", mother_idx);
+            mother_idx = this._bank.getInt("parent", mother_idx-1);
         }
         return -1;
     }
