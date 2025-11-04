@@ -198,66 +198,71 @@ extends java.lang.Object</pre>
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>int</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#_is_cfr">_is_cfr</a></code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>double</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#_m">_m</a></code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>int</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#_parent">_parent</a></code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>int</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#_pid">_pid</a></code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>int</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#_ppid">_ppid</a></code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>double</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#_px">_px</a></code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>double</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#_py">_py</a></code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>double</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#_pz">_pz</a></code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>int</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#_sector">_sector</a></code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>int</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#_stat">_stat</a></code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>double</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#_vt">_vt</a></code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>double</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#_vx">_vx</a></code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>double</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#_vy">_vy</a></code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>double</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#_vz">_vz</a></code><br></td>
                         </tr>
@@ -499,6 +504,18 @@ extends java.lang.Object</pre>
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;int</code></td>
                             <td class="colLast"><code><strong><a href="#index()">index</a></strong>()</code><br>Access particle's bank index.</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>protected&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#is_cfr(int)">is_cfr</a></strong>(int is_cfr)</code><br>Set MC::Lund particle fragmentation mechanism status.</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>protected&nbsp;double</code></td>
+                            <td class="colLast"><code><strong><a href="#is_cfr()">is_cfr</a></strong>()</code><br>Access MC::Lund particle fragmentation mechanism status.</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -894,6 +911,14 @@ extends java.lang.Object</pre>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>int <strong>_index</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="_is_cfr"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>int <strong>_is_cfr</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1299,6 +1324,22 @@ extends java.lang.Object</pre>
                             <li class="blockList">
                                 <h4>protected&nbsp;int <strong>index</strong>()</h4>
                                 <p> Access particle's bank index. <DL><DT><B>Returns:</B></DT><DD>_index</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="is_cfr(int)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;void <strong>is_cfr</strong>(int is_cfr)</h4>
+                                <p> Set MC::Lund particle fragmentation mechanism status. <DL><DT><B>Parameters:</B></DT><DD>is_cfr</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="is_cfr()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;double <strong>is_cfr</strong>()</h4>
+                                <p> Access MC::Lund particle fragmentation mechanism status. <DL><DT><B>Returns:</B></DT><DD>_is_cfr</DD></DL></p>
                             </li>
                         </ul>
                     
