@@ -94,10 +94,20 @@ public class MCDecays {
         this._particleList = fplist;
     }
 
+    /**
+    * Check if a given pid is a quark pid
+    * @param pid
+    * @return isQuark
+    */
     protected boolean isQuark(int pid) {
         return Math.abs(pid)<10 && pid!=0;
     }
 
+    /**
+    * Check if a given pid is a diquark pid
+    * @param pid
+    * @return isDiQuark
+    */
     protected boolean isDiQuark(int pid) {
         int abs_pid = Math.abs(pid);
         return (abs_pid == 1103 || 
