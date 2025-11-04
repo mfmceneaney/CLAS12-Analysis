@@ -99,7 +99,7 @@ public class MCDecays {
     }
 
     protected boolean isDiQuark(int pid) {
-        int abs_pid = abs(pid);
+        int abs_pid = Math.abs(pid);
         return (abs_pid == 1103 || 
             abs_pid == 2101 || abs_pid == 2103 || 
             abs_pid == 2203 || 
@@ -129,7 +129,7 @@ public class MCDecays {
 
             // Check mother pid and status
             if (this.isQuark(mother_pid)) return 1;
-            if (this.isDiquark(mother_pid)) return 0;
+            if (this.isDiQuark(mother_pid)) return 0;
 
             // Reset mother index
             mother_idx = this._bank.getInt("parent", mother_idx);
