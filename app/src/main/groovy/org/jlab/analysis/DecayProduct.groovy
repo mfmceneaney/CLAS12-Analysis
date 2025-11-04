@@ -42,6 +42,7 @@ public class DecayProduct {
     int       _sector;
     int       _detector_status;
     double    _detector_chi2ndf;
+    int       _is_cfr;
     Constants _constants = new ExtendedConstants(); //TODO: Might slow things down a lot...
 
     public DecayProduct(int pid, double px, double py, double pz, double beta, double vx, double vy, double vz, double vt, double chi2pid, int stat) {
@@ -784,6 +785,24 @@ public class DecayProduct {
     protected double detector_chi2ndf() {
 
         return this._detector_chi2ndf;
+    }
+
+    /**
+    * Set MC::Lund particle fragmentation mechanism status.
+    * @param is_cfr
+    */
+    protected void is_cfr(int is_cfr) {
+
+        this._is_cfr = is_cfr;
+    }
+
+    /**
+    * Access MC::Lund particle fragmentation mechanism status.
+    * @return _is_cfr
+    */
+    protected double is_cfr() {
+
+        return this._is_cfr;
     }
 
 } // class
