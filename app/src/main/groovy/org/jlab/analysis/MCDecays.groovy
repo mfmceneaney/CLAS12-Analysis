@@ -94,6 +94,49 @@ public class MCDecays {
         this._particleList = fplist;
     }
 
+    protected boolean isQuark(int pid) {
+        return Math.abs(pid)<10 && pid!=0;
+    }
+
+    protected boolean isDiQuark(int pid) {
+        int abs_pid = abs(pid);
+        return (abs_pid == 1103 || 
+            abs_pid == 2101 || abs_pid == 2103 || 
+            abs_pid == 2203 || 
+            abs_pid == 3101 || abs_pid == 3103 || 
+            abs_pid == 3201 || abs_pid == 3203 || 
+            abs_pid == 3303
+        );
+    }
+
+    /**
+    * Check if a particle at a given lund index (1,N) in MC::Lund originates from CFR or TFR fragmentation.
+    * Return 1 if there is a parent which is a quark.
+    * Return 0 if there is a parent which is a diquark.
+    * Return -1 otherwise.
+    * @param idx
+    * @return is_cfr
+    */
+    protected int checkIsCfr(int idx) {
+
+        // Loop through bank checking status and pids of mothers until you find diquark or quark from scattering
+        int mother_idx = idx;
+        while (mother_idx>0) {
+
+            // Get mother pid and status
+            int mother_pid = this._bank.getInt("pid", mother_idx-1);
+            int mother_sta = this._bank.getInt("status", mother_idx-1);
+
+            // Check mother pid and status
+            if (this.isQuark(mother_pid)) return 1;
+            if (this.isDiquark(mother_pid)) return 0;
+
+            // Reset mother index
+            mother_idx = this._bank.getInt("parent", mother_idx);
+        }
+        return -1;
+    }
+
    /**
     * Set full list of particles in event. (Used for pid tagging events.)
     */
@@ -128,6 +171,9 @@ public class MCDecays {
             double vz = this._bank.getFloat("vz", i);
 
             DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,i+1,parent,daughter,ppid,gppid,ggppid);
+
+            // Set CFR status
+            p.is_cfr(this.checkIsCfr(parent));
 
             // Set mass
             double m  = this._bank.getFloat("mass", i);
@@ -177,6 +223,9 @@ public class MCDecays {
             double vz = this._bank.getFloat("vz", i);
 
             DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,i+1,parent,daughter,ppid,gppid,ggppid);
+
+            // Set CFR status
+            p.is_cfr(this.checkIsCfr(parent));
 
             // Set mass
             double m  = this._bank.getFloat("mass", i);
@@ -485,6 +534,10 @@ public class MCDecays {
             double vz = this._bank.getFloat("vz", i);
 
             DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,i+1,parent,daughter,ppid,gppid,ggppid);
+
+            // Set CFR status
+            p.is_cfr(this.checkIsCfr(parent));
+
             p.charge(charge); //TODO: Necessary?
             //TODO: sector cut
             this._particleList.add(p);
