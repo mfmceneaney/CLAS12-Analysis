@@ -158,7 +158,7 @@ public class MCDecays {
     * Get a list of the last parent Lund indices of all particles in an event.
     * @return lastParentIndices
     */
-    protected void getLastParentIndices() {
+    protected ArrayList<Integer> getLastParentIndices() {
 
         // Create list
         ArrayList<Integer> last_parent_indices = new ArrayList<Integer>();
@@ -186,7 +186,7 @@ public class MCDecays {
         int idx_g = 2;
 
         // Sanity check
-        if (this._particleList().size()<idx_g+1) return;
+        if (this._particleList.size()<idx_g+1) return;
         
         // Grab lorentz vectors
         LorentzVector lv_N = this._particleList.get(idx_N).lv();
@@ -194,7 +194,7 @@ public class MCDecays {
 
         // Get boost vector
         LorentzVector lv_gN = new LorentzVector(lv_N);
-        lv_gn.add(lv_g);
+        lv_gN.add(lv_g);
         Vector3 boost = lv_gN.boostVector();
         boost.negative();
 
@@ -260,9 +260,6 @@ public class MCDecays {
 
             DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,i+1,parent,daughter,ppid,gppid,ggppid);
 
-            // Set CFR status
-            p.is_cfr(this.checkIsCfr(parent));
-
             // Set mass
             double m  = this._bank.getFloat("mass", i);
             p.m(m);
@@ -315,15 +312,15 @@ public class MCDecays {
 
             DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,i+1,parent,daughter,ppid,gppid,ggppid);
 
-            // Set CFR status
-            p.is_cfr(this.checkIsCfr(parent));
-
             // Set mass
             double m  = this._bank.getFloat("mass", i);
             p.m(m);
 
             this._particleList.add(p);
         }
+
+        // Now set the cfr flags
+        this.setCFRFlags();
     }
 
     /**
@@ -606,7 +603,7 @@ public class MCDecays {
             // Get charge and parent and daughter indices
             int pid        = this._bank.getInt("pid", i);
             int charge     = this._bank.getInt("charge", i);
-            if (!this._charges.contains(charge) && !this._parCharges.contains(charge) && !this._constants.getCharge(this._constants.getBeamPID())==charge) { continue; }
+            // if (!this._charges.contains(charge) && !this._parCharges.contains(charge) && !this._constants.getCharge(this._constants.getBeamPID())==charge) { continue; }
             int parent     = this._bank.getInt("parent", i);
             int daughter   = this._bank.getInt("daughter", i);
             int ppid       = this._bank.getInt("pid", parent-1);
@@ -626,13 +623,13 @@ public class MCDecays {
 
             DecayProduct p = new DecayProduct(pid,px,py,pz,bt,vx,vy,vz,i+1,parent,daughter,ppid,gppid,ggppid);
 
-            // Set CFR status
-            p.is_cfr(this.checkIsCfr(parent));
-
             p.charge(charge); //TODO: Necessary?
             //TODO: sector cut
             this._particleList.add(p);
         }
+
+        // Now set the cfr flags
+        this.setCFRFlags();
     }
 
     /**
