@@ -29,10 +29,10 @@ jobs:
     - name: Set image tags dynamically
       id: vars
       run: |
-        if [[ "${{ github.event_name }}" == "push" ]]; then
+        if [ "${{ github.event_name }}" == "push" ]; then
           # On push to main → publish production tag
           echo "tag=latest" >> $GITHUB_OUTPUT
-        elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+        elif [ "${{ github.event_name }}" == "pull_request" ]; then
           # On PR to main → publish preview image with PR number
           echo "tag=pr-${{ github.event.number }}" >> $GITHUB_OUTPUT
         fi
