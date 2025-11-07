@@ -146,7 +146,10 @@ public class MCDecays {
             int parent_pid = parent_idx>0 ? this._bank.getInt("pid", parent_idx-1) : 0;
 
             // Check mother pid and status
-            if (this.isLundString(parent_pid)) return idx;
+            if (this.isLundString(parent_pid)) {
+                System.out.println("index, idx, pid, parent_idx, parent_pid = " + index + " , " + idx + " , " + pid + " , " + parent_idx + " , " + parent_pid);
+                return idx;
+            }
 
             // Reset index
             idx = parent_idx;
@@ -181,20 +184,24 @@ public class MCDecays {
     */
     protected void setCFRFlags() {
 
-        // Grab target hadron and virtual photon from particle list
-        int idx_N = 1;
-        int idx_g = 2;
+        // Grab target hadron and virtual photon (e-eprime) from particle list
+        int idx_e0 = 0;
+        int idx_N  = 1;
+        int idx_e1 = 3;
 
         // Sanity check
-        if (this._particleList.size()<idx_g+1) return;
+        if (this._particleList.size()<idx_e1+1) return;
         
         // Grab lorentz vectors
-        LorentzVector lv_N = this._particleList.get(idx_N).lv();
-        LorentzVector lv_g = this._particleList.get(idx_g).lv();
+        LorentzVector lv_e0 = this._particleList.get(idx_e0).lv();
+        LorentzVector lv_N  = this._particleList.get(idx_N).lv();
+        LorentzVector lv_e1 = this._particleList.get(idx_e1).lv();
 
         // Get boost vector
-        LorentzVector lv_gN = new LorentzVector(lv_N);
-        lv_gN.add(lv_g);
+        LorentzVector lv_q = new LorentzVector(lv_e0);
+        lv_q.sub(lv_e1);
+        LorentzVector lv_gN = new LorentzVector(lv_q);
+        lv_gN.add(lv_N);
         Vector3 boost = lv_gN.boostVector();
         boost.negative();
 
@@ -218,6 +225,11 @@ public class MCDecays {
 
                 // Check whether z component is positive or negative
                 cfr_flag = lv_p.pz() > 0 ? 1 : 0;
+                int pid = this._particleList.get(i).pid();
+                System.out.println("i, pid = " + i + " , " + pid + " lv_p.pz() = "+lv_p.pz());
+            } else {
+                int pid = this._particleList.get(i).pid();
+                System.out.println("i, pid = " + i + " , " + pid + " lv_p.pz() == -inf");
             }
 
             // Set particle flag in list
