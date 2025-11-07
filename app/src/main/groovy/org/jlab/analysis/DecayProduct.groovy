@@ -451,6 +451,30 @@ public class DecayProduct {
     }
 
     /**
+    * Access particle's rapidity.
+    * @return rapidity
+    */
+    protected double rapidity() {
+        double arg = (this.p() + this.pz()) / (this.p() - this.pz());
+        if (arg<=0.0) {
+            return this.pz() > 0.0 ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY;
+        }
+        return 0.5 * Math.log(arg);
+    }
+
+    /**
+    * Access particle's pseudorapidity eta.
+    * @return eta
+    */
+    protected double eta() {
+        double arg = Math.tan(this.theta()/2.0);
+        if (arg<=0.0) {
+            return this.pz() > 0.0 ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY;
+        }
+        return - Math.log(arg);
+    }
+
+    /**
     * Set particle's momentum vector.
     * @param px
     * @param py
