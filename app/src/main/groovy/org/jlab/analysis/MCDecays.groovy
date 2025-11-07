@@ -233,7 +233,7 @@ public class MCDecays {
                 lv_p.boost(boost);
 
                 // Check whether z component is positive or negative
-                cfr_flag = lv_p.eta() > lv_lund_string.eta() ? 1 : 0;
+                cfr_flag = lv_p.pz() > lv_lund_string.pz() ? 1 : 0;
             }
 
             // Set particle flag in list
