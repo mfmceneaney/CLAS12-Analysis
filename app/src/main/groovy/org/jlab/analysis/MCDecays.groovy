@@ -147,7 +147,6 @@ public class MCDecays {
 
             // Check mother pid and status
             if (this.isLundString(parent_pid)) {
-                System.out.println("index, idx, pid, parent_idx, parent_pid = " + index + " , " + idx + " , " + pid + " , " + parent_idx + " , " + parent_pid);
                 return idx;
             }
 
@@ -225,11 +224,6 @@ public class MCDecays {
 
                 // Check whether z component is positive or negative
                 cfr_flag = lv_p.pz() > 0 ? 1 : 0;
-                int pid = this._particleList.get(i).pid();
-                System.out.println("i, pid = " + i + " , " + pid + " lv_p.pz() = "+lv_p.pz());
-            } else {
-                int pid = this._particleList.get(i).pid();
-                System.out.println("i, pid = " + i + " , " + pid + " lv_p.pz() == -inf");
             }
 
             // Set particle flag in list
