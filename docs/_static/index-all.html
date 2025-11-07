@@ -206,9 +206,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Set particle's pid.  </div></dd>
 <dt><span class="strong"><a href="org/jlab/analysis/DecayProduct.html#charge()" title="Method in DecayProduct">charge()</a></span> - Method in <a href="org/jlab/analysis/DecayProduct.html">DecayProduct</a>
 </dt><dd> <div class="block">Access particle's charge.</div></dd>
-<dt><span class="strong"><a href="org/jlab/analysis/MCDecays.html#checkIsCfr(int)" title="Method in MCDecays">checkIsCfr(int)</a></span> - Method in <a href="org/jlab/analysis/MCDecays.html">MCDecays</a>
-</dt><dd> <div class="block">Check if a particle at a given lund index (1,N) in MC::Lund originates from CFR or TFR fragmentation.
- </div></dd>
 <dt><span class="strong"><a href="org/jlab/analysis/DecayProduct.html#chi2pid()" title="Method in DecayProduct">chi2pid()</a></span> - Method in <a href="org/jlab/analysis/DecayProduct.html">DecayProduct</a>
 </dt><dd> <div class="block">Access REC::Particle particle's chi2pid.</div></dd>
 <dt><span class="strong"><a href="org/jlab/analysis/MLClient.html#classify(org.jlab.jnp.hipo4.data.Event)" title="Method in MLClient">classify(org.jlab.jnp.hipo4.data.Event)</a></span> - Method in <a href="org/jlab/analysis/MLClient.html">MLClient</a>
@@ -419,6 +416,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/jlab/analysis/Kinematics.html#getLambdaVars(HashMap<String, Double>, ArrayList<LorentzVector>, org.jlab.clas.physics.LorentzVector, org.jlab.clas.physics.LorentzVector, org.jlab.clas.physics.LorentzVector, org.jlab.clas.physics.LorentzVector, org.jlab.clas.physics.Vector3)" title="Method in Kinematics">getLambdaVars(HashMap&lt;String, Double&gt;, ArrayList&lt;LorentzVector&gt;, org.jlab.clas.physics.LorentzVector, org.jlab.clas.physics.LorentzVector, org.jlab.clas.physics.LorentzVector, org.jlab.clas.physics.LorentzVector, org.jlab.clas.physics.Vector3)</a></span> - Method in <a href="org/jlab/analysis/Kinematics.html">Kinematics</a>
 </dt><dd> <div class="block">Compute additional kinematics particular to Lambda baryon analysis
  but potentially useful for other two body decays.</div></dd>
+<dt><span class="strong"><a href="org/jlab/analysis/MCDecays.html#getLastParentIndex(int)" title="Method in MCDecays">getLastParentIndex(int)</a></span> - Method in <a href="org/jlab/analysis/MCDecays.html">MCDecays</a>
+</dt><dd> <div class="block">Get the last parent Lund index before the diquark
+ string for a given Lund index.</div></dd>
+<dt><span class="strong"><a href="org/jlab/analysis/MCDecays.html#getLastParentIndices()" title="Method in MCDecays">getLastParentIndices()</a></span> - Method in <a href="org/jlab/analysis/MCDecays.html">MCDecays</a>
+</dt><dd> <div class="block">Get a list of the last parent Lund indices of all particles in an event.</div></dd>
 <dt><span class="strong"><a href="org/jlab/analysis/Constants.html#getMass(int)" title="Method in Constants">getMass(int)</a></span> - Method in <a href="org/jlab/analysis/Constants.html">Constants</a>
 </dt><dd> <div class="block">Get mass by Lund pid (charge does not matter).  </div></dd>
 <dt><span class="strong"><a href="org/jlab/analysis/MCDecays.html#getMatchingMap()" title="Method in MCDecays">getMatchingMap()</a></span> - Method in <a href="org/jlab/analysis/MCDecays.html">MCDecays</a>
@@ -524,6 +526,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Access MC::Lund particle fragmentation mechanism status.</div></dd>
 <dt><span class="strong"><a href="org/jlab/analysis/MCDecays.html#isDiQuark(int)" title="Method in MCDecays">isDiQuark(int)</a></span> - Method in <a href="org/jlab/analysis/MCDecays.html">MCDecays</a>
 </dt><dd> <div class="block">Check if a given pid is a diquark pid</div></dd>
+<dt><span class="strong"><a href="org/jlab/analysis/MCDecays.html#isLundString(int)" title="Method in MCDecays">isLundString(int)</a></span> - Method in <a href="org/jlab/analysis/MCDecays.html">MCDecays</a>
+</dt><dd> <div class="block">Check if a given pid is a Lund string pid.</div></dd>
 <dt><span class="strong"><a href="org/jlab/analysis/MCDecays.html#isQuark(int)" title="Method in MCDecays">isQuark(int)</a></span> - Method in <a href="org/jlab/analysis/MCDecays.html">MCDecays</a>
 </dt><dd> <div class="block">Check if a given pid is a quark pid</div></dd>
 </dl>
@@ -873,6 +877,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Set beam mass [GeV/c^2].  </div></dd>
 <dt><span class="strong"><a href="org/jlab/analysis/Constants.html#setBeamPID(int)" title="Method in Constants">setBeamPID(int)</a></span> - Method in <a href="org/jlab/analysis/Constants.html">Constants</a>
 </dt><dd> <div class="block">Set beam Lund pid.</div></dd>
+<dt><span class="strong"><a href="org/jlab/analysis/MCDecays.html#setCFRFlags()" title="Method in MCDecays">setCFRFlags()</a></span> - Method in <a href="org/jlab/analysis/MCDecays.html">MCDecays</a>
+</dt><dd> <div class="block">Create an array of flags indicating whether a particle at a given
+ lund index (0,N-1) in MC::Lund originates from CFR or TFR fragmentation.
+ </div></dd>
 <dt><span class="strong"><a href="org/jlab/analysis/Decays.html#setChargeList()" title="Method in Decays">setChargeList()</a></span> - Method in <a href="org/jlab/analysis/Decays.html">Decays</a>
 </dt><dd> <div class="block">Create list of lists of decay particles for each charge in specified decay channel.</div></dd>
 <dt><span class="strong"><a href="org/jlab/analysis/MCDecays.html#setChargeList()" title="Method in MCDecays">setChargeList()</a></span> - Method in <a href="org/jlab/analysis/MCDecays.html">MCDecays</a>
