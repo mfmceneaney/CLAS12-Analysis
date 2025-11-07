@@ -207,6 +207,16 @@ public class MCDecays {
         // Get a list of last parent indices
         ArrayList<Integer> last_parent_indices = this.getLastParentIndices();
 
+        // Loop particles and grab lund string lorentz vector
+        LorentzVector lv_lund_string = new LorentzVector();
+        for (int i=0; i<this._particleList.size(); i++) {
+            if (this.isLundString(this._particleList.get(i).pid())) {
+                lv_lund_string = new LorentzVector(this._particleList.get(i).lv());
+                lv_lund_string.boost(boost);
+                break;
+            }
+        }
+
         // Loop last parent indices, boost and check the rapidity of the last parent
         for (int i=0; i<last_parent_indices.size(); i++) {
 
@@ -223,7 +233,7 @@ public class MCDecays {
                 lv_p.boost(boost);
 
                 // Check whether z component is positive or negative
-                cfr_flag = lv_p.pz() > 0 ? 1 : 0;
+                cfr_flag = lv_p.pz() > lv_lund_string.pz() ? 1 : 0;
             }
 
             // Set particle flag in list
