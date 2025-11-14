@@ -1083,7 +1083,7 @@ public class Analysis {
             Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
             int runnum = -1;
             int evnum  = -1;
-            if (event.hasBank(schema)) {
+            if (schema != null && event.hasBank(schema)) {
                 Bank bank     = new Bank(schema);
                 event.read(bank);
                 runnum = bank.getInt('run',0);
@@ -1346,7 +1346,7 @@ public class Analysis {
             Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
             int runnum = -1;
             int evnum  = -1;
-            if (event.hasBank(schema)) {
+            if (schema != null && event.hasBank(schema)) {
                 Bank bank     = new Bank(schema);
                 event.read(bank);
                 runnum = bank.getInt('run',0);
@@ -1480,7 +1480,7 @@ public class Analysis {
             Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
             int runnum = -1;
             int evnum  = -1;
-            if (event.hasBank(schema)) {
+            if (schema != null && event.hasBank(schema)) {
                 Bank bank     = new Bank(schema);
                 event.read(bank);
                 runnum = bank.getInt('run',0);

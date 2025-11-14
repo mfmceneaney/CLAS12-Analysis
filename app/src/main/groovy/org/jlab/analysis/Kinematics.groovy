@@ -65,7 +65,7 @@ public class Kinematics {
     protected ConfigVar _getEventNum = new ConfigVar() {
         double get(HipoReader reader, Event event) {
             Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
-            if (!event.hasBank(schema)) { return 0; }
+            if (schema == null || event.hasBank(schema)) { return 0; }
             Bank bank     = new Bank(schema);
             event.read(bank);
             double num = bank.getInt("event",0);
@@ -76,7 +76,7 @@ public class Kinematics {
     protected ConfigVar _getRunNum = new ConfigVar() {
         double get(HipoReader reader, Event event) {
             Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
-            if (!event.hasBank(schema)) { return 0; }
+            if (schema == null || event.hasBank(schema)) { return 0; }
             Bank bank     = new Bank(schema);
             event.read(bank);
             double num = bank.getInt("run",0);
@@ -87,7 +87,7 @@ public class Kinematics {
     protected ConfigVar _getTorus = new ConfigVar() {
         double get(HipoReader reader, Event event) {
             Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
-            if (!event.hasBank(schema)) { return 0; }
+            if (schema == null || event.hasBank(schema)) { return 0; }
             Bank bank     = new Bank(schema);
             event.read(bank);
             double torus = (double) bank.getFloat("torus",0);
@@ -99,7 +99,7 @@ public class Kinematics {
         double get(HipoReader reader, Event event) {
             double helicity  = 0.0;
             Schema schema = reader.getSchemaFactory().getSchema("REC::Event");
-            if (!event.hasBank(schema)) { return 0; }
+            if (schema == null || event.hasBank(schema)) { return 0; }
             Bank bank     = new Bank(schema);
             event.read(bank);
             helicity = (double) bank.getByte("helicity",0);
@@ -111,7 +111,7 @@ public class Kinematics {
         double get(HipoReader reader, Event event) {
             double pred  = 0.0;
             Schema schema = reader.getSchemaFactory().getSchema("ML::pred");
-            if (!event.hasBank(schema)) { return 0; }
+            if (schema == null || event.hasBank(schema)) { return 0; }
             Bank bank     = new Bank(schema);
             event.read(bank);
             pred = (double) bank.getDouble("pred",0);
@@ -123,7 +123,7 @@ public class Kinematics {
         double get(HipoReader reader, Event event) {
             double label  = 0.0;
             Schema schema = reader.getSchemaFactory().getSchema("ML::pred");
-            if (!event.hasBank(schema)) { return 0; }
+            if (schema == null || event.hasBank(schema)) { return 0; }
             Bank bank     = new Bank(schema);
             event.read(bank);
             label = (double) bank.getInt("label",0);
@@ -135,7 +135,7 @@ public class Kinematics {
         double get(HipoReader reader, Event event) {
             double helicity  = 0.0;
             Schema schema = reader.getSchemaFactory().getSchema("MC::Header");
-            if (!event.hasBank(schema)) { return 0; }
+            if (schema == null || event.hasBank(schema)) { return 0; }
             Bank bank     = new Bank(schema);
             event.read(bank);
             helicity = (double) bank.getFloat("helicity",0);
@@ -147,7 +147,7 @@ public class Kinematics {
         double get(HipoReader reader, Event event) {
             double bc = 9999;
             Schema schema = reader.getSchemaFactory().getSchema("REC::Event");
-            if (!event.hasBank(schema)) { return 0; }
+            if (schema == null || event.hasBank(schema)) { return 0; }
             Bank bank     = new Bank(schema);
             event.read(bank);
             bc = (double) bank.getFloat("beamCharge",0);
@@ -159,7 +159,7 @@ public class Kinematics {
         double get(HipoReader reader, Event event) {
             double liveTime = 9999;
             Schema schema = reader.getSchemaFactory().getSchema("REC::Event");
-            if (!event.hasBank(schema)) { return 0; }
+            if (schema == null || event.hasBank(schema)) { return 0; }
             Bank bank     = new Bank(schema);
             event.read(bank);
             liveTime = (double) bank.getFloat("liveTime",0);
@@ -171,7 +171,7 @@ public class Kinematics {
         double get(HipoReader reader, Event event) {
             double startTime = 9999;
             Schema schema = reader.getSchemaFactory().getSchema("REC::Event");
-            if (!event.hasBank(schema)) { return 0; }
+            if (schema == null || event.hasBank(schema)) { return 0; }
             Bank bank     = new Bank(schema);
             event.read(bank);
             startTime = (double) bank.getFloat("startTime",0);
@@ -183,7 +183,7 @@ public class Kinematics {
         double get(HipoReader reader, Event event) {
             double RFTime = 9999;
             Schema schema = reader.getSchemaFactory().getSchema("REC::Event");
-            if (!event.hasBank(schema)) { return 0; }
+            if (schema == null || event.hasBank(schema)) { return 0; }
             Bank bank     = new Bank(schema);
             event.read(bank);
             RFTime = (double) bank.getFloat("RFTime",0);
