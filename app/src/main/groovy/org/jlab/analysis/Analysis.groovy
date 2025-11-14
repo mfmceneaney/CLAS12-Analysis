@@ -1081,16 +1081,20 @@ public class Analysis {
 
             // QADB Cuts
             Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
-            Bank bank     = new Bank(schema);
-            event.read(bank);
-            int runnum = bank.getInt('run',0);
-            int evnum  = bank.getInt('event',0);
-            if (this._requireQA && !this._match && !this._useMC) {
-                switch (this._qaMethod) {
-                    case "OkForAsymmetry": if (!this._qa.OkForAsymmetry(runnum,evnum)) continue; // not sure if this will break event loop or switch statement...
-                    case "golden":         if (!this._qa.golden(runnum,evnum)) continue;
-                    case "custom":         System.out.println(" *** WARNING *** Congratulations! Custom QADB method is for you to implement;)");
-                    default:               System.out.println(" *** WARNING *** QA Method not recognized.  Using OkForAsymmetry()."); if (!this._qa.OkForAsymmetry(runnum,evnum)) continue;
+            int runnum = -1;
+            int evnum  = -1;
+            if (schema != null && event.hasBank(schema)) {
+                Bank bank     = new Bank(schema);
+                event.read(bank);
+                runnum = bank.getInt('run',0);
+                evnum  = bank.getInt('event',0);
+                if (this._requireQA && !this._match && !this._useMC) {
+                    switch (this._qaMethod) {
+                        case "OkForAsymmetry": if (!this._qa.OkForAsymmetry(runnum,evnum)) continue; // not sure if this will break event loop or switch statement...
+                        case "golden":         if (!this._qa.golden(runnum,evnum)) continue;
+                        case "custom":         System.out.println(" *** WARNING *** Congratulations! Custom QADB method is for you to implement;)");
+                        default:               System.out.println(" *** WARNING *** QA Method not recognized.  Using OkForAsymmetry()."); if (!this._qa.OkForAsymmetry(runnum,evnum)) continue;
+                    }
                 }
             }
 
@@ -1340,10 +1344,14 @@ public class Analysis {
 
             // Get Event # and Run #
             Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
-            Bank bank     = new Bank(schema);
-            event.read(bank);
-            int runnum = bank.getInt('run',0);
-            int evnum  = bank.getInt('event',0);
+            int runnum = -1;
+            int evnum  = -1;
+            if (schema != null && event.hasBank(schema)) {
+                Bank bank     = new Bank(schema);
+                event.read(bank);
+                runnum = bank.getInt('run',0);
+                evnum  = bank.getInt('event',0);
+            }
 
             // Read needed banks only once!
             if (this._requireFC) { this._fiducialCuts.setArrays(reader,event); }
@@ -1470,10 +1478,14 @@ public class Analysis {
 
             // Get Event # and Run #
             Schema schema = reader.getSchemaFactory().getSchema("RUN::config");
-            Bank bank     = new Bank(schema);
-            event.read(bank);
-            int runnum = bank.getInt('run',0);
-            int evnum  = bank.getInt('event',0);
+            int runnum = -1;
+            int evnum  = -1;
+            if (schema != null && event.hasBank(schema)) {
+                Bank bank     = new Bank(schema);
+                event.read(bank);
+                runnum = bank.getInt('run',0);
+                evnum  = bank.getInt('event',0);
+            }
 
             // Read needed banks only once!
             if (this._requireFC) { this._fiducialCuts.setArrays(reader,event); }
